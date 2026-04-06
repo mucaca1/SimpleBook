@@ -24,6 +24,7 @@ import { toast } from "react-toastify";
 import { evolu } from "../../evolu-init";
 import { TypeConfirmDialog } from "../ui/TypeConfirmDialog";
 import { DeleteConfirmDialog } from "../ui/DeleteConfirmDialog";
+import { AppOwner } from "@evolu/common";
 
 type MnemonicDialogState = {
     open: boolean;
@@ -56,7 +57,8 @@ export function DangerZone() {
     // Show Mnemonic handlers
     const handleShowMnemonic = async () => {
         try {
-            const mnemonic = await evolu.getOwner().getMnemonic();
+            const owner: Promise<AppOwner> = evolu.appOwner;
+            const mnemonic = (await owner).mnemonic;
             if (!mnemonic) {
                 toast.error("Failed to retrieve mnemonic");
                 return;
