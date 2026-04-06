@@ -1,0 +1,52 @@
+{
+    "common": {
+        "welcome": "Vitajte",
+        "hello": "Ahoj",
+        "home": "Domov",
+        "settings": "Nastavenia",
+        "save": "Uložiť",
+        "saving": "Ukladá sa...",
+        "cancel": "Zrušiť",
+        "back": "Späť",
+        "next": "Ďalej",
+        "continue": "Pokračovať",
+        "later": "Neskor"
+    },
+    "app": {
+        "title": "SimpleBook",
+        "version": "v{version}"
+    },
+    "language": {
+        "english": "English (EN)",
+        "slovak": "Slovensky (SK)"
+    },
+    "theme": {
+        "label": "Téma",
+        "light": "Svetlá",
+        "dark": "Tmavá"
+    },
+    "welcome": {
+        "greeting": "Vitajte 👋",
+        "steps": {
+            "language": "Jazyk",
+            "theme": "Téma"
+        },
+        "language": {
+            "instruction": "Vyberte si preferovaný jazyk"
+        },
+        "theme": {
+            "instruction": "Vyberte si, ako má aplikácia vyzerať"
+        }
+    },
+    "update": {
+        "checking": "Kontrolujem aktualizácie...",
+        "downloading": "Sťahujem aktualizáciu v{version}",
+        "progress": "{progress}% hotovo",
+        "ready": {
+            "title": "Aktualizácia pripravená",
+            "message": "Verzia {version} bola stiahnutá a je pripravená na inštaláciu.",
+            "restartMessage": "Aplikácia sa reštartuje na dokončenie inštalácie."
+        },
+        "restartAndInstall": "Reštartovať a nainštalovať"
+    }
+}

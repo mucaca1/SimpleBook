@@ -1,0 +1,78 @@
+{
+  "name": "SimpleBook",
+  "productName": "SimpleBook",
+  "version": "1.0.4",
+  "description": "My Electron application description",
+  "main": ".vite/build/main.js",
+  "scripts": {
+    "vite:dev": "vite",
+    "clean": "shx rm -rf node_modules .vite out",
+    "lint": "eslint --ext .ts,.tsx .",
+    "electron:dev": "electron-forge start",
+    "electron:build": "electron-forge make",
+    "electron:build:win": "electron-forge make --platform=win32",
+    "electron:build:linux": "electron-forge make --platform=linux",
+    "electron:package": "electron-forge package",
+    "electron:publish": "electron-forge publish"
+  },
+  "build": {
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "mucaca1",
+        "repo": "SimpleBook"
+      }
+    ]
+  },
+  "keywords": [],
+  "author": {
+    "name": "mucaca1"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.8.1",
+    "@electron-forge/maker-deb": "^7.8.1",
+    "@electron-forge/maker-rpm": "^7.8.1",
+    "@electron-forge/maker-squirrel": "^7.8.1",
+    "@electron-forge/maker-zip": "^7.8.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.8.1",
+    "@electron-forge/plugin-fuses": "^7.8.1",
+    "@electron-forge/plugin-vite": "^7.8.1",
+    "@electron-forge/publisher-github": "^7.11.1",
+    "@electron/fuses": "^1.8.0",
+    "@types/electron-squirrel-startup": "^1.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "electron": "36.9.3",
+    "eslint": "^8.57.1",
+    "eslint-plugin-import": "^2.31.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "vite": "^5.4.20"
+  },
+  "dependencies": {
+    "@effect/schema": "^0.75.5",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@evolu/common": "^7.4.1",
+    "@evolu/react": "10.4.0",
+    "@evolu/react-web": "2.4.0",
+    "@mui/icons-material": "^7.1.2",
+    "@mui/material": "^7.1.2",
+    "@mui/x-data-grid": "^8.6.0",
+    "@mui/x-date-pickers": "^8.12.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.2",
+    "dayjs": "^1.11.18",
+    "electron-log": "^5.4.3",
+    "electron-squirrel-startup": "^1.0.1",
+    "electron-updater": "^6.7.3",
+    "i18next": "^25.2.1",
+    "i18next-browser-languagedetector": "^8.2.0",
+    "react-hook-form": "^7.60.0",
+    "react-i18next": "^15.5.3",
+    "react-router-dom": "^7.6.2",
+    "react-toastify": "^11.0.5"
+  }
+}

@@ -1,0 +1,52 @@
+{
+    "common": {
+        "welcome": "Welcome",
+        "hello": "Hello",
+        "home": "Home",
+        "settings": "Settings",
+        "save": "Save",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "back": "Back",
+        "next": "Next",
+        "continue": "Continue",
+        "later": "Later"
+    },
+    "app": {
+        "title": "SimpleBook",
+        "version": "v{version}"
+    },
+    "language": {
+        "english": "English (EN)",
+        "slovak": "Slovensky (SK)"
+    },
+    "theme": {
+        "label": "Theme",
+        "light": "Light",
+        "dark": "Dark"
+    },
+    "welcome": {
+        "greeting": "Welcome 👋",
+        "steps": {
+            "language": "Language",
+            "theme": "Theme"
+        },
+        "language": {
+            "instruction": "Choose your preferred language"
+        },
+        "theme": {
+            "instruction": "Choose how the app should look"
+        }
+    },
+    "update": {
+        "checking": "Checking for updates...",
+        "downloading": "Downloading update v{version}",
+        "progress": "{progress}% complete",
+        "ready": {
+            "title": "Update Ready",
+            "message": "Version {version} has been downloaded and is ready to install.",
+            "restartMessage": "The app will restart to complete the installation."
+        },
+        "restartAndInstall": "Restart & Install"
+    }
+}
