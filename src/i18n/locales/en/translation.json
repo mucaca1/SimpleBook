@@ -4,6 +4,7 @@
         "hello": "Hello",
         "home": "Home",
         "settings": "Settings",
+        "subject": "Subject",
         "save": "Save",
         "saving": "Saving...",
         "cancel": "Cancel",
@@ -19,6 +20,26 @@
     "language": {
         "english": "English (EN)",
         "slovak": "Slovensky (SK)"
+    },
+    "subject": {
+        "customers": "Customers",
+        "employee": "Employee",
+        "customersPage": {
+            "title": "Customers Page",
+            "description": "You are on the Customers page"
+        },
+        "employeePage": {
+            "title": "Employee Page",
+            "description": "You are on the Employee page"
+        },
+        "homePage": {
+            "title": "Home Page",
+            "description": "You are on the Home page"
+        },
+        "settingsPage": {
+            "title": "Settings Page",
+            "description": "You are on the Settings page"
+        }
     },
     "theme": {
         "label": "Theme",
