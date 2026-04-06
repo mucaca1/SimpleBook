@@ -4,13 +4,22 @@
         "hello": "Hello",
         "home": "Home",
         "settings": "Settings",
+        "subject": "Subject",
         "save": "Save",
         "saving": "Saving...",
         "cancel": "Cancel",
         "back": "Back",
         "next": "Next",
         "continue": "Continue",
-        "later": "Later"
+        "later": "Later",
+        "delete": "Delete",
+        "edit": "Edit",
+        "add": "Add",
+        "actions": "Actions",
+        "confirm": "Confirm",
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success"
     },
     "app": {
         "title": "SimpleBook",
@@ -19,6 +28,26 @@
     "language": {
         "english": "English (EN)",
         "slovak": "Slovensky (SK)"
+    },
+    "subject": {
+        "customers": "Customers",
+        "employee": "Employee",
+        "customersPage": {
+            "title": "Customers Page",
+            "description": "You are on the Customers page"
+        },
+        "employeePage": {
+            "title": "Employee Page",
+            "description": "You are on the Employee page"
+        },
+        "homePage": {
+            "title": "Home Page",
+            "description": "You are on the Home page"
+        },
+        "settingsPage": {
+            "title": "Settings Page",
+            "description": "You are on the Settings page"
+        }
     },
     "theme": {
         "label": "Theme",
@@ -48,5 +77,76 @@
             "restartMessage": "The app will restart to complete the installation."
         },
         "restartAndInstall": "Restart & Install"
+    },
+    "customer": {
+        "title": "Customers",
+        "add": "Add Customer",
+        "edit": "Edit Customer",
+        "delete": "Delete Customer",
+        "form": {
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "degree": "Degree",
+            "birthDate": "Birth Date",
+            "isAdult": "Is Adult (18+)",
+            "sex": "Sex",
+            "customerId": "Customer ID",
+            "submit": "Submit",
+            "cancel": "Cancel",
+            "update": "Update",
+            "addCustomer": "Add Customer",
+            "updateCustomer": "Update Customer",
+            "saving": "Saving...",
+            "sexNone": "None",
+            "sexMale": "Male",
+            "sexFemale": "Female",
+            "sexOther": "Other",
+            "validation": {
+                "firstNameMaxLength": "First name must be less than 100 characters",
+                "lastNameMaxLength": "Last name must be less than 100 characters",
+                "degreeMaxLength": "Degree must be less than 10 characters",
+                "customerIdMaxLength": "Customer ID must be less than 50 characters"
+            },
+            "placeholder": {
+                "degree": "e.g., M.D., Ph.D.",
+                "customerId": "External customer identifier"
+            }
+        },
+        "table": {
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "degree": "Degree",
+            "birthDate": "Birth Date",
+            "isAdult": "Adult",
+            "sex": "Sex",
+            "id": "ID",
+            "actions": "Actions",
+            "empty": "No customers found",
+            "loading": "Loading customers..."
+        },
+        "toast": {
+            "created": "Customer created successfully",
+            "updated": "Customer updated successfully",
+            "deleted": "Customer deleted successfully",
+            "createError": "Failed to create customer",
+            "updateError": "Failed to update customer",
+            "deleteError": "Failed to delete customer"
+        },
+        "deleteConfirm": {
+            "title": "Delete {itemType}",
+            "message": "Are you sure you want to delete {itemName}?",
+            "confirm": "Delete",
+            "cancel": "Cancel"
+        },
+        "sex": {
+            "male": "Male",
+            "female": "Female",
+            "other": "Other"
+        },
+        "actions": {
+            "add": "Add Customer",
+            "edit": "Edit",
+            "delete": "Delete"
+        }
     }
 }

@@ -4,13 +4,22 @@
         "hello": "Ahoj",
         "home": "Domov",
         "settings": "Nastavenia",
+        "subject": "Predmet",
         "save": "Uložiť",
         "saving": "Ukladá sa...",
         "cancel": "Zrušiť",
         "back": "Späť",
         "next": "Ďalej",
         "continue": "Pokračovať",
-        "later": "Neskor"
+        "later": "Neskor",
+        "delete": "Odstrániť",
+        "edit": "Upraviť",
+        "add": "Pridať",
+        "actions": "Akcie",
+        "confirm": "Potvrdiť",
+        "loading": "Načítavam...",
+        "error": "Chyba",
+        "success": "Úspech"
     },
     "app": {
         "title": "SimpleBook",
@@ -19,6 +28,26 @@
     "language": {
         "english": "English (EN)",
         "slovak": "Slovensky (SK)"
+    },
+    "subject": {
+        "customers": "Zákazníci",
+        "employee": "Zamestnanec",
+        "customersPage": {
+            "title": "Stránka zákazníkov",
+            "description": "Ste na stránke zákazníkov"
+        },
+        "employeePage": {
+            "title": "Stránka zamestnanca",
+            "description": "Ste na stránke zamestnanca"
+        },
+        "homePage": {
+            "title": "Domovská stránka",
+            "description": "Ste na domovskej stránke"
+        },
+        "settingsPage": {
+            "title": "Stránka nastavení",
+            "description": "Ste na stránke nastavení"
+        }
     },
     "theme": {
         "label": "Téma",
@@ -48,5 +77,76 @@
             "restartMessage": "Aplikácia sa reštartuje na dokončenie inštalácie."
         },
         "restartAndInstall": "Reštartovať a nainštalovať"
+    },
+    "customer": {
+        "title": "Zákazníci",
+        "add": "Pridať zákazníka",
+        "edit": "Upraviť zákazníka",
+        "delete": "Odstrániť zákazníka",
+        "form": {
+            "firstName": "Meno",
+            "lastName": "Priezvisko",
+            "degree": "Titul",
+            "birthDate": "Dátum narodenia",
+            "isAdult": "Dospelý (18+)",
+            "sex": "Pohlavie",
+            "customerId": "ID zákazníka",
+            "submit": "Uložiť zákazníka",
+            "cancel": "Zrušiť",
+            "update": "Aktualizovať zákazníka",
+            "addCustomer": "Pridať zákazníka",
+            "updateCustomer": "Aktualizovať zákazníka",
+            "saving": "Ukladám...",
+            "sexNone": "Žiadne",
+            "sexMale": "Muž",
+            "sexFemale": "Žena",
+            "sexOther": "Iné",
+            "validation": {
+                "firstNameMaxLength": "Meno musí mať menej ako 100 znakov",
+                "lastNameMaxLength": "Priezvisko musí mať menej ako 100 znakov",
+                "degreeMaxLength": "Titul musí mať menej ako 10 znakov",
+                "customerIdMaxLength": "ID zákazníka musí mať menej ako 50 znakov"
+            },
+            "placeholder": {
+                "degree": "napr. MUDr., PhD.",
+                "customerId": "Externý identifikátor zákazníka"
+            }
+        },
+        "table": {
+            "firstName": "Meno",
+            "lastName": "Priezvisko",
+            "degree": "Titul",
+            "birthDate": "Dátum narodenia",
+            "isAdult": "Dospelý",
+            "sex": "Pohlavie",
+            "id": "ID",
+            "actions": "Akcie",
+            "empty": "Nenašli sa žiadni zákazníci. Pridajte svojho prvého zákazníka!",
+            "loading": "Načítavam zákazníkov..."
+        },
+        "toast": {
+            "created": "Zákazník bol úspešne vytvorený",
+            "updated": "Zákazník bol úspešne aktualizovaný",
+            "deleted": "Zákazník bol úspešne odstránený",
+            "createError": "Nepodarilo sa vytvoriť zákazníka. Skúste to znova.",
+            "updateError": "Nepodarilo sa aktualizovať zákazníka. Skúste to znova.",
+            "deleteError": "Nepodarilo sa odstrániť zákazníka. Skúste to znova."
+        },
+        "deleteConfirm": {
+            "title": "Odstrániť {itemType}",
+            "message": "Naozaj chcete odstrániť {itemName}?",
+            "confirm": "Odstrániť",
+            "cancel": "Zrušiť"
+        },
+        "sex": {
+            "male": "Muž",
+            "female": "Žena",
+            "other": "Iné"
+        },
+        "actions": {
+            "add": "Pridať zákazníka",
+            "edit": "Upraviť",
+            "delete": "Odstrániť"
+        }
     }
 }

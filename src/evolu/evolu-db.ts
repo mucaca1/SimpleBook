@@ -9,6 +9,21 @@ const Settings = {
     theme: Evolu.NonEmptyString100,
 }
 
+const CustomerId = Evolu.id("CustomerId");
+export type CustomerId = typeof CustomerId.Type;
+
+const Customer = {
+    id: CustomerId,
+    firstName: Evolu.nullOr(Evolu.NonEmptyString100),
+    lastName: Evolu.nullOr(Evolu.NonEmptyString100),
+    degree: Evolu.nullOr(Evolu.NonEmptyString100),
+    birthDate: Evolu.nullOr(Evolu.NonEmptyString100),
+    isAdult: Evolu.SqliteBoolean,
+    sex: Evolu.nullOr(Evolu.NonEmptyString100),
+    customerId: Evolu.nullOr(Evolu.NonEmptyString100)
+}
+
 export const Schema = {
     settings: Settings,
+    customers: Customer
 };

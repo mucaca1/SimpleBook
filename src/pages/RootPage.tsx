@@ -2,21 +2,33 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { MenuBar } from "../components/layout";
 import { Suspense } from "react";
 import { MemoryRouter } from 'react-router-dom';
+import { CustomersPage } from "./CustomersPage";
+import { EmployeePage } from "./EmployeePage";
+import { HomePage } from "./HomePage";
+import { SettingsPage } from "./SettingsPage";
 
 export function RootPage() {
     return (
         <MemoryRouter initialEntries={['/']} initialIndex={0}>
             <MenuBar />
             <Suspense >
-                <div style={{ maxWidth: "90%", padding: "2rem" }}>
+                <div style={{ maxWidth: "90%", margin: "0 auto", padding: "2rem" }}>
                     <Routes>
                         <Route
                             path="/"
-                            element={<div>hello</div>}
+                            element={<HomePage />}
                         />
                         <Route
                             path="/settings"
-                            element={<div>settings</div>}
+                            element={<SettingsPage />}
+                        />
+                        <Route
+                            path="/customers"
+                            element={<CustomersPage />}
+                        />
+                        <Route
+                            path="/employee"
+                            element={<EmployeePage />}
                         />
                     </Routes>
                 </div>
