@@ -1,3 +1,12 @@
+# Tech
+
+- React
+- Evolu (local-first library)
+- Vite
+- Electron
+- MUI Components
+
+
 # General
 The goal is to create an application that will manage the company, employees, customers, payroll, and orders, including their processing.
 
