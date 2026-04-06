@@ -106,6 +106,7 @@
             "required": "Povinné",
             "editableAfterInitial": "Upravovateľné po počiatočnej hodnote",
             "showInTable": "Zobraziť v tabuľke",
+            "containEmptyValue": "Obsahuje prázdnu hodnotu",
             "loading": "Načítavam...",
             "yes": "Áno",
             "no": "Nie",
@@ -130,13 +131,20 @@
                 "fieldNameMaxLength": "Názov poľa musí mať menej ako 100 znakov",
                 "dropdownItemsRequired": "Možnosti rozbaľovacieho zoznamu sú povinné pre typ Dropdown",
                 "dropdownItemsFormat": "Zadajte možnosti oddelené čiarkami",
+                "dropdownMinOptions": "Je vyžadovaná aspoň jedna možnosť",
+                "dropdownDuplicateOption": "Táto možnosť už existuje",
                 "placeholderMaxLength": "Zástupný symbol musí mať menej ako 200 znakov",
                 "helpTextMaxLength": "Pomocný text musí mať menej ako 500 znakov"
             },
             "help": {
                 "dropdownItemsFormat": "Zadajte možnosti oddelené čiarkami",
                 "editableAfterInitial": "Ak je vypnuté, pole nebude možné upraviť po uložení prvej hodnoty",
-                "showInTable": "Ak je zapnuté, toto pole sa zobrazí ako stĺpec v tabuľke zákazníkov"
+                "showInTable": "Ak je zapnuté, toto pole sa zobrazí ako stĺpec v tabuľke zákazníkov",
+                "containEmptyValue": "Ak je zaškrtnuté, prázdna možnosť bude k dispozícii na vrchu rozbaľovacieho zoznamu"
+            },
+            "chipInput": {
+                "placeholder": "Zadajte možnosť a stlačte Enter",
+                "helperText": "Pridajte aspoň jednu možnosť"
             },
             "table": {
                 "fieldName": "Názov poľa",

@@ -106,6 +106,7 @@
             "required": "Required",
             "editableAfterInitial": "Editable After Initial Value",
             "showInTable": "Show in Table",
+            "containEmptyValue": "Contain empty value",
             "loading": "Loading...",
             "yes": "Yes",
             "no": "No",
@@ -130,13 +131,20 @@
                 "fieldNameMaxLength": "Field name must be less than 100 characters",
                 "dropdownItemsRequired": "Dropdown options are required for Dropdown type",
                 "dropdownItemsFormat": "Enter options separated by commas",
+                "dropdownMinOptions": "At least one option is required",
+                "dropdownDuplicateOption": "This option already exists",
                 "placeholderMaxLength": "Placeholder must be less than 200 characters",
                 "helpTextMaxLength": "Help text must be less than 500 characters"
             },
             "help": {
                 "dropdownItemsFormat": "Enter options separated by commas",
                 "editableAfterInitial": "If disabled, the field cannot be edited after the first value is saved",
-                "showInTable": "If enabled, this field will appear as a column in the customer table"
+                "showInTable": "If enabled, this field will appear as a column in the customer table",
+                "containEmptyValue": "If checked, an empty option will be available at the top of the dropdown list"
+            },
+            "chipInput": {
+                "placeholder": "Type an option and press Enter",
+                "helperText": "Add at least one option"
             },
             "table": {
                 "fieldName": "Field Name",

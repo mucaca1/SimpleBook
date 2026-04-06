@@ -13,11 +13,17 @@ import {
     Typography,
     Stack,
     Chip,
+    SvgIcon,
 } from "@mui/material";
 import {
     Edit as EditIcon,
     Delete as DeleteIcon,
     Add as AddIcon,
+    ShortText as TextIcon,
+    Pin as NumberIcon,
+    Event as DateIcon,
+    CheckBox as YesNoIcon,
+    ArrowDropDown as DropdownIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useCustomFieldCrud } from "../../hooks/useCustomFieldCrud";
@@ -32,6 +38,26 @@ import * as Evolu from "@evolu/common";
 import { evolu } from "../../evolu-init";
 
 type ModalMode = "add" | "edit" | null;
+
+/**
+ * Get icon for field type
+ */
+const getFieldTypeIcon = (fieldType: string) => {
+    switch (fieldType) {
+        case "Text":
+            return TextIcon;
+        case "Number":
+            return NumberIcon;
+        case "Date":
+            return DateIcon;
+        case "Yes/No":
+            return YesNoIcon;
+        case "Dropdown":
+            return DropdownIcon;
+        default:
+            return TextIcon;
+    }
+};
 
 export function CustomFieldsList() {
     const { t } = useTranslation();
@@ -236,11 +262,16 @@ export function CustomFieldsList() {
                                     <TableRow key={field.id} hover>
                                         <TableCell>{field.fieldName}</TableCell>
                                         <TableCell>
-                                            <Chip
-                                                label={CUSTOM_FIELD_TYPE_LABELS[field.fieldType as keyof typeof CUSTOM_FIELD_TYPE_LABELS]}
-                                                size="small"
-                                                variant="outlined"
-                                            />
+                                            <Stack direction="row" spacing={1} alignItems="center">
+                                                <SvgIcon fontSize="small" color="action">
+                                                    {React.createElement(getFieldTypeIcon(field.fieldType))}
+                                                </SvgIcon>
+                                                <Chip
+                                                    label={CUSTOM_FIELD_TYPE_LABELS[field.fieldType as keyof typeof CUSTOM_FIELD_TYPE_LABELS]}
+                                                    size="small"
+                                                    variant="outlined"
+                                                />
+                                            </Stack>
                                         </TableCell>
                                         <TableCell>
                                             {

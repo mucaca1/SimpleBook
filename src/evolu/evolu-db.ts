@@ -37,6 +37,7 @@ const CustomField = {
     required: Evolu.SqliteBoolean,
     editableAfterInitial: Evolu.SqliteBoolean,
     showInTable: Evolu.SqliteBoolean,
+    containEmptyValue: Evolu.SqliteBoolean,
 }
 
 const CustomFieldValueId = Evolu.id("CustomFieldValueId");

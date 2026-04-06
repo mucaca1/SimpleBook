@@ -263,6 +263,8 @@ export const CustomFieldsEditor = React.forwardRef<
                     console.error('Failed to parse dropdown items:', e);
                 }
 
+                const hasEmptyValue = field.containEmptyValue === Evolu.sqliteTrue;
+
                 return (
                     <FormControl fullWidth disabled={disabled} error={!!error}>
                         {inline && <Typography variant="body1" sx={{ mb: 1 }}>{label}</Typography>}
@@ -271,7 +273,12 @@ export const CustomFieldsEditor = React.forwardRef<
                             onChange={(e) => handleFieldValueChange(field.id, e.target.value)}
                             displayEmpty
                         >
-                            <MenuItem value="" disabled={required}>
+                            {hasEmptyValue && (
+                                <MenuItem value="">
+                                    <em>&nbsp;</em>
+                                </MenuItem>
+                            )}
+                            <MenuItem value="" disabled={required || hasEmptyValue}>
                                 <em>
                                     {field.placeholder ||
                                     t('customField.selectOption') ||

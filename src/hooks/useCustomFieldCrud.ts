@@ -91,6 +91,7 @@ export function useCustomFieldCrud(): UseCustomFieldCrudReturn {
                 required: Evolu.booleanToSqliteBoolean(data.required || false),
                 editableAfterInitial: Evolu.booleanToSqliteBoolean(data.editableAfterInitial || false),
                 showInTable: Evolu.booleanToSqliteBoolean(data.showInTable || false),
+                containEmptyValue: Evolu.booleanToSqliteBoolean(data.containEmptyValue || false),
             });
 
             if (result.ok) {
@@ -126,6 +127,7 @@ export function useCustomFieldCrud(): UseCustomFieldCrudReturn {
                 required: Evolu.booleanToSqliteBoolean(data.required || false),
                 editableAfterInitial: Evolu.booleanToSqliteBoolean(data.editableAfterInitial || false),
                 showInTable: Evolu.booleanToSqliteBoolean(data.showInTable || false),
+                containEmptyValue: Evolu.booleanToSqliteBoolean(data.containEmptyValue || false),
             });
 
             if (result.ok) {

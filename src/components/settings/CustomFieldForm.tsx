@@ -9,6 +9,9 @@ import {
     MenuItem,
     Stack,
     Typography,
+    SvgIcon,
+    Autocomplete,
+    Chip,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import {
@@ -18,6 +21,13 @@ import {
 } from "../../types/customField";
 import { FieldTypeChangeDialog } from "../ui/FieldTypeChangeDialog";
 import { DropdownItemsChangeDialog } from "../ui/DropdownItemsChangeDialog";
+import {
+    ShortText as TextIcon,
+    Pin as NumberIcon,
+    Event as DateIcon,
+    CheckBox as YesNoIcon,
+    ArrowDropDown as DropdownIcon,
+} from "@mui/icons-material";
 
 interface CustomFieldFormProps {
     mode: "add" | "edit";
@@ -63,6 +73,7 @@ export function CustomFieldForm({
             required: false,
             editableAfterInitial: false,
             showInTable: false,
+            containEmptyValue: false,
         },
     });
 
@@ -146,6 +157,26 @@ export function CustomFieldForm({
         setPendingData(null);
     };
 
+    /**
+     * Get icon for field type
+     */
+    const getFieldTypeIcon = (fieldType: string) => {
+        switch (fieldType) {
+            case "Text":
+                return TextIcon;
+            case "Number":
+                return NumberIcon;
+            case "Date":
+                return DateIcon;
+            case "Yes/No":
+                return YesNoIcon;
+            case "Dropdown":
+                return DropdownIcon;
+            default:
+                return TextIcon;
+        }
+    };
+
     return (
         <Box component="form" onSubmit={handleSubmit(handleFormSubmit)} sx={{ width: "100%" }}>
             <Stack spacing={3}>
@@ -213,7 +244,12 @@ export function CustomFieldForm({
                         >
                             {Object.entries(CUSTOM_FIELD_TYPE_LABELS).map(([key, label]) => (
                                 <MenuItem key={key} value={key}>
-                                    {label}
+                                    <Stack direction="row" spacing={1} alignItems="center">
+                                        <SvgIcon fontSize="small" color="action">
+                                            {React.createElement(getFieldTypeIcon(key))}
+                                        </SvgIcon>
+                                        <span>{label}</span>
+                                    </Stack>
                                 </MenuItem>
                             ))}
                         </TextField>
@@ -226,25 +262,71 @@ export function CustomFieldForm({
                         name="dropdownItems"
                         control={control}
                         rules={{
-                            required: t("settings.customFields.validation.dropdownItemsRequired") || "Dropdown items are required when field type is Dropdown",
-                        }}
-                        render={({ field }) => (
-                            <TextField
-                                {...field}
-                                label={t("settings.customFields.dropdownItems")}
-                                fullWidth
-                                multiline
-                                rows={2}
-                                error={!!errors.dropdownItems}
-                                helperText={
-                                    errors.dropdownItems?.message ||
-                                    t("settings.customFields.help.dropdownItemsFormat") ||
-                                    "Enter options separated by commas"
+                            validate: (value) => {
+                                // Parse dropdown items from JSON string
+                                let options: string[] = [];
+                                if (value) {
+                                    try {
+                                        options = JSON.parse(value);
+                                    } catch (e) {
+                                        return t("settings.customFields.validation.dropdownItemsFormat") ||
+                                            "Invalid format";
+                                    }
                                 }
-                                disabled={isSubmitting}
-                                placeholder="Option 1, Option 2, Option 3"
-                            />
-                        )}
+                                // Require at least one option
+                                if (options.length === 0) {
+                                    return t("settings.customFields.validation.dropdownMinOptions") ||
+                                        "At least one option is required";
+                                }
+                                return true;
+                            },
+                        }}
+                        render={({ field }) => {
+                            // Parse dropdown items to array for chip input
+                            let options: string[] = [];
+                            if (field.value) {
+                                try {
+                                    options = JSON.parse(field.value);
+                                } catch (e) {
+                                    console.error("Failed to parse dropdown items:", e);
+                                }
+                            }
+
+                            return (
+                                <Autocomplete
+                                    multiple
+                                    freeSolo
+                                    options={[]}
+                                    value={options}
+                                    onChange={(event, newValue) => {
+                                        // Filter out duplicates and handle the change
+                                        const uniqueValues = [...new Set(newValue)];
+                                        field.onChange(JSON.stringify(uniqueValues));
+                                    }}
+                                    renderTags={(value, getTagProps) =>
+                                        value.map((option, index) => (
+                                            <Chip
+                                                {...getTagProps({ index })}
+                                                key={option}
+                                                label={option}
+                                                size="small"
+                                            />
+                                        ))
+                                    }
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label={t("settings.customFields.dropdownItems")}
+                                            placeholder={t("settings.customFields.chipInput.placeholder")}
+                                            error={!!errors.dropdownItems}
+                                            helperText={errors.dropdownItems?.message}
+                                            disabled={isSubmitting}
+                                        />
+                                    )}
+                                    disabled={isSubmitting}
+                                />
+                            );
+                        }}
                     />
                 )}
 
@@ -367,6 +449,37 @@ export function CustomFieldForm({
                         />
                     )}
                 />
+
+                {/* Contain Empty Value Checkbox - Only show for Dropdown type */}
+                {watchFieldType === "Dropdown" && (
+                    <Controller
+                        name="containEmptyValue"
+                        control={control}
+                        render={({ field }) => (
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={field.value || false}
+                                        onChange={field.onChange}
+                                        disabled={isSubmitting}
+                                    />
+                                }
+                                label={
+                                    <Box>
+                                        <Typography variant="body1">
+                                            {t("settings.customFields.containEmptyValue") ||
+                                                "Contain empty value"}
+                                        </Typography>
+                                        <Typography variant="caption" color="text.secondary">
+                                            {t("settings.customFields.help.containEmptyValue") ||
+                                                "If checked, an empty option will be available at the top of the dropdown list."}
+                                        </Typography>
+                                    </Box>
+                                }
+                            />
+                        )}
+                    />
+                )}
 
                 {/* Action Buttons */}
                 <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>

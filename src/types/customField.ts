@@ -24,6 +24,7 @@ export interface CustomField {
     required: boolean;
     editableAfterInitial: boolean;
     showInTable: boolean;
+    containEmptyValue?: boolean | null;
 }
 
 /**
@@ -39,6 +40,7 @@ export interface CustomFieldFormData {
     required: boolean;
     editableAfterInitial: boolean;
     showInTable: boolean;
+    containEmptyValue?: boolean;
 }
 
 /**
@@ -73,4 +75,9 @@ export const CUSTOM_FIELD_TYPE_LABELS: Record<CustomFieldType, string> = {
 export const CUSTOM_FIELD_APPLIES_TO_LABELS: Record<CustomFieldAppliesTo, string> = {
     'Customer': 'Customer',
     'Employee': 'Employee',
+};
+
+export const CONTAIN_EMPTY_VALUE_LABELS: Record<boolean, string> = {
+    true: 'Yes',
+    false: 'No',
 };
