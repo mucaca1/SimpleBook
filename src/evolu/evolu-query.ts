@@ -6,3 +6,12 @@ export const settings: Evolu.Query = evolu.createQuery((db) =>
 );
 
 export type TSettingsRow = typeof settings.Row;
+
+export const customers: Evolu.Query = evolu.createQuery((db) =>
+    db.selectFrom("customers")
+        .selectAll()
+        .where("isDeleted", "is not", Evolu.sqliteTrue)
+        .orderBy("createdAt", "desc")
+);
+
+export type TCustomerRow = typeof customers.Row;
