@@ -1,0 +1,85 @@
+/**
+ * Custom Field Utilities
+ *
+ * Helper functions for managing custom field values outside of React components.
+ * These utilities can be called from callbacks, event handlers, and non-React code.
+ */
+
+import { evolu } from '../evolu-init';
+import type { CustomerId } from './evolu-db';
+
+export type CustomFieldValueInput = Record<string, string | boolean | null>;
+
+/**
+ * Save custom field values for a customer
+ *
+ * This function can be called outside of React components to save custom field values.
+ * It handles both creating new values and updating existing ones.
+ *
+ * @param customerId - The customer ID to save values for
+ * @param inputValues - Object mapping custom field IDs to their values
+ * @returns Promise that resolves when all values are saved
+ *
+ * @example
+ * ```ts
+ * await saveCustomFieldValuesForCustomer(customerId, {
+ *   "field-id-1": "Some text value",
+ *   "field-id-2": "123",
+ *   "field-id-3": true,
+ * });
+ * ```
+ */
+export async function saveCustomFieldValuesForCustomer(
+    customerId: CustomerId,
+    inputValues: CustomFieldValueInput
+): Promise<void> {
+    // Query directly using evolu's SQL interface
+    try {
+        // Get existing values for this customer
+        const existingValuesResult = await evolu.query(`
+            SELECT * FROM customFieldValues
+            WHERE customerId = '${customerId}'
+            AND isDeleted != 1
+        `);
+
+        const existingValues = existingValuesResult as Array<{
+            id: string;
+            customFieldId: string;
+            customerId: string;
+            value: string | null;
+        }>;
+
+        // Create a map of existing values for easy lookup
+        const existingValuesMap = new Map<string, string>();
+        existingValues.forEach((v) => {
+            existingValuesMap.set(v.customFieldId, v.id);
+        });
+
+        // Process each custom field value
+        for (const [customFieldId, value] of Object.entries(inputValues)) {
+            const existingValueId = existingValuesMap.get(customFieldId);
+
+            // Convert boolean to string for storage
+            const stringValue =
+                typeof value === 'boolean' ? (value ? 'true' : 'false') : value || null;
+
+            if (existingValueId) {
+                // Update existing value
+                await evolu.update('customFieldValues', {
+                    id: existingValueId,
+                    value: stringValue,
+                });
+            } else {
+                // Create new value
+                await evolu.insert('customFieldValues', {
+                    customFieldId,
+                    customerId,
+                    value: stringValue,
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Failed to save custom field values:', error);
+        throw error;
+    }
+}

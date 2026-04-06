@@ -10,13 +10,15 @@
  * when changed from either the database or UI.
  */
 
-import { useContext, useEffect, useCallback } from "react";
+import { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueries, useQuery } from "@evolu/react";
 import { ThemeContext } from "../context/ThemeContext";
 import { Language } from "../types/common";
 import { ThemeMode } from "../types/common";
 import { settings } from "../evolu/evolu-query";
+import { evolu } from "../evolu-init";
+import { SettingsId } from "../evolu/evolu-db";
 
 /**
  * Hook return type
@@ -25,6 +27,7 @@ interface UseSettingsSyncReturn {
     isInitialized: boolean;
     language: Language | null;
     theme: ThemeMode | null;
+    id: SettingsId | null;
 }
 
 /**
@@ -64,6 +67,7 @@ export function useSettingsSync(): UseSettingsSyncReturn {
         isInitialized: settingsRow !== null,
         language: settingsRow?.language as Language | null,
         theme: settingsRow?.theme as ThemeMode | null,
+        id: settingsRow?.id as SettingsId | null,
     };
 }
 
@@ -85,4 +89,80 @@ export function useHasSettings(): boolean {
  */
 export function useAppQueries() {
     return useQueries([settings]);
+}
+
+/**
+ * Update the language setting in the database
+ *
+ * Persists the language change to the Evolu database.
+ * The useSettingsSync hook will automatically sync the change
+ * to i18next, causing the UI to update.
+ *
+ * Shows success/error toast notifications
+ *
+ * @param language - The language to set ("en" or "sk")
+ *
+ * @example
+ * ```tsx
+ * // In a component
+ * const handleLanguageChange = (newLanguage: Language) => {
+ *   await updateLanguage(newLanguage);
+ * };
+ * ```
+ */
+export async function updateLanguage(id: SettingsId | null, language: string): Promise<void> {
+    try {
+        if (id) {
+            // Update existing settings
+            const updateResult = await evolu.update("settings", {
+                id: id,
+                language,
+            });
+
+            if (!updateResult.ok) {
+                throw new Error(updateResult.error.message);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to update language:", error);
+        throw error;
+    }
+}
+
+/**
+ * Update the theme setting in the database
+ *
+ * Persists the theme change to the Evolu database.
+ * The useSettingsSync hook will automatically sync the change
+ * to ThemeContext, causing the UI to update.
+ *
+ * Shows success/error toast notifications
+ *
+ * @param theme - The theme mode to set ("light" or "dark")
+ *
+ * @example
+ * ```tsx
+ * // In a component
+ * const handleThemeChange = (newTheme: ThemeMode) => {
+ *   await updateTheme(newTheme);
+ * };
+ * ```
+ */
+export async function updateTheme(id: SettingsId | null, theme: string): Promise<void> {
+    try {
+        if (id) {
+            // Update existing settings
+            const updateResult = await evolu.update("settings", {
+                id: id,
+                theme,
+            });
+
+            if (!updateResult.ok) {
+                throw new Error(updateResult.error.message);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to update theme:", error);
+        throw error;
+    }
 }

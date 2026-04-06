@@ -133,8 +133,11 @@ export function useEvoluBackup(evolu: Evolu<any>, options: UseEvoluBackupOptions
         return {
             status: 'idle' as const,
             error: null,
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             toggle: () => { },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             start: () => { },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             stop: () => { },
         };
     }

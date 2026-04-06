@@ -56,17 +56,37 @@ export function CustomersPage() {
     /**
      * Handle form submission from CustomerFormModal
      * Creates a new customer or updates an existing one
+     * Also handles saving custom field values
      */
-    const handleSubmit = async (data: CustomerFormData) => {
+    const handleSubmit = async (
+        data: CustomerFormData,
+        customFieldValues?: Record<string, string | boolean | null>
+    ) => {
         setIsSubmitting(true);
         try {
+            let customerId: string | null = null;
+
             if (editingCustomer) {
                 // Update existing customer
                 await updateCustomer(editingCustomer.id, data);
+                customerId = editingCustomer.id;
             } else {
                 // Create new customer
-                await createCustomer(data);
+                customerId = await createCustomer(data);
             }
+
+            // Save custom field values if they exist and customer was saved successfully
+            if (customerId && customFieldValues && Object.keys(customFieldValues).length > 0) {
+                try {
+                    const { saveCustomFieldValuesForCustomer } = await import('../evolu/customFieldUtils');
+                    await saveCustomFieldValuesForCustomer(customerId, customFieldValues);
+                } catch (cfError) {
+                    console.error("Failed to save custom field values:", cfError);
+                    // Don't fail the entire submission if custom fields fail
+                    // Log but continue
+                }
+            }
+
             // Close modal on success
             handleModalClose();
         } catch (error) {

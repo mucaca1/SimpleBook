@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
     Dialog,
     DialogTitle,
@@ -6,45 +6,50 @@ import {
     IconButton,
     Stack,
     Typography,
-} from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
-import { Customer, CustomerFormData } from '../../types/customer';
-import { CustomerForm } from './CustomerForm';
+} from "@mui/material";
+import { Close as CloseIcon } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
+import { CustomField, CustomFieldFormData } from "../../types/customField";
+import { CustomFieldForm } from "./CustomFieldForm";
 
-interface CustomerFormModalProps {
+interface CustomFieldFormModalProps {
     open: boolean;
     onClose: () => void;
-    mode: 'add' | 'edit';
-    customer?: Customer;
-    onSubmit: (data: CustomerFormData, customFieldValues?: Record<string, string | boolean | null>) => Promise<void>;
+    mode: "add" | "edit";
+    customField?: CustomField;
+    onSubmit: (data: CustomFieldFormData) => Promise<void>;
     isSubmitting: boolean;
 }
 
-export function CustomerFormModal({
+export function CustomFieldFormModal({
     open,
     onClose,
     mode,
-    customer,
+    customField,
     onSubmit,
     isSubmitting,
-}: CustomerFormModalProps) {
+}: CustomFieldFormModalProps) {
     const { t } = useTranslation();
 
-    // Convert Customer to CustomerFormData for editing
-    const initialData: CustomerFormData | undefined = customer
+    // Convert CustomField to CustomFieldFormData for editing
+    const initialData: CustomFieldFormData | undefined = customField
         ? {
-              firstName: customer.firstName,
-              lastName: customer.lastName,
-              degree: customer.degree,
-              birthDate: customer.birthDate,
-              isAdult: customer.isAdult,
-              sex: customer.sex,
-              customerId: customer.customerId,
+              appliesTo: customField.appliesTo,
+              fieldName: customField.fieldName,
+              fieldType: customField.fieldType,
+              dropdownItems: customField.dropdownItems || "",
+              placeholder: customField.placeholder || "",
+              helpText: customField.helpText || "",
+              required: customField.required,
+              editableAfterInitial: customField.editableAfterInitial,
+              showInTable: customField.showInTable,
           }
         : undefined;
 
-    const title = mode === 'add' ? t('customer.form.addCustomer') : t('customer.form.updateCustomer');
+    const title =
+        mode === "add"
+            ? t("settings.customFields.addNew")
+            : t("settings.customFields.editField");
 
     return (
         <Dialog
@@ -55,7 +60,7 @@ export function CustomerFormModal({
             maxWidth="sm"
             fullWidth
             PaperProps={{
-                sx: { maxHeight: '90vh' },
+                sx: { maxHeight: "90vh" },
             }}
         >
             <DialogTitle>
@@ -78,10 +83,9 @@ export function CustomerFormModal({
             </DialogTitle>
 
             <DialogContent dividers>
-                <CustomerForm
+                <CustomFieldForm
                     mode={mode}
                     initialData={initialData}
-                    customerId={customer?.id || null}
                     onSubmit={onSubmit}
                     onCancel={onClose}
                     isSubmitting={isSubmitting}

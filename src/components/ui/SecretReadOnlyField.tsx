@@ -3,7 +3,6 @@ import { useState, useMemo } from "react";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { useTranslation } from "react-i18next";
 
 interface SecretFieldOptions {
     fieldName: string,
@@ -22,7 +21,7 @@ interface SecretFieldOptions {
  * @param wordsPerLine - Number of words per line (default: 4)
  * @returns Array of word group strings
  */
-const formatMnemonic = (mnemonic: string, wordsPerLine: number = 4): string[] => {
+const formatMnemonic = (mnemonic: string, wordsPerLine = 4): string[] => {
     const words = mnemonic.split(' ').filter(word => word.trim() !== '');
     if (words.length === 0) return [mnemonic];
 
@@ -44,7 +43,6 @@ export function SecretReadOnlyField({
     wordsPerLine = 4
 }: SecretFieldOptions) {
     const [showSecret, setShowSecret] = useState<boolean>(false);
-    const { t } = useTranslation();
 
     // Memoize formatted mnemonic lines
     const mnemonicLines = useMemo(() => {

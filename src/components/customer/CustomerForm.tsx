@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import {
     Box,
@@ -7,9 +7,7 @@ import {
     FormControlLabel,
     Checkbox,
     MenuItem,
-    Select,
     Stack,
-    Typography,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
@@ -17,11 +15,14 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { CustomerFormData, Sex } from '../../types/customer';
+import { CustomFieldsEditor, CustomFieldsEditorRef } from '../settings/CustomFieldsEditor';
+import type { CustomerId } from '../../evolu/evolu-db';
 
 interface CustomerFormProps {
     mode: 'add' | 'edit';
     initialData?: CustomerFormData;
-    onSubmit: (data: CustomerFormData) => Promise<void>;
+    customerId?: CustomerId | null;
+    onSubmit: (data: CustomerFormData, customFieldValues?: Record<string, string | boolean | null>) => Promise<void>;
     onCancel: () => void;
     isSubmitting: boolean;
 }
@@ -29,11 +30,15 @@ interface CustomerFormProps {
 export function CustomerForm({
     mode,
     initialData,
+    customerId,
     onSubmit,
     onCancel,
     isSubmitting,
 }: CustomerFormProps) {
     const { t } = useTranslation();
+
+    // Ref for accessing CustomFieldsEditor validation and values
+    const customFieldsEditorRef = useRef<CustomFieldsEditorRef>(null);
 
     const SEX_OPTIONS: { value: Sex; label: string }[] = [
         { value: 'male', label: t('customer.form.sexMale') },
@@ -66,7 +71,19 @@ export function CustomerForm({
     }, [initialData, reset]);
 
     const handleFormSubmit = async (data: CustomerFormData) => {
-        await onSubmit(data);
+        // Validate custom fields if editor is present
+        if (customFieldsEditorRef.current) {
+            const isValid = customFieldsEditorRef.current.validate();
+            if (!isValid) {
+                return; // Stop submission if validation fails
+            }
+        }
+
+        // Get custom field values
+        const customFieldValues = customFieldsEditorRef.current?.getValues();
+
+        // Submit both customer data and custom field values
+        await onSubmit(data, customFieldValues);
         // Form will be reset by the parent component closing the modal
     };
 
@@ -230,6 +247,14 @@ export function CustomerForm({
                                 placeholder={t('customer.form.placeholder.customerId')}
                             />
                         )}
+                    />
+
+                    {/* Inline Custom Fields - Integrated like normal fields */}
+                    <CustomFieldsEditor
+                        ref={customFieldsEditorRef}
+                        customerId={customerId || null}
+                        isSubmitting={isSubmitting}
+                        inline={true}
                     />
 
                     {/* Action Buttons */}

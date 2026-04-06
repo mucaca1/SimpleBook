@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu } from "electron";
+import { app, BrowserWindow, Menu, shell } from "electron";
 import { autoUpdater } from "electron-updater";
 
 const name = app.getName();
@@ -22,7 +22,6 @@ export function createMenu(bw: BrowserWindow) {
                 {
                     label: 'Source',
                     click: async () => {
-                        const { shell } = require('electron')
                         await shell.openExternal('https://github.com/mucaca1/todo-demo-app')
                     }
                 }
@@ -43,4 +42,4 @@ export function createMenu(bw: BrowserWindow) {
             ]
         }
     ]));
-};
+}

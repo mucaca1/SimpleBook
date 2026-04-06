@@ -8,6 +8,7 @@
         "save": "Save",
         "saving": "Saving...",
         "cancel": "Cancel",
+        "close": "Close",
         "back": "Back",
         "next": "Next",
         "continue": "Continue",
@@ -78,12 +79,136 @@
         },
         "restartAndInstall": "Restart & Install"
     },
+    "settings": {
+        "title": "Settings",
+        "description": "Manage your application settings",
+        "general": {
+            "title": "General Options",
+            "appearance": "Appearance",
+            "language": "Language",
+            "theme": "Theme",
+            "languageChanged": "Language changed successfully",
+            "themeChanged": "Theme changed successfully"
+        },
+        "customFields": {
+            "title": "Custom Fields",
+            "description": "Define custom fields to extend customer data",
+            "addField": "Add Custom Field",
+            "addNew": "Add New Field",
+            "editField": "Edit Custom Field",
+            "deleteField": "Delete Custom Field",
+            "fieldName": "Field Name",
+            "fieldType": "Field Type",
+            "appliesTo": "Applies To",
+            "dropdownItems": "Dropdown Options",
+            "placeholder": "Placeholder",
+            "helpText": "Help Text",
+            "required": "Required",
+            "editableAfterInitial": "Editable After Initial Value",
+            "showInTable": "Show in Table",
+            "loading": "Loading...",
+            "yes": "Yes",
+            "no": "No",
+            "cancel": "Cancel",
+            "saving": "Saving...",
+            "add": "Add",
+            "update": "Update",
+            "fieldTypes": {
+                "text": "Text",
+                "number": "Number",
+                "date": "Date",
+                "yesNo": "Yes/No",
+                "dropdown": "Dropdown"
+            },
+            "appliesToOptions": {
+                "customer": "Customer",
+                "employee": "Employee"
+            },
+            "validation": {
+                "fieldNameRequired": "Field name is required",
+                "fieldNameUnique": "Field name must be unique",
+                "fieldNameMaxLength": "Field name must be less than 100 characters",
+                "dropdownItemsRequired": "Dropdown options are required for Dropdown type",
+                "dropdownItemsFormat": "Enter options separated by commas",
+                "placeholderMaxLength": "Placeholder must be less than 200 characters",
+                "helpTextMaxLength": "Help text must be less than 500 characters"
+            },
+            "help": {
+                "dropdownItemsFormat": "Enter options separated by commas",
+                "editableAfterInitial": "If disabled, the field cannot be edited after the first value is saved",
+                "showInTable": "If enabled, this field will appear as a column in the customer table"
+            },
+            "table": {
+                "fieldName": "Field Name",
+                "fieldType": "Type",
+                "appliesTo": "Applies To",
+                "required": "Required",
+                "showInTable": "Show in Table",
+                "actions": "Actions"
+            },
+            "noFields": "No custom fields found. Add your first custom field!",
+            "deleteConfirm": {
+                "title": "Delete Custom Field",
+                "message": "Are you sure you want to delete '{fieldName}'? All associated values will be lost.",
+                "messageWithCount": "Are you sure you want to delete '{fieldName}'? This will also delete {count} associated value(s).",
+                "confirm": "Delete",
+                "cancel": "Cancel",
+                "itemType": "custom field"
+            },
+            "typeChangeWarning": "This will clear all existing values for this field. Continue?",
+            "dropdownChangeTitle": "Dropdown Items Changed",
+            "dropdownChangeMessage": "The dropdown options have been modified. What should happen to existing customer records using the changed values?",
+            "dropdownChangeKeep": "Keep old values",
+            "dropdownChangeClear": "Clear affected values"
+        },
+        "dangerZone": {
+            "title": "Danger Zone",
+            "description": "Irreversible and dangerous actions",
+            "showMnemonic": {
+                "title": "Show Mnemonic",
+                "description": "Display your mnemonic phrase for backup purposes",
+                "button": "Show Mnemonic",
+                "dialogTitle": "Your Mnemonic Phrase",
+                "securityWarning": "Keep this phrase secure. Anyone with access to it can access your data."
+            },
+            "importMnemonic": {
+                "title": "Import Mnemonic",
+                "description": "Import a mnemonic phrase to restore database access",
+                "warning": "Warning: This will replace your current database owner. Make sure you have a backup if needed.",
+                "button": "Import Mnemonic",
+                "dialogTitle": "Import Mnemonic Phrase",
+                "dialogWarning": "Importing a mnemonic will replace your current database owner. This action cannot be undone.",
+                "label": "Enter your 12 or 24 word mnemonic phrase",
+                "helper": "Separate words with spaces",
+                "confirm": "Import",
+                "itemType": "mnemonic"
+            },
+            "deleteOwner": {
+                "title": "Delete App Owner",
+                "warning": "This will permanently delete the app owner and mnemonic phrase. You will not be able to access your data without the mnemonic. This action cannot be undone.",
+                "button": "Delete Owner",
+                "itemType": "app owner",
+                "typeConfirmTitle": "Confirm Deletion",
+                "typeConfirmMessage": "Type 'DELETE' to confirm that you want to delete the app owner:",
+                "confirmButton": "Delete Owner"
+            },
+            "mnemonic": {
+                "title": "Your Mnemonic Phrase",
+                "description": "Save this phrase in a secure location. It is required to restore access to your data.",
+                "copy": "Copy to Clipboard",
+                "copied": "Copied!",
+                "show": "Show Full Mnemonic",
+                "hide": "Hide Mnemonic"
+            }
+        }
+    },
     "customer": {
         "title": "Customers",
         "add": "Add Customer",
         "edit": "Edit Customer",
         "delete": "Delete Customer",
         "form": {
+            "customFieldsSection": "Custom Fields",
             "firstName": "First Name",
             "lastName": "Last Name",
             "degree": "Degree",
@@ -147,6 +272,25 @@
             "add": "Add Customer",
             "edit": "Edit",
             "delete": "Delete"
+        }
+    },
+    "customField": {
+        "selectOption": "Select an option",
+        "fieldNotEditable": "This field cannot be edited after initial entry",
+        "toast": {
+            "created": "Custom field created successfully",
+            "updated": "Custom field updated successfully",
+            "deleted": "Custom field deleted successfully",
+            "valuesSaved": "Custom field values saved successfully",
+            "createError": "Failed to create custom field",
+            "updateError": "Failed to update custom field",
+            "deleteError": "Failed to delete custom field",
+            "saveValuesError": "Failed to save custom field values"
+        },
+        "validation": {
+            "required": "This field is required",
+            "invalidNumber": "Please enter a valid number",
+            "invalidDate": "Please enter a valid date"
         }
     }
 }

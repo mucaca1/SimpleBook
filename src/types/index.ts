@@ -11,3 +11,8 @@ export type { Settings, SettingsCreateInput, SettingsUpdateInput, SettingsId } f
 
 // Customer types
 export type { Customer, CustomerFormData, Sex } from './customer';
+
+// Custom field types
+export type { CustomField, CustomFieldFormData, CustomFieldValue, CustomFieldValueWithField } from './customField';
+export type { CustomFieldType, CustomFieldAppliesTo } from './customField';
+export { CUSTOM_FIELD_TYPE_LABELS, CUSTOM_FIELD_APPLIES_TO_LABELS } from './customField';

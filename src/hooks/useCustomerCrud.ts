@@ -28,7 +28,7 @@ interface UseCustomerCrudReturn {
     isLoading: boolean;
 
     // Actions
-    createCustomer: (data: CustomerFormData) => Promise<void>;
+    createCustomer: (data: CustomerFormData) => Promise<string | null>;
     updateCustomer: (id: string, data: CustomerFormData) => Promise<void>;
     deleteCustomer: (id: string) => Promise<void>;
 }
@@ -75,8 +75,9 @@ export function useCustomerCrud(): UseCustomerCrudReturn {
      * Shows success/error toast notifications
      *
      * @param data - Customer form data (without id)
+     * @returns The ID of the created customer, or null if failed
      */
-    const createCustomer = async (data: CustomerFormData): Promise<void> => {
+    const createCustomer = async (data: CustomerFormData): Promise<string | null> => {
         try {
             const result = await evolu.insert("customers", {
                 firstName: data.firstName || null,
@@ -90,6 +91,7 @@ export function useCustomerCrud(): UseCustomerCrudReturn {
 
             if (result.ok) {
                 toast.success(t("customer.toast.created"));
+                return result.id || null;
             } else {
                 throw new Error(result.error.message);
             }

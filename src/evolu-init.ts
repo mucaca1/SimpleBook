@@ -7,7 +7,7 @@ import { createUseEvolu } from "@evolu/react";
 const DB_VERSION_KEY = "evolu_db_version";
 
 // Current database version - increment when schema changes require migration
-const CURRENT_DB_VERSION = 3;
+const CURRENT_DB_VERSION = 4;
 
 /**
  * Get the current database version from localStorage
@@ -28,6 +28,7 @@ function getDatabaseVersion(): number {
  * - Version 1: Initial schema without owner (no evolu_message table)
  * - Version 2: Added owner support (enables evolu_message table for time-travel)
  * - Version 3: Added Customer table for customer management feature
+ * - Version 4: Added CustomFields and CustomFieldValues tables for custom fields feature
  */
 function needsDatabaseReset(): boolean {
     const currentVersion = getDatabaseVersion();

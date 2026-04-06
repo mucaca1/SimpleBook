@@ -8,6 +8,7 @@
         "save": "Uložiť",
         "saving": "Ukladá sa...",
         "cancel": "Zrušiť",
+        "close": "Zavrieť",
         "back": "Späť",
         "next": "Ďalej",
         "continue": "Pokračovať",
@@ -78,12 +79,136 @@
         },
         "restartAndInstall": "Reštartovať a nainštalovať"
     },
+    "settings": {
+        "title": "Nastavenia",
+        "description": "Spravujte nastavenia vašej aplikácie",
+        "general": {
+            "title": "Všeobecné možnosti",
+            "appearance": "Vzhľad",
+            "language": "Jazyk",
+            "theme": "Téma",
+            "languageChanged": "Jazyk bol úspešne zmenený",
+            "themeChanged": "Téma bola úspešne zmenená"
+        },
+        "customFields": {
+            "title": "Vlastné polia",
+            "description": "Definujte vlastné polia pre rozšírenie údajov o zákazníkoch",
+            "addField": "Pridať vlastné pole",
+            "addNew": "Pridať nové pole",
+            "editField": "Upraviť vlastné pole",
+            "deleteField": "Odstrániť vlastné pole",
+            "fieldName": "Názov poľa",
+            "fieldType": "Typ poľa",
+            "appliesTo": "Platí pre",
+            "dropdownItems": "Možnosti rozbaľovacieho zoznamu",
+            "placeholder": "Zástupný symbol",
+            "helpText": "Pomocný text",
+            "required": "Povinné",
+            "editableAfterInitial": "Upravovateľné po počiatočnej hodnote",
+            "showInTable": "Zobraziť v tabuľke",
+            "loading": "Načítavam...",
+            "yes": "Áno",
+            "no": "Nie",
+            "cancel": "Zrušiť",
+            "saving": "Ukladám...",
+            "add": "Pridať",
+            "update": "Aktualizovať",
+            "fieldTypes": {
+                "text": "Text",
+                "number": "Číslo",
+                "date": "Dátum",
+                "yesNo": "Áno/Nie",
+                "dropdown": "Rozbaľovací zoznam"
+            },
+            "appliesToOptions": {
+                "customer": "Zákazník",
+                "employee": "Zamestnanec"
+            },
+            "validation": {
+                "fieldNameRequired": "Názov poľa je povinný",
+                "fieldNameUnique": "Názov poľa musí byť jedinečný",
+                "fieldNameMaxLength": "Názov poľa musí mať menej ako 100 znakov",
+                "dropdownItemsRequired": "Možnosti rozbaľovacieho zoznamu sú povinné pre typ Dropdown",
+                "dropdownItemsFormat": "Zadajte možnosti oddelené čiarkami",
+                "placeholderMaxLength": "Zástupný symbol musí mať menej ako 200 znakov",
+                "helpTextMaxLength": "Pomocný text musí mať menej ako 500 znakov"
+            },
+            "help": {
+                "dropdownItemsFormat": "Zadajte možnosti oddelené čiarkami",
+                "editableAfterInitial": "Ak je vypnuté, pole nebude možné upraviť po uložení prvej hodnoty",
+                "showInTable": "Ak je zapnuté, toto pole sa zobrazí ako stĺpec v tabuľke zákazníkov"
+            },
+            "table": {
+                "fieldName": "Názov poľa",
+                "fieldType": "Typ",
+                "appliesTo": "Platí pre",
+                "required": "Povinné",
+                "showInTable": "Zobraziť v tabuľke",
+                "actions": "Akcie"
+            },
+            "noFields": "Nenašli sa žiadne vlastné polia. Pridajte svoje prvé vlastné pole!",
+            "deleteConfirm": {
+                "title": "Odstrániť vlastné pole",
+                "message": "Naozaj chcete odstrániť '{fieldName}'? Všetky súvisiace hodnoty budú stratené.",
+                "messageWithCount": "Naozaj chcete odstrániť '{fieldName}'? Týmto sa odstráni aj {count} súvisiacich hodnôt.",
+                "confirm": "Odstrániť",
+                "cancel": "Zrušiť",
+                "itemType": "vlastné pole"
+            },
+            "typeChangeWarning": "Týmto vymažete všetky existujúce hodnoty pre toto pole. Pokračovať?",
+            "dropdownChangeTitle": "Zmenené položky rozbaľovacieho zoznamu",
+            "dropdownChangeMessage": "Položky rozbaľovacieho zoznamu boli zmenené. Čo sa má stať s existujúcimi záznamami zákazníkov používajúcimi zmenené hodnoty?",
+            "dropdownChangeKeep": "Ponechať staré hodnoty",
+            "dropdownChangeClear": "Vymazať dotknuté hodnoty"
+        },
+        "dangerZone": {
+            "title": "Nebezpečná zóna",
+            "description": "Nevratné a nebezpečné akcie",
+            "showMnemonic": {
+                "title": "Zobraziť mnemotechnickú frázu",
+                "description": "Zobrazte svoju mnemotechnickú frázu pre záložné účely",
+                "button": "Zobraziť mnemotechnickú frázu",
+                "dialogTitle": "Vaša mnemotechnická fráza",
+                "securityWarning": "Uchovajte túto frázu v bezpečí. Ktokoľvek s prístupom k nej môže pristupovať k vašim údajom."
+            },
+            "importMnemonic": {
+                "title": "Importovať mnemotechnickú frázu",
+                "description": "Importujte mnemotechnickú frázu na obnovenie prístupu k databáze",
+                "warning": "Upozornenie: Týmto nahradíte aktuálneho vlastníka databázy. Uistite sa, že máte zálohu, ak je to potrebné.",
+                "button": "Importovať mnemotechnickú frázu",
+                "dialogTitle": "Importovať mnemotechnickú frázu",
+                "dialogWarning": "Importovanie mnemotechnickej frázy nahradí vášho aktuálneho vlastníka databázy. Táto akcia sa nedá vrátiť späť.",
+                "label": "Zadajte vašu 12 alebo 24 slovnú mnemotechnickú frázu",
+                "helper": "Oddelujte slová medzerami",
+                "confirm": "Importovať",
+                "itemType": "mnemotechnická fráza"
+            },
+            "deleteOwner": {
+                "title": "Odstrániť vlastníka aplikácie",
+                "warning": "Týmto permanentne odstránite vlastníka aplikácie a mnemotechnickú frázu. Bez mnemotechnickej frázy nebudete mať prístup k vašim údajom. Táto akcia sa nedá vrátiť späť.",
+                "button": "Odstrániť vlastníka",
+                "itemType": "vlastník aplikácie",
+                "typeConfirmTitle": "Potvrdiť odstránenie",
+                "typeConfirmMessage": "Na potvrdenie, že chcete odstrániť vlastníka aplikácie, napíšte 'DELETE':",
+                "confirmButton": "Odstrániť vlastníka"
+            },
+            "mnemonic": {
+                "title": "Vaša mnemotechnická fráza",
+                "description": "Uložte túto frázu na bezpečnom mieste. Je vyžadovaná na obnovenie prístupu k vašim údajom.",
+                "copy": "Kopírovať do schránky",
+                "copied": "Skopírované!",
+                "show": "Zobraziť celú mnemotechnickú frázu",
+                "hide": "Skryť mnemotechnickú frázu"
+            }
+        }
+    },
     "customer": {
         "title": "Zákazníci",
         "add": "Pridať zákazníka",
         "edit": "Upraviť zákazníka",
         "delete": "Odstrániť zákazníka",
         "form": {
+            "customFieldsSection": "Vlastné polia",
             "firstName": "Meno",
             "lastName": "Priezvisko",
             "degree": "Titul",
@@ -147,6 +272,25 @@
             "add": "Pridať zákazníka",
             "edit": "Upraviť",
             "delete": "Odstrániť"
+        }
+    },
+    "customField": {
+        "selectOption": "Vyberte možnosť",
+        "fieldNotEditable": "Toto pole nie je možné upraviť po počiatočnom zadaní",
+        "toast": {
+            "created": "Vlastné pole bolo úspešne vytvorené",
+            "updated": "Vlastné pole bolo úspešne aktualizované",
+            "deleted": "Vlastné pole bolo úspešne odstránené",
+            "valuesSaved": "Hodnoty vlastných polí boli úspešne uložené",
+            "createError": "Nepodarilo sa vytvoriť vlastné pole",
+            "updateError": "Nepodarilo sa aktualizovať vlastné pole",
+            "deleteError": "Nepodarilo sa odstrániť vlastné pole",
+            "saveValuesError": "Nepodarilo sa uložiť hodnoty vlastných polí"
+        },
+        "validation": {
+            "required": "Toto pole je povinné",
+            "invalidNumber": "Prosím, zadajte platné číslo",
+            "invalidDate": "Prosím, zadajte platný dátum"
         }
     }
 }
