@@ -27,12 +27,11 @@ export const CustomerTable = memo(({ customers, isLoading, onEdit, onDelete, onA
     const allCustomFields = useQuery(customFields) as TCustomFieldRow[];
     const allCustomFieldValues = useQuery(customFieldValues) as TCustomFieldValueRow[];
 
-    // Filter to Customer fields that should be shown in table
-    const tableCustomFields = useMemo(() => {
+    // Filter to Customer fields (all fields, regardless of showInTable flag)
+    const customerCustomFields = useMemo(() => {
         return allCustomFields.filter(
             (field) =>
                 field.appliesTo === 'Customer' &&
-                field.showInTable === Evolu.sqliteTrue &&
                 field.isDeleted !== Evolu.sqliteTrue
         );
     }, [allCustomFields]);
@@ -163,7 +162,7 @@ export const CustomerTable = memo(({ customers, isLoading, onEdit, onDelete, onA
 
     // Dynamic columns for custom fields that should be shown in table
     const customFieldColumns: GridColDef[] = useMemo(() => {
-        return tableCustomFields.map((field) => ({
+        return customerCustomFields.map((field) => ({
             field: `customField_${field.id}`,
             headerName: field.fieldName,
             width: 150,
@@ -176,7 +175,20 @@ export const CustomerTable = memo(({ customers, isLoading, onEdit, onDelete, onA
             sortable: true,
             filterable: true,
         }));
-    }, [tableCustomFields, customerFieldValuesMap]);
+    }, [customerCustomFields, customerFieldValuesMap]);
+
+    // Build column visibility model based on showInTable flag
+    const columnVisibilityModel = useMemo(() => {
+        const model: Record<string, boolean> = {};
+
+        customerCustomFields.forEach((field) => {
+            const columnField = `customField_${field.id}`;
+            // Hide columns where showInTable is not true
+            model[columnField] = field.showInTable === Evolu.sqliteTrue;
+        });
+
+        return model;
+    }, [customerCustomFields]);
 
     // Combine base columns with custom field columns
     const columns: GridColDef[] = useMemo(() => {
@@ -246,6 +258,9 @@ export const CustomerTable = memo(({ customers, isLoading, onEdit, onDelete, onA
                 initialState={{
                     pagination: {
                         paginationModel: { pageSize: 10 },
+                    },
+                    columns: {
+                        columnVisibilityModel: columnVisibilityModel,
                     },
                 }}
                 disableRowSelectionOnClick
