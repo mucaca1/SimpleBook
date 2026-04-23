@@ -6,6 +6,7 @@ import { useCustomerCrud } from "../hooks/useCustomerCrud";
 import { CustomerTable, CustomerFormModal } from "../components/customer";
 import { Customer, CustomerFormData } from "../types/customer";
 import { DeleteConfirmDialog } from "../components/ui/DeleteConfirmDialog";
+import { CustomerId } from "../evolu/evolu-db";
 
 export function CustomersPage() {
     const { t } = useTranslation();
@@ -64,7 +65,7 @@ export function CustomersPage() {
     ) => {
         setIsSubmitting(true);
         try {
-            let customerId: string | null = null;
+            let customerId: CustomerId | null = null;
 
             if (editingCustomer) {
                 // Update existing customer

@@ -8,7 +8,7 @@
  * Uses useCustomFieldValues hook for fetching and saving field values.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@evolu/react';
 import {
     Box,
@@ -30,7 +30,7 @@ import { useTranslation } from 'react-i18next';
 import { customFields } from '../../evolu/evolu-query';
 import { useCustomFieldValues } from '../../hooks/useCustomFieldValues';
 import type { TCustomFieldRow } from '../../evolu/evolu-query';
-import type { CustomerId } from '../../evolu/evolu-db';
+import type { CustomerId, CustomFieldId } from '../../evolu/evolu-db';
 import * as Evolu from '@evolu/common';
 
 interface CustomFieldsEditorProps {
@@ -43,14 +43,14 @@ interface CustomFieldsEditorProps {
  * Custom field value state interface
  */
 interface CustomFieldValuesState {
-    [customFieldId: string]: string | boolean | null;
+    [customFieldId: CustomFieldId]: string | boolean | null;
 }
 
 /**
  * Custom field validation error state
  */
 interface ValidationErrorsState {
-    [customFieldId: string]: string;
+    [customFieldId: CustomFieldId]: string;
 }
 
 export const CustomFieldsEditor = React.forwardRef<
@@ -64,7 +64,7 @@ export const CustomFieldsEditor = React.forwardRef<
 
     // Filter to only Customer fields
     const customerFields = allCustomFields.filter(
-        (field) => field.appliesTo === 'Customer' && field.isDeleted !== Evolu.sqliteTrue
+        (field) => field.appliesTo === 'Customer'
     );
 
     // Fetch existing values for this customer
@@ -73,6 +73,13 @@ export const CustomFieldsEditor = React.forwardRef<
     // Local state for field values
     const [fieldValues, setFieldValues] = useState<CustomFieldValuesState>({});
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsState>({});
+
+    // Use a ref to always have access to the latest fieldValues
+    // This avoids closure issues with useImperativeHandle
+    const fieldValuesRef = useRef(fieldValues);
+    useEffect(() => {
+        fieldValuesRef.current = fieldValues;
+    }, [fieldValues]);
 
     // Initialize field values from database
     useEffect(() => {
@@ -107,10 +114,13 @@ export const CustomFieldsEditor = React.forwardRef<
 
     // Handle field value change
     const handleFieldValueChange = (fieldId: string, value: string | boolean | null) => {
-        setFieldValues((prev) => ({
-            ...prev,
-            [fieldId]: value,
-        }));
+        setFieldValues((prev) => {
+            const newValue = {
+                ...prev,
+                [fieldId]: value,
+            };
+            return newValue;
+        });
 
         // Clear validation error for this field
         if (validationErrors[fieldId]) {
@@ -126,10 +136,11 @@ export const CustomFieldsEditor = React.forwardRef<
     const validateRequiredFields = (): boolean => {
         const errors: ValidationErrorsState = {};
         let isValid = true;
+        const currentValues = fieldValuesRef.current;
 
         customerFields.forEach((field) => {
             if (field.required === Evolu.sqliteTrue) {
-                const value = fieldValues[field.id];
+                const value = currentValues[field.id];
                 const hasValue =
                     value !== null &&
                     value !== undefined &&
@@ -152,9 +163,9 @@ export const CustomFieldsEditor = React.forwardRef<
         ref,
         () => ({
             validate: validateRequiredFields,
-            getValues: () => fieldValues,
+            getValues: () => fieldValuesRef.current,
         }),
-        [fieldValues, validationErrors]
+        [validationErrors] // Only recreate when validation errors change, not fieldValues
     );
 
     // Don't render if no customer fields exist

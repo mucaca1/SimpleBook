@@ -7,6 +7,8 @@
 
 import { evolu } from '../evolu-init';
 import type { CustomerId } from './evolu-db';
+import { getCustomFieldValuesForCustomer } from './evolu-query';
+import type { TCustomFieldValueRow } from './evolu-query';
 
 export type CustomFieldValueInput = Record<string, string | boolean | null>;
 
@@ -33,25 +35,16 @@ export async function saveCustomFieldValuesForCustomer(
     customerId: CustomerId,
     inputValues: CustomFieldValueInput
 ): Promise<void> {
-    // Query directly using evolu's SQL interface
+    // Query using Evolu's loadQuery API
     try {
         // Get existing values for this customer
-        const existingValuesResult = await evolu.query(`
-            SELECT * FROM customFieldValues
-            WHERE customerId = '${customerId}'
-            AND isDeleted != 1
-        `);
-
-        const existingValues = existingValuesResult as Array<{
-            id: string;
-            customFieldId: string;
-            customerId: string;
-            value: string | null;
-        }>;
+        const { rows: existingValues } = await evolu.loadQuery(
+            getCustomFieldValuesForCustomer(customerId)
+        );
 
         // Create a map of existing values for easy lookup
         const existingValuesMap = new Map<string, string>();
-        existingValues.forEach((v) => {
+        existingValues?.forEach((v: TCustomFieldValueRow) => {
             existingValuesMap.set(v.customFieldId, v.id);
         });
 

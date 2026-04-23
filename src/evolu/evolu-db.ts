@@ -32,8 +32,8 @@ const CustomField = {
     fieldName: Evolu.NonEmptyString100,
     fieldType: Evolu.NonEmptyString100,
     dropdownItems: Evolu.nullOr(Evolu.NonEmptyString1000),
-    placeholder: Evolu.nullOr(Evolu.NonEmptyString200),
-    helpText: Evolu.nullOr(Evolu.NonEmptyString500),
+    placeholder: Evolu.nullOr(Evolu.NonEmptyString1000),
+    helpText: Evolu.nullOr(Evolu.NonEmptyString1000),
     required: Evolu.SqliteBoolean,
     editableAfterInitial: Evolu.SqliteBoolean,
     showInTable: Evolu.SqliteBoolean,
@@ -47,8 +47,8 @@ const CustomFieldValue = {
     id: CustomFieldValueId,
     customFieldId: CustomFieldId,
     customerId: Evolu.nullOr(CustomerId),
-    employeeId: Evolu.nullOr(Evolu.string),
-    value: Evolu.nullOr(Evolu.NonEmptyString500),
+    //employeeId: Evolu.nullOr(Evolu.string),
+    value: Evolu.nullOr(Evolu.NonEmptyString1000)
 }
 
 export const Schema = {
