@@ -29,16 +29,19 @@ import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { customFields } from '../../evolu/evolu-query';
 import { useCustomFieldValues } from '../../hooks/useCustomFieldValues';
+import { useEmployeeCustomFieldValues } from '../../hooks/useEmployeeCustomFieldValues';
 import type { TCustomFieldRow } from '../../evolu/evolu-query';
-import type { CustomerId, CustomFieldId } from '../../evolu/evolu-db';
+import type { CustomerId, CustomFieldId, EmployeeId } from '../../evolu/evolu-db';
 import { getTranslatedFieldName } from '../../utils/customFieldTranslations';
 import type { Language } from '../../types/common';
 import * as Evolu from '@evolu/common';
 
 interface CustomFieldsEditorProps {
-    customerId: CustomerId | null;
+    appliesTo: 'Customer' | 'Employee';
+    customerId?: CustomerId | null;
+    employeeId?: EmployeeId | null;
     isSubmitting: boolean;
-    inline?: boolean; // If true, render fields inline without section header and boxes
+    inline?: boolean;
 }
 
 /**
@@ -58,20 +61,23 @@ interface ValidationErrorsState {
 export const CustomFieldsEditor = React.forwardRef<
     CustomFieldsEditorRef,
     CustomFieldsEditorProps
->(({ customerId, isSubmitting, inline = false }, ref) => {
+>(({ appliesTo, customerId, employeeId, isSubmitting, inline = false }, ref) => {
     const { t, i18n } = useTranslation();
     const currentLanguage = (i18n.language?.split('-')[0] || 'en') as Language;
 
     // Fetch all custom fields
     const allCustomFields = useQuery(customFields) as TCustomFieldRow[];
 
-    // Filter to only Customer fields
-    const customerFields = allCustomFields.filter(
-        (field) => field.appliesTo === 'Customer'
+    const entityId = employeeId || customerId || null;
+
+    const filteredFields = allCustomFields.filter(
+        (field) => field.appliesTo === appliesTo
     );
 
-    // Fetch existing values for this customer
-    const { values } = useCustomFieldValues(customerId);
+    // Fetch existing values
+    const { values: customerValues } = useCustomFieldValues(appliesTo === 'Customer' ? entityId as CustomerId : null);
+    const { values: employeeValues } = useEmployeeCustomFieldValues(appliesTo === 'Employee' ? entityId as EmployeeId : null);
+    const values = appliesTo === 'Employee' ? employeeValues : customerValues;
 
     // Local state for field values
     const [fieldValues, setFieldValues] = useState<CustomFieldValuesState>({});
@@ -100,11 +106,9 @@ export const CustomFieldsEditor = React.forwardRef<
 
     // Check if a field should be disabled (editableAfterInitial logic)
     const isFieldDisabled = (field: TCustomFieldRow): boolean => {
-        // Disable if isSubmitting
         if (isSubmitting) return true;
 
-        // If editing (customerId exists) and field is not editable after initial
-        if (customerId && field.editableAfterInitial === Evolu.sqliteTrue) {
+        if (entityId && field.editableAfterInitial === Evolu.sqliteTrue) {
             // Check if this field already has a value
             const hasValue = values.some(
                 (v) => v.customFieldId === field.id && v.value !== null && v.value !== ''
@@ -141,7 +145,7 @@ export const CustomFieldsEditor = React.forwardRef<
         let isValid = true;
         const currentValues = fieldValuesRef.current;
 
-        customerFields.forEach((field) => {
+        filteredFields.forEach((field) => {
             if (field.required === Evolu.sqliteTrue) {
                 const value = currentValues[field.id];
                 const hasValue =
@@ -171,8 +175,8 @@ export const CustomFieldsEditor = React.forwardRef<
         [validationErrors] // Only recreate when validation errors change, not fieldValues
     );
 
-    // Don't render if no customer fields exist
-    if (customerFields.length === 0) {
+    // Don't render if no fields exist for this entity type
+    if (filteredFields.length === 0) {
         return null;
     }
 
@@ -331,7 +335,7 @@ export const CustomFieldsEditor = React.forwardRef<
     if (inline) {
         return (
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                {customerFields.map((field) => (
+                {filteredFields.map((field) => (
                     <Box key={field.id}>
                         {renderFieldInput(field)}
                     </Box>
@@ -348,7 +352,7 @@ export const CustomFieldsEditor = React.forwardRef<
                     {t('customer.form.customFieldsSection') || 'Custom Fields'}
                 </Typography>
 
-                {customerFields.map((field) => (
+                {filteredFields.map((field) => (
                     <Box
                         key={field.id}
                         sx={{

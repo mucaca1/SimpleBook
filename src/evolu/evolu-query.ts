@@ -1,6 +1,6 @@
 import * as Evolu from "@evolu/common";
 import { evolu } from "../evolu-init";
-import type { CustomerId } from "./evolu-db";
+import type { CustomerId, EmployeeId } from "./evolu-db";
 
 export const settings: Evolu.Query = evolu.createQuery((db) =>
     db.selectFrom("settings").select(["id", "language", "theme"])
@@ -39,5 +39,22 @@ export const getCustomFieldValuesForCustomer = (customerId: CustomerId): Evolu.Q
         db.selectFrom("customFieldValues")
             .selectAll()
             .where("customerId", "==", customerId)
+            .where("isDeleted", "is not", Evolu.sqliteTrue)
+    );
+
+export const employees: Evolu.Query = evolu.createQuery((db) =>
+    db.selectFrom("employees")
+        .selectAll()
+        .where("isDeleted", "is not", Evolu.sqliteTrue)
+        .orderBy("createdAt", "desc")
+);
+
+export type TEmployeeRow = typeof employees.Row;
+
+export const getCustomFieldValuesForEmployee = (employeeId: EmployeeId): Evolu.Query =>
+    evolu.createQuery((db) =>
+        db.selectFrom("customFieldValues")
+            .selectAll()
+            .where("employeeId", "==", employeeId)
             .where("isDeleted", "is not", Evolu.sqliteTrue)
     );

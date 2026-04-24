@@ -44,17 +44,29 @@ const CustomField = {
 const CustomFieldValueId = Evolu.id("CustomFieldValueId");
 export type CustomFieldValueId = typeof CustomFieldValueId.Type;
 
+const EmployeeId = Evolu.id("EmployeeId");
+export type EmployeeId = typeof EmployeeId.Type;
+
+const Employee = {
+    id: EmployeeId,
+    firstName: Evolu.nullOr(Evolu.NonEmptyString100),
+    lastName: Evolu.nullOr(Evolu.NonEmptyString100),
+    phone: Evolu.nullOr(Evolu.NonEmptyString100),
+    email: Evolu.nullOr(Evolu.NonEmptyString100),
+}
+
 const CustomFieldValue = {
     id: CustomFieldValueId,
     customFieldId: CustomFieldId,
     customerId: Evolu.nullOr(CustomerId),
-    //employeeId: Evolu.nullOr(Evolu.string),
+    employeeId: Evolu.nullOr(EmployeeId),
     value: Evolu.nullOr(Evolu.NonEmptyString1000)
 }
 
 export const Schema = {
     settings: Settings,
     customers: Customer,
+    employees: Employee,
     customFields: CustomField,
     customFieldValues: CustomFieldValue,
 };

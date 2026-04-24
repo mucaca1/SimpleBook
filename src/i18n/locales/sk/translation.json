@@ -32,14 +32,14 @@
     },
     "subject": {
         "customers": "Zákazníci",
-        "employee": "Zamestnanec",
+        "employee": "Zamestnanci",
         "customersPage": {
             "title": "Stránka zákazníkov",
             "description": "Ste na stránke zákazníkov"
         },
         "employeePage": {
-            "title": "Stránka zamestnanca",
-            "description": "Ste na stránke zamestnanca"
+            "title": "Zamestnanci",
+            "description": "Spravujte svojich zamestnancov"
         },
         "homePage": {
             "title": "Domovská stránka",
@@ -282,6 +282,65 @@
         },
         "actions": {
             "add": "Pridať zákazníka",
+            "edit": "Upraviť",
+            "delete": "Odstrániť"
+        }
+    },
+    "employee": {
+        "title": "Zamestnanci",
+        "add": "Pridať zamestnanca",
+        "edit": "Upraviť zamestnanca",
+        "delete": "Odstrániť zamestnanca",
+        "form": {
+            "customFieldsSection": "Vlastné polia",
+            "firstName": "Meno",
+            "lastName": "Priezvisko",
+            "phone": "Telefónne číslo",
+            "email": "E-mailová adresa",
+            "cancel": "Zrušiť",
+            "addEmployee": "Pridať zamestnanca",
+            "updateEmployee": "Aktualizovať zamestnanca",
+            "saving": "Ukladám...",
+            "validation": {
+                "firstNameMaxLength": "Meno musí mať menej ako 100 znakov",
+                "lastNameMaxLength": "Priezvisko musí mať menej ako 100 znakov",
+                "phoneMaxLength": "Telefónne číslo musí mať menej ako 100 znakov",
+                "phoneInvalid": "Zadajte platné telefónne číslo",
+                "emailMaxLength": "E-mail musí mať menej ako 100 znakov",
+                "emailInvalid": "Zadajte platnú e-mailovú adresu"
+            },
+            "placeholder": {
+                "phone": "napr. +421 234 567 890",
+                "email": "napr. jan@priklad.sk"
+            }
+        },
+        "table": {
+            "firstName": "Meno",
+            "lastName": "Priezvisko",
+            "phone": "Telefón",
+            "email": "E-mail",
+            "actions": "Akcie",
+            "empty": "Nenašli sa žiadni zamestnanci. Pridajte svojho prvého zamestnanca!",
+            "loading": "Načítavam zamestnancov...",
+            "yes": "Áno",
+            "no": "Nie"
+        },
+        "toast": {
+            "created": "Zamestnanec bol úspešne vytvorený",
+            "updated": "Zamestnanec bol úspešne aktualizovaný",
+            "deleted": "Zamestnanec bol úspešne odstránený",
+            "createError": "Nepodarilo sa vytvoriť zamestnanca",
+            "updateError": "Nepodarilo sa aktualizovať zamestnanca",
+            "deleteError": "Nepodarilo sa odstrániť zamestnanca"
+        },
+        "deleteConfirm": {
+            "title": "Odstrániť {itemType}",
+            "message": "Naozaj chcete odstrániť {itemName}?",
+            "confirm": "Odstrániť",
+            "cancel": "Zrušiť"
+        },
+        "actions": {
+            "add": "Pridať zamestnanca",
             "edit": "Upraviť",
             "delete": "Odstrániť"
         }
