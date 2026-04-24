@@ -1,4 +1,5 @@
 import { CustomFieldId, CustomFieldValueId } from '../evolu/evolu-db';
+import type { Language } from './common';
 
 /**
  * Custom field type enumeration
@@ -11,6 +12,11 @@ export type CustomFieldType = 'Text' | 'Number' | 'Date' | 'Yes/No' | 'Dropdown'
 export type CustomFieldAppliesTo = 'Customer' | 'Employee';
 
 /**
+ * Map of language code to translated field name
+ */
+export type FieldNameTranslations = Partial<Record<Language, string>>;
+
+/**
  * Custom field definition
  */
 export interface CustomField {
@@ -18,6 +24,7 @@ export interface CustomField {
     appliesTo: CustomFieldAppliesTo;
     fieldName: string;
     fieldType: CustomFieldType;
+    fieldNameTranslations?: string | null;
     dropdownItems?: string | null;
     placeholder?: string | null;
     helpText?: string | null;
@@ -34,6 +41,7 @@ export interface CustomFieldFormData {
     appliesTo: CustomFieldAppliesTo;
     fieldName: string;
     fieldType: CustomFieldType;
+    fieldNameTranslations: FieldNameTranslations;
     dropdownItems?: string;
     placeholder?: string;
     helpText?: string;

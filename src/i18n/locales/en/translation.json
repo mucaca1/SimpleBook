@@ -146,6 +146,10 @@
                 "placeholder": "Type an option and press Enter",
                 "helperText": "Add at least one option"
             },
+            "translations": {
+                "title": "Translations",
+                "description": "Add translated field names for each language. Leave empty to use the default field name."
+            },
             "table": {
                 "fieldName": "Field Name",
                 "fieldType": "Type",

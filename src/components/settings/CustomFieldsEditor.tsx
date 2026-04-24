@@ -31,6 +31,8 @@ import { customFields } from '../../evolu/evolu-query';
 import { useCustomFieldValues } from '../../hooks/useCustomFieldValues';
 import type { TCustomFieldRow } from '../../evolu/evolu-query';
 import type { CustomerId, CustomFieldId } from '../../evolu/evolu-db';
+import { getTranslatedFieldName } from '../../utils/customFieldTranslations';
+import type { Language } from '../../types/common';
 import * as Evolu from '@evolu/common';
 
 interface CustomFieldsEditorProps {
@@ -57,7 +59,8 @@ export const CustomFieldsEditor = React.forwardRef<
     CustomFieldsEditorRef,
     CustomFieldsEditorProps
 >(({ customerId, isSubmitting, inline = false }, ref) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const currentLanguage = (i18n.language?.split('-')[0] || 'en') as Language;
 
     // Fetch all custom fields
     const allCustomFields = useQuery(customFields) as TCustomFieldRow[];
@@ -181,7 +184,7 @@ export const CustomFieldsEditor = React.forwardRef<
         const required = field.required === Evolu.sqliteTrue;
         const label = (
             <span>
-                {field.fieldName}
+                {getTranslatedFieldName(field.fieldName, field.fieldNameTranslations, currentLanguage)}
                 {required && <span style={{ color: 'red' }}> *</span>}
             </span>
         );
@@ -251,7 +254,7 @@ export const CustomFieldsEditor = React.forwardRef<
                                     disabled={disabled}
                                 />
                             }
-                            label={inline ? label : (field.helpText || field.fieldName)}
+                            label={inline ? label : (field.helpText || getTranslatedFieldName(field.fieldName, field.fieldNameTranslations, currentLanguage))}
                         />
                         {error && (
                             <FormHelperText error sx={{ ml: 0 }}>
@@ -358,7 +361,7 @@ export const CustomFieldsEditor = React.forwardRef<
                     >
                         <Stack spacing={1}>
                             <Typography variant="subtitle1" fontWeight="medium">
-                                {field.fieldName}
+                                {getTranslatedFieldName(field.fieldName, field.fieldNameTranslations, currentLanguage)}
                                 {field.required === Evolu.sqliteTrue && (
                                     <span style={{ color: 'red' }}> *</span>
                                 )}

@@ -10,6 +10,8 @@ import { CustomerActions } from './CustomerActions';
 import { useQuery } from '@evolu/react';
 import { customFields, customFieldValues } from '../../evolu/evolu-query';
 import type { TCustomFieldRow, TCustomFieldValueRow } from '../../evolu/evolu-query';
+import { getTranslatedFieldName } from '../../utils/customFieldTranslations';
+import type { Language } from '../../types/common';
 import * as Evolu from '@evolu/common';
 
 interface CustomerTableProps {
@@ -21,7 +23,8 @@ interface CustomerTableProps {
 }
 
 export const CustomerTable = memo(({ customers, isLoading, onEdit, onDelete, onAdd }: CustomerTableProps) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const currentLanguage = (i18n.language?.split('-')[0] || 'en') as Language;
 
     // Query custom fields and values
     const allCustomFields = useQuery(customFields) as TCustomFieldRow[];
@@ -164,7 +167,7 @@ export const CustomerTable = memo(({ customers, isLoading, onEdit, onDelete, onA
     const customFieldColumns: GridColDef[] = useMemo(() => {
         return customerCustomFields.map((field) => ({
             field: `customField_${field.id}`,
-            headerName: field.fieldName,
+            headerName: getTranslatedFieldName(field.fieldName, field.fieldNameTranslations, currentLanguage),
             width: 150,
             renderCell: (params) => {
                 const customerId = params.row.id;

@@ -146,6 +146,10 @@
                 "placeholder": "Zadajte možnosť a stlačte Enter",
                 "helperText": "Pridajte aspoň jednu možnosť"
             },
+            "translations": {
+                "title": "Preklady",
+                "description": "Pridajte preložené názvy polí pre každý jazyk. Ak necháte prázdne, použije sa predvolený názov poľa."
+            },
             "table": {
                 "fieldName": "Názov poľa",
                 "fieldType": "Typ",

@@ -12,13 +12,20 @@ import {
     SvgIcon,
     Autocomplete,
     Chip,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    InputAdornment,
 } from "@mui/material";
+import { ExpandMore as ExpandMoreIcon, Translate as TranslateIcon } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import {
     CustomFieldFormData,
     CUSTOM_FIELD_TYPE_LABELS,
     CUSTOM_FIELD_APPLIES_TO_LABELS,
 } from "../../types/customField";
+import type { Language } from "../../types/common";
+import { LANGUAGE_LABELS } from "../../types/common";
 import { FieldTypeChangeDialog } from "../ui/FieldTypeChangeDialog";
 import { DropdownItemsChangeDialog } from "../ui/DropdownItemsChangeDialog";
 import {
@@ -67,6 +74,7 @@ export function CustomFieldForm({
             appliesTo: "Customer",
             fieldName: "",
             fieldType: "Text",
+            fieldNameTranslations: {},
             dropdownItems: "",
             placeholder: "",
             helpText: "",
@@ -224,6 +232,63 @@ export function CustomFieldForm({
                             helperText={errors.fieldName?.message}
                             disabled={isSubmitting}
                         />
+                    )}
+                />
+
+                {/* Field Name Translations */}
+                <Controller
+                    name="fieldNameTranslations"
+                    control={control}
+                    render={({ field: translationsField }) => (
+                        <Accordion
+                            elevation={0}
+                            sx={{
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                '&:before': { display: 'none' },
+                                borderRadius: 1,
+                            }}
+                        >
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ minHeight: 48 }}>
+                                <Stack direction="row" spacing={1} alignItems="center">
+                                    <TranslateIcon fontSize="small" color="action" />
+                                    <Typography variant="body2">
+                                        {t("settings.customFields.translations.title")}
+                                    </Typography>
+                                </Stack>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Stack spacing={2}>
+                                    <Typography variant="caption" color="text.secondary">
+                                        {t("settings.customFields.translations.description")}
+                                    </Typography>
+                                    {(Object.keys(LANGUAGE_LABELS) as Language[]).map((lang) => (
+                                        <TextField
+                                            key={lang}
+                                            label={LANGUAGE_LABELS[lang]}
+                                            value={translationsField.value?.[lang] || ""}
+                                            onChange={(e) => {
+                                                const updated = { ...translationsField.value, [lang]: e.target.value };
+                                                if (!e.target.value) delete updated[lang];
+                                                translationsField.onChange(updated);
+                                            }}
+                                            fullWidth
+                                            size="small"
+                                            disabled={isSubmitting}
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', minWidth: 20 }}>
+                                                            {lang}
+                                                        </Typography>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    ))}
+                                </Stack>
+                            </AccordionDetails>
+                        </Accordion>
                     )}
                 />
 

@@ -31,6 +31,7 @@ const CustomField = {
     appliesTo: Evolu.NonEmptyString100,
     fieldName: Evolu.NonEmptyString100,
     fieldType: Evolu.NonEmptyString100,
+    fieldNameTranslations: Evolu.nullOr(Evolu.NonEmptyString1000),
     dropdownItems: Evolu.nullOr(Evolu.NonEmptyString1000),
     placeholder: Evolu.nullOr(Evolu.NonEmptyString1000),
     helpText: Evolu.nullOr(Evolu.NonEmptyString1000),

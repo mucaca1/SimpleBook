@@ -10,6 +10,7 @@ import {
 import { Close as CloseIcon } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { CustomField, CustomFieldFormData } from "../../types/customField";
+import { parseFieldNameTranslations } from "../../utils/customFieldTranslations";
 import { CustomFieldForm } from "./CustomFieldForm";
 
 interface CustomFieldFormModalProps {
@@ -37,6 +38,7 @@ export function CustomFieldFormModal({
               appliesTo: customField.appliesTo,
               fieldName: customField.fieldName,
               fieldType: customField.fieldType,
+              fieldNameTranslations: parseFieldNameTranslations(customField.fieldNameTranslations),
               dropdownItems: customField.dropdownItems || "",
               placeholder: customField.placeholder || "",
               helpText: customField.helpText || "",

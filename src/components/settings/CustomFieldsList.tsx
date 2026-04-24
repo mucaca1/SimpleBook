@@ -32,6 +32,8 @@ import { DeleteConfirmDialog } from "../ui/DeleteConfirmDialog";
 import { CustomFieldFormData } from "../../types/customField";
 import type { TCustomFieldRow } from "../../evolu/evolu-query";
 import { CUSTOM_FIELD_TYPE_LABELS, CUSTOM_FIELD_APPLIES_TO_LABELS } from "../../types/customField";
+import { getTranslatedFieldName } from "../../utils/customFieldTranslations";
+import type { Language } from "../../types/common";
 import { useQuery } from "@evolu/react";
 import { customFieldValues } from "../../evolu/evolu-query";
 import * as Evolu from "@evolu/common";
@@ -60,7 +62,8 @@ const getFieldTypeIcon = (fieldType: string) => {
 };
 
 export function CustomFieldsList() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const currentLanguage = (i18n.language?.split('-')[0] || 'en') as Language;
     const { customFields, isLoading, createCustomField, updateCustomField, deleteCustomField } =
         useCustomFieldCrud();
 
@@ -260,7 +263,7 @@ export function CustomFieldsList() {
                             ) : (
                                 customFields.map((field) => (
                                     <TableRow key={field.id} hover>
-                                        <TableCell>{field.fieldName}</TableCell>
+                                        <TableCell>{getTranslatedFieldName(field.fieldName, field.fieldNameTranslations, currentLanguage)}</TableCell>
                                         <TableCell>
                                             <Stack direction="row" spacing={1} alignItems="center">
                                                 <SvgIcon fontSize="small" color="action">
@@ -347,7 +350,7 @@ export function CustomFieldsList() {
                 {/* Delete Confirmation Dialog */}
                 <DeleteConfirmDialog
                     open={deleteDialogOpen}
-                    itemName={fieldToDelete?.fieldName || ""}
+                    itemName={fieldToDelete ? getTranslatedFieldName(fieldToDelete.fieldName, fieldToDelete.fieldNameTranslations, currentLanguage) : ""}
                     itemType={t("settings.customFields.deleteConfirm.itemType") || "custom field"}
                     onConfirm={handleDeleteConfirm}
                     onClose={handleDeleteDialogClose}

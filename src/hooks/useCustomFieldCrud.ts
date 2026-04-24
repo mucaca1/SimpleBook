@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import { evolu } from "../evolu-init";
 import { customFields, customFieldValues } from "../evolu/evolu-query";
 import { CustomFieldFormData } from "../types/customField";
+import { serializeFieldNameTranslations } from "../utils/customFieldTranslations";
 import type { TCustomFieldRow } from "../evolu/evolu-query";
 import * as Evolu from "@evolu/common";
 
@@ -85,6 +86,7 @@ export function useCustomFieldCrud(): UseCustomFieldCrudReturn {
                 appliesTo: data.appliesTo || null,
                 fieldName: data.fieldName || null,
                 fieldType: data.fieldType || null,
+                fieldNameTranslations: serializeFieldNameTranslations(data.fieldNameTranslations),
                 dropdownItems: data.dropdownItems || null,
                 placeholder: data.placeholder || null,
                 helpText: data.helpText || null,
@@ -121,6 +123,7 @@ export function useCustomFieldCrud(): UseCustomFieldCrudReturn {
                 appliesTo: data.appliesTo || null,
                 fieldName: data.fieldName || null,
                 fieldType: data.fieldType || null,
+                fieldNameTranslations: serializeFieldNameTranslations(data.fieldNameTranslations),
                 dropdownItems: data.dropdownItems || null,
                 placeholder: data.placeholder || null,
                 helpText: data.helpText || null,
