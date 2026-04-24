@@ -3,7 +3,6 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions,
     IconButton,
     Stack,
     Typography,
@@ -18,7 +17,7 @@ interface CustomerFormModalProps {
     onClose: () => void;
     mode: 'add' | 'edit';
     customer?: Customer;
-    onSubmit: (data: CustomerFormData) => Promise<void>;
+    onSubmit: (data: CustomerFormData, customFieldValues?: Record<string, string | boolean | null>) => Promise<void>;
     isSubmitting: boolean;
 }
 
@@ -82,6 +81,7 @@ export function CustomerFormModal({
                 <CustomerForm
                     mode={mode}
                     initialData={initialData}
+                    customerId={customer?.id || null}
                     onSubmit={onSubmit}
                     onCancel={onClose}
                     isSubmitting={isSubmitting}

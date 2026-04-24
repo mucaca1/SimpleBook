@@ -1,4 +1,4 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -9,6 +9,8 @@ export interface DeleteConfirmDialogProps {
     onConfirm: () => void;
     onClose: () => void;
     isDeleting?: boolean;
+    affectedCount?: number;
+    customMessage?: string;
 }
 
 export function DeleteConfirmDialog({
@@ -18,8 +20,24 @@ export function DeleteConfirmDialog({
     onConfirm,
     onClose,
     isDeleting = false,
+    affectedCount,
+    customMessage,
 }: DeleteConfirmDialogProps) {
     const { t } = useTranslation();
+
+    const renderMessage = () => {
+        if (customMessage) {
+            return customMessage;
+        }
+
+        let message = t('customer.deleteConfirm.message', { itemName });
+        if (affectedCount !== undefined && affectedCount > 0) {
+            message += " ";
+            message += t('customer.deleteConfirm.affectedCount', { count: affectedCount }) ||
+                `This will also delete ${affectedCount} associated ${affectedCount === 1 ? 'value' : 'values'}.`;
+        }
+        return message;
+    };
 
     return (
         <Dialog
@@ -34,7 +52,9 @@ export function DeleteConfirmDialog({
                 {t('customer.deleteConfirm.title', { itemType })}
             </DialogTitle>
             <DialogContent>
-                {t('customer.deleteConfirm.message', { itemName })}
+                <Typography variant="body1">
+                    {renderMessage()}
+                </Typography>
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} color="secondary" disabled={isDeleting}>

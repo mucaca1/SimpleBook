@@ -18,6 +18,7 @@ import { customers } from "../evolu/evolu-query";
 import { CustomerFormData } from "../types/customer";
 import type { TCustomerRow } from "../evolu/evolu-query";
 import * as Evolu from "@evolu/common";
+import { CustomerId } from "../evolu/evolu-db";
 
 /**
  * Hook return type
@@ -28,9 +29,9 @@ interface UseCustomerCrudReturn {
     isLoading: boolean;
 
     // Actions
-    createCustomer: (data: CustomerFormData) => Promise<void>;
-    updateCustomer: (id: string, data: CustomerFormData) => Promise<void>;
-    deleteCustomer: (id: string) => Promise<void>;
+    createCustomer: (data: CustomerFormData) => Promise<CustomerId>;
+    updateCustomer: (id: CustomerId, data: CustomerFormData) => Promise<void>;
+    deleteCustomer: (id: CustomerId) => Promise<void>;
 }
 
 /**
@@ -75,8 +76,9 @@ export function useCustomerCrud(): UseCustomerCrudReturn {
      * Shows success/error toast notifications
      *
      * @param data - Customer form data (without id)
+     * @returns The ID of the created customer (throws on error)
      */
-    const createCustomer = async (data: CustomerFormData): Promise<void> => {
+    const createCustomer = async (data: CustomerFormData): Promise<CustomerId> => {
         try {
             const result = await evolu.insert("customers", {
                 firstName: data.firstName || null,
@@ -90,6 +92,7 @@ export function useCustomerCrud(): UseCustomerCrudReturn {
 
             if (result.ok) {
                 toast.success(t("customer.toast.created"));
+                return result.value.id;
             } else {
                 throw new Error(result.error.message);
             }

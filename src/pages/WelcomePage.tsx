@@ -30,8 +30,8 @@ export function WelcomePage() {
     const next = () => setStep((s) => (s === 0 ? 1 : s));
     const back = () => setStep((s) => (s === 1 ? 0 : s));
 
-    const finish = () => {
-        insert("settings", {language: i18n.language, theme: mode});
+    const finish = async () => {
+        await insert("settings", {language: i18n.language, theme: mode});
     };
 
     return (

@@ -12,7 +12,9 @@ interface ThemeContextType {
 
 export const ThemeContext = createContext<ThemeContextType>({
     mode: 'light',
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     setTheme: () => { },
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     storeTheme: () => { },
 });
 

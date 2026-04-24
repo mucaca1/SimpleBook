@@ -23,7 +23,38 @@ const Customer = {
     customerId: Evolu.nullOr(Evolu.NonEmptyString100)
 }
 
+const CustomFieldId = Evolu.id("CustomFieldId");
+export type CustomFieldId = typeof CustomFieldId.Type;
+
+const CustomField = {
+    id: CustomFieldId,
+    appliesTo: Evolu.NonEmptyString100,
+    fieldName: Evolu.NonEmptyString100,
+    fieldType: Evolu.NonEmptyString100,
+    fieldNameTranslations: Evolu.nullOr(Evolu.NonEmptyString1000),
+    dropdownItems: Evolu.nullOr(Evolu.NonEmptyString1000),
+    placeholder: Evolu.nullOr(Evolu.NonEmptyString1000),
+    helpText: Evolu.nullOr(Evolu.NonEmptyString1000),
+    required: Evolu.SqliteBoolean,
+    editableAfterInitial: Evolu.SqliteBoolean,
+    showInTable: Evolu.SqliteBoolean,
+    containEmptyValue: Evolu.SqliteBoolean,
+}
+
+const CustomFieldValueId = Evolu.id("CustomFieldValueId");
+export type CustomFieldValueId = typeof CustomFieldValueId.Type;
+
+const CustomFieldValue = {
+    id: CustomFieldValueId,
+    customFieldId: CustomFieldId,
+    customerId: Evolu.nullOr(CustomerId),
+    //employeeId: Evolu.nullOr(Evolu.string),
+    value: Evolu.nullOr(Evolu.NonEmptyString1000)
+}
+
 export const Schema = {
     settings: Settings,
-    customers: Customer
+    customers: Customer,
+    customFields: CustomField,
+    customFieldValues: CustomFieldValue,
 };
