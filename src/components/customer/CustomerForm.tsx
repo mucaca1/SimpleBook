@@ -252,6 +252,7 @@ export function CustomerForm({
                     {/* Inline Custom Fields - Integrated like normal fields */}
                     <CustomFieldsEditor
                         ref={customFieldsEditorRef}
+                        appliesTo="Customer"
                         customerId={customerId || null}
                         isSubmitting={isSubmitting}
                         inline={true}

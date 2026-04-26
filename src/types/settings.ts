@@ -5,6 +5,8 @@
 import { SettingsId } from '../evolu/evolu-db';
 import { Language, ThemeMode } from './common';
 
+export type CalendarTimeFormat = "12h" | "24h";
+
 /**
  * Settings representation for UI display
  */
@@ -13,6 +15,8 @@ export interface Settings {
     language: Language;
     theme: ThemeMode;
     syncUrl: string | null;
+    calendarTimeFormat: CalendarTimeFormat;
+    calendarShowWeekends: boolean;
 }
 
 /**
@@ -22,6 +26,8 @@ export interface SettingsCreateInput {
     language: Language;
     theme: ThemeMode;
     syncUrl?: string | null;
+    calendarTimeFormat?: CalendarTimeFormat;
+    calendarShowWeekends?: boolean;
 }
 
 /**
@@ -31,6 +37,8 @@ export interface SettingsUpdateInput {
     language?: Language;
     theme?: ThemeMode;
     syncUrl?: string | null;
+    calendarTimeFormat?: CalendarTimeFormat;
+    calendarShowWeekends?: boolean;
 }
 
 /**

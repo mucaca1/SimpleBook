@@ -32,14 +32,14 @@
     },
     "subject": {
         "customers": "Customers",
-        "employee": "Employee",
+        "employee": "Employees",
         "customersPage": {
             "title": "Customers Page",
             "description": "You are on the Customers page"
         },
         "employeePage": {
-            "title": "Employee Page",
-            "description": "You are on the Employee page"
+            "title": "Employees",
+            "description": "Manage your employees"
         },
         "homePage": {
             "title": "Home Page",
@@ -286,6 +286,65 @@
             "delete": "Delete"
         }
     },
+    "employee": {
+        "title": "Employees",
+        "add": "Add Employee",
+        "edit": "Edit Employee",
+        "delete": "Delete Employee",
+        "form": {
+            "customFieldsSection": "Custom Fields",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "phone": "Phone Number",
+            "email": "Email Address",
+            "cancel": "Cancel",
+            "addEmployee": "Add Employee",
+            "updateEmployee": "Update Employee",
+            "saving": "Saving...",
+            "validation": {
+                "firstNameMaxLength": "First name must be less than 100 characters",
+                "lastNameMaxLength": "Last name must be less than 100 characters",
+                "phoneMaxLength": "Phone number must be less than 100 characters",
+                "phoneInvalid": "Please enter a valid phone number",
+                "emailMaxLength": "Email must be less than 100 characters",
+                "emailInvalid": "Please enter a valid email address"
+            },
+            "placeholder": {
+                "phone": "e.g., +1 234 567 890",
+                "email": "e.g., john@example.com"
+            }
+        },
+        "table": {
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "phone": "Phone",
+            "email": "Email",
+            "actions": "Actions",
+            "empty": "No employees found. Add your first employee!",
+            "loading": "Loading employees...",
+            "yes": "Yes",
+            "no": "No"
+        },
+        "toast": {
+            "created": "Employee created successfully",
+            "updated": "Employee updated successfully",
+            "deleted": "Employee deleted successfully",
+            "createError": "Failed to create employee",
+            "updateError": "Failed to update employee",
+            "deleteError": "Failed to delete employee"
+        },
+        "deleteConfirm": {
+            "title": "Delete {itemType}",
+            "message": "Are you sure you want to delete {itemName}?",
+            "confirm": "Delete",
+            "cancel": "Cancel"
+        },
+        "actions": {
+            "add": "Add Employee",
+            "edit": "Edit",
+            "delete": "Delete"
+        }
+    },
     "customField": {
         "selectOption": "Select an option",
         "fieldNotEditable": "This field cannot be edited after initial entry",
@@ -303,6 +362,15 @@
             "required": "This field is required",
             "invalidNumber": "Please enter a valid number",
             "invalidDate": "Please enter a valid date"
+        }
+    },
+    "scheduler": {
+        "toast": {
+            "created": "Event created successfully",
+            "deleted": "Event deleted successfully",
+            "syncError": "Failed to sync events",
+            "createError": "Failed to create event",
+            "deleteError": "Failed to delete event"
         }
     }
 }

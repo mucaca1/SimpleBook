@@ -6,8 +6,8 @@
  */
 
 import { evolu } from '../evolu-init';
-import type { CustomerId } from './evolu-db';
-import { getCustomFieldValuesForCustomer } from './evolu-query';
+import type { CustomerId, EmployeeId } from './evolu-db';
+import { getCustomFieldValuesForCustomer, getCustomFieldValuesForEmployee } from './evolu-query';
 import type { TCustomFieldValueRow } from './evolu-query';
 
 export type CustomFieldValueInput = Record<string, string | boolean | null>;
@@ -73,6 +73,45 @@ export async function saveCustomFieldValuesForCustomer(
         }
     } catch (error) {
         console.error('Failed to save custom field values:', error);
+        throw error;
+    }
+}
+
+export async function saveCustomFieldValuesForEmployee(
+    employeeId: EmployeeId,
+    inputValues: CustomFieldValueInput
+): Promise<void> {
+    try {
+        const { rows: existingValues } = await evolu.loadQuery(
+            getCustomFieldValuesForEmployee(employeeId)
+        );
+
+        const existingValuesMap = new Map<string, string>();
+        existingValues?.forEach((v: TCustomFieldValueRow) => {
+            existingValuesMap.set(v.customFieldId, v.id);
+        });
+
+        for (const [customFieldId, value] of Object.entries(inputValues)) {
+            const existingValueId = existingValuesMap.get(customFieldId);
+
+            const stringValue =
+                typeof value === 'boolean' ? (value ? 'true' : 'false') : value || null;
+
+            if (existingValueId) {
+                await evolu.update('customFieldValues', {
+                    id: existingValueId,
+                    value: stringValue,
+                });
+            } else {
+                await evolu.insert('customFieldValues', {
+                    customFieldId,
+                    employeeId,
+                    value: stringValue,
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Failed to save custom field values for employee:', error);
         throw error;
     }
 }

@@ -7,6 +7,8 @@ const Settings = {
     id: SettingsId,
     language: Evolu.NonEmptyString100,
     theme: Evolu.NonEmptyString100,
+    calendarTimeFormat: Evolu.NonEmptyString100,
+    calendarShowWeekends: Evolu.SqliteBoolean,
 }
 
 const CustomerId = Evolu.id("CustomerId");
@@ -44,17 +46,44 @@ const CustomField = {
 const CustomFieldValueId = Evolu.id("CustomFieldValueId");
 export type CustomFieldValueId = typeof CustomFieldValueId.Type;
 
+const EmployeeId = Evolu.id("EmployeeId");
+export type EmployeeId = typeof EmployeeId.Type;
+
+const Employee = {
+    id: EmployeeId,
+    firstName: Evolu.nullOr(Evolu.NonEmptyString100),
+    lastName: Evolu.nullOr(Evolu.NonEmptyString100),
+    phone: Evolu.nullOr(Evolu.NonEmptyString100),
+    email: Evolu.nullOr(Evolu.NonEmptyString100),
+}
+
 const CustomFieldValue = {
     id: CustomFieldValueId,
     customFieldId: CustomFieldId,
     customerId: Evolu.nullOr(CustomerId),
-    //employeeId: Evolu.nullOr(Evolu.string),
+    employeeId: Evolu.nullOr(EmployeeId),
     value: Evolu.nullOr(Evolu.NonEmptyString1000)
+}
+
+const CalendarEventId = Evolu.id("CalendarEventId");
+export type CalendarEventId = typeof CalendarEventId.Type;
+
+const CalendarEvent = {
+    id: CalendarEventId,
+    title: Evolu.NonEmptyString1000,
+    description: Evolu.nullOr(Evolu.NonEmptyString1000),
+    start: Evolu.NonEmptyString100,
+    end: Evolu.NonEmptyString100,
+    allDay: Evolu.SqliteBoolean,
+    color: Evolu.nullOr(Evolu.NonEmptyString100),
+    resource: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
 export const Schema = {
     settings: Settings,
     customers: Customer,
+    employees: Employee,
     customFields: CustomField,
     customFieldValues: CustomFieldValue,
+    calendarEvents: CalendarEvent,
 };
