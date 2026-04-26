@@ -1,20 +1,24 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { Box, CircularProgress } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { EventCalendar } from "@mui/x-scheduler";
 import type { EventCalendarPreferences } from "@mui/x-scheduler-headless/models";
+import type { SchedulerResource } from "@mui/x-scheduler-headless/models";
 import { sk } from "date-fns/locale/sk";
 import { useQuery } from "@evolu/react";
 import { sqliteFalse } from "@evolu/common";
 import { useCalendarEventCrud } from "../hooks/useCalendarEventCrud";
+import { useServiceCrud } from "../hooks/useServiceCrud";
 import { skSKSchedulerLocaleText } from "../i18n/locales/sk/scheduler";
 import { settings } from "../evolu/evolu-query";
 import { evolu } from "../evolu-init";
 import type { SettingsId } from "../evolu/evolu-db";
+import { hexToSchedulerColor } from "../utils/colorMapping";
 
 export function HomePage() {
     const { i18n } = useTranslation();
     const { events, isLoading, handleEventsChange } = useCalendarEventCrud();
+    const { services } = useServiceCrud();
     const rows = useQuery(settings);
     const settingsRow = rows.length > 1 && rows.length > 0 ? rows[0] : null;
 
@@ -29,6 +33,15 @@ export function HomePage() {
         ampm,
         showWeekends,
     };
+
+    const resources: SchedulerResource[] = useMemo(
+        () => (services ?? []).map((service) => ({
+            id: service.id,
+            title: service.name,
+            eventColor: hexToSchedulerColor(service.color),
+        })),
+        [services]
+    );
 
     const handlePreferencesChange = useCallback(
         (newPrefs: Partial<EventCalendarPreferences>) => {
@@ -58,6 +71,7 @@ export function HomePage() {
         <Box sx={{ height: "calc(100vh - 120px)" }}>
             <EventCalendar
                 events={events}
+                resources={resources}
                 onEventsChange={handleEventsChange}
                 defaultView="week"
                 dateLocale={dateLocale}
