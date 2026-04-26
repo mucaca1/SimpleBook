@@ -1,12 +1,17 @@
 import React from "react";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { EventCalendar } from "@mui/x-scheduler";
+import { sk } from "date-fns/locale/sk";
 import { useCalendarEventCrud } from "../hooks/useCalendarEventCrud";
+import { skSKSchedulerLocaleText } from "../i18n/locales/sk/scheduler";
 
 export function HomePage() {
-    const { t } = useTranslation();
+    const { i18n } = useTranslation();
     const { events, isLoading, handleEventsChange } = useCalendarEventCrud();
+    const isSk = i18n.language === "sk";
+    const localeText = isSk ? skSKSchedulerLocaleText : undefined;
+    const dateLocale = isSk ? sk : undefined;
 
     if (isLoading) {
         return (
@@ -22,6 +27,8 @@ export function HomePage() {
                 events={events}
                 onEventsChange={handleEventsChange}
                 defaultView="week"
+                dateLocale={dateLocale}
+                localeText={localeText}
                 sx={{ height: "100%" }}
             />
         </Box>
