@@ -4,6 +4,7 @@
         "hello": "Hello",
         "home": "Home",
         "settings": "Settings",
+        "service": "Services",
         "subject": "Subject",
         "save": "Save",
         "saving": "Saving...",
@@ -363,6 +364,10 @@
             "invalidNumber": "Please enter a valid number",
             "invalidDate": "Please enter a valid date"
         }
+    },
+    "service": {
+        "title": "Services",
+        "pageTitle": "Services"
     },
     "scheduler": {
         "toast": {

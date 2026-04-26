@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { CustomersPage } from "./CustomersPage";
 import { EmployeePage } from "./EmployeePage";
 import { HomePage } from "./HomePage";
+import { ServicePage } from "./ServicePage";
 import { SettingsPage } from "./SettingsPage";
 
 export function RootPage() {
@@ -29,6 +30,10 @@ export function RootPage() {
                         <Route
                             path="/employee"
                             element={<EmployeePage />}
+                        />
+                        <Route
+                            path="/service"
+                            element={<ServicePage />}
                         />
                     </Routes>
                 </div>

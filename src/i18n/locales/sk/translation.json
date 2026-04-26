@@ -4,6 +4,7 @@
         "hello": "Ahoj",
         "home": "Domov",
         "settings": "Nastavenia",
+        "service": "Služby",
         "subject": "Predmet",
         "save": "Uložiť",
         "saving": "Ukladá sa...",
@@ -363,6 +364,10 @@
             "invalidNumber": "Prosím, zadajte platné číslo",
             "invalidDate": "Prosím, zadajte platný dátum"
         }
+    },
+    "service": {
+        "title": "Služby",
+        "pageTitle": "Služby"
     },
     "scheduler": {
         "toast": {
