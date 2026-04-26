@@ -63,10 +63,25 @@ const CustomFieldValue = {
     value: Evolu.nullOr(Evolu.NonEmptyString1000)
 }
 
+const CalendarEventId = Evolu.id("CalendarEventId");
+export type CalendarEventId = typeof CalendarEventId.Type;
+
+const CalendarEvent = {
+    id: CalendarEventId,
+    title: Evolu.NonEmptyString1000,
+    description: Evolu.nullOr(Evolu.NonEmptyString1000),
+    start: Evolu.NonEmptyString100,
+    end: Evolu.NonEmptyString100,
+    allDay: Evolu.SqliteBoolean,
+    color: Evolu.nullOr(Evolu.NonEmptyString100),
+    resource: Evolu.nullOr(Evolu.NonEmptyString100),
+}
+
 export const Schema = {
     settings: Settings,
     customers: Customer,
     employees: Employee,
     customFields: CustomField,
     customFieldValues: CustomFieldValue,
+    calendarEvents: CalendarEvent,
 };

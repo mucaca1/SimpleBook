@@ -363,5 +363,14 @@
             "invalidNumber": "Please enter a valid number",
             "invalidDate": "Please enter a valid date"
         }
+    },
+    "scheduler": {
+        "toast": {
+            "created": "Event created successfully",
+            "deleted": "Event deleted successfully",
+            "syncError": "Failed to sync events",
+            "createError": "Failed to create event",
+            "deleteError": "Failed to delete event"
+        }
     }
 }

@@ -363,5 +363,14 @@
             "invalidNumber": "Prosím, zadajte platné číslo",
             "invalidDate": "Prosím, zadajte platný dátum"
         }
+    },
+    "scheduler": {
+        "toast": {
+            "created": "Udalosť bola úspešne vytvorená",
+            "deleted": "Udalosť bola úspešne odstránená",
+            "syncError": "Nepodarilo sa synchronizovať udalosti",
+            "createError": "Nepodarilo sa vytvoriť udalosť",
+            "deleteError": "Nepodarilo sa odstrániť udalosť"
+        }
     }
 }
