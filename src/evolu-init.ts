@@ -7,7 +7,7 @@ import { createUseEvolu } from "@evolu/react";
 const DB_VERSION_KEY = "evolu_db_version";
 
 // Current database version - increment when schema changes require migration
-const CURRENT_DB_VERSION = 6;
+const CURRENT_DB_VERSION = 7;
 
 /**
  * Get the current database version from localStorage
@@ -31,6 +31,7 @@ function getDatabaseVersion(): number {
  * - Version 4: Added CustomFields and CustomFieldValues tables for custom fields feature
  * - Version 5: Added CalendarEvents table for scheduler feature
  * - Version 6: Added calendarTimeFormat and calendarShowWeekends to Settings
+ * - Version 7: Added Services table for service type management
  */
 function needsDatabaseReset(): boolean {
     const currentVersion = getDatabaseVersion();

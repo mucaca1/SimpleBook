@@ -67,3 +67,12 @@ export const calendarEvents: Evolu.Query = evolu.createQuery((db) =>
 );
 
 export type TCalendarEventRow = typeof calendarEvents.Row;
+
+export const services: Evolu.Query = evolu.createQuery((db) =>
+    db.selectFrom("services")
+        .selectAll()
+        .where("isDeleted", "is not", Evolu.sqliteTrue)
+        .orderBy("createdAt", "desc")
+);
+
+export type TServiceRow = typeof services.Row;

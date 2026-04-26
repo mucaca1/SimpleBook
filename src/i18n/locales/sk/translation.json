@@ -367,7 +367,27 @@
     },
     "service": {
         "title": "Služby",
-        "pageTitle": "Služby"
+        "description": "Spravujte svoje typy služieb",
+        "add": "Pridať službu",
+        "empty": "Nenašli sa žiadne služby. Pridajte svoju prvú službu!",
+        "form": {
+            "name": "Názov služby",
+            "description": "Popis",
+            "duration": "Predvolená doba trvania",
+            "customDuration": "Vlastná...",
+            "customDurationLabel": "Trvanie (minúty)",
+            "color": "Farba",
+            "addService": "Pridať službu",
+            "updateService": "Aktualizovať službu"
+        },
+        "toast": {
+            "created": "Služba bola úspešne vytvorená",
+            "updated": "Služba bola úspešne aktualizovaná",
+            "deleted": "Služba bola úspešne odstránená",
+            "createError": "Nepodarilo sa vytvoriť službu",
+            "updateError": "Nepodarilo sa aktualizovať službu",
+            "deleteError": "Nepodarilo sa odstrániť službu"
+        }
     },
     "scheduler": {
         "toast": {

@@ -367,7 +367,27 @@
     },
     "service": {
         "title": "Services",
-        "pageTitle": "Services"
+        "description": "Manage your service types",
+        "add": "Add Service",
+        "empty": "No services found. Add your first service!",
+        "form": {
+            "name": "Service Name",
+            "description": "Description",
+            "duration": "Default Duration",
+            "customDuration": "Custom...",
+            "customDurationLabel": "Duration (minutes)",
+            "color": "Color",
+            "addService": "Add Service",
+            "updateService": "Update Service"
+        },
+        "toast": {
+            "created": "Service created successfully",
+            "updated": "Service updated successfully",
+            "deleted": "Service deleted successfully",
+            "createError": "Failed to create service",
+            "updateError": "Failed to update service",
+            "deleteError": "Failed to delete service"
+        }
     },
     "scheduler": {
         "toast": {

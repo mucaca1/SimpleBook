@@ -79,6 +79,17 @@ const CalendarEvent = {
     resource: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
+const ServiceId = Evolu.id("ServiceId");
+export type ServiceId = typeof ServiceId.Type;
+
+const Service = {
+    id: ServiceId,
+    name: Evolu.NonEmptyString100,
+    description: Evolu.nullOr(Evolu.NonEmptyString1000),
+    duration: Evolu.NonEmptyString100,
+    color: Evolu.nullOr(Evolu.NonEmptyString100),
+}
+
 export const Schema = {
     settings: Settings,
     customers: Customer,
@@ -86,4 +97,5 @@ export const Schema = {
     customFields: CustomField,
     customFieldValues: CustomFieldValue,
     calendarEvents: CalendarEvent,
+    services: Service,
 };
