@@ -31,7 +31,7 @@ export function WelcomePage() {
     const back = () => setStep((s) => (s === 1 ? 0 : s));
 
     const finish = async () => {
-        await insert("settings", {language: i18n.language, theme: mode});
+        await insert("settings", {language: i18n.language, theme: mode, calendarTimeFormat: "24h", calendarShowWeekends: 1});
     };
 
     return (

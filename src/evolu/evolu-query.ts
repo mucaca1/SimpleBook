@@ -3,7 +3,7 @@ import { evolu } from "../evolu-init";
 import type { CustomerId, EmployeeId, CalendarEventId } from "./evolu-db";
 
 export const settings: Evolu.Query = evolu.createQuery((db) =>
-    db.selectFrom("settings").select(["id", "language", "theme"])
+    db.selectFrom("settings").select(["id", "language", "theme", "calendarTimeFormat", "calendarShowWeekends"])
 );
 
 export type TSettingsRow = typeof settings.Row;

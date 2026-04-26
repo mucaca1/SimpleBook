@@ -7,6 +7,8 @@ const Settings = {
     id: SettingsId,
     language: Evolu.NonEmptyString100,
     theme: Evolu.NonEmptyString100,
+    calendarTimeFormat: Evolu.NonEmptyString100,
+    calendarShowWeekends: Evolu.SqliteBoolean,
 }
 
 const CustomerId = Evolu.id("CustomerId");
