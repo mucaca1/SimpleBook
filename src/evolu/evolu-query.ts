@@ -1,6 +1,6 @@
 import * as Evolu from "@evolu/common";
 import { evolu } from "../evolu-init";
-import type { CustomerId, EmployeeId, CalendarEventId } from "./evolu-db";
+import type { CustomerId, EmployeeId, CalendarEventId, CalendarEventEmployeeId } from "./evolu-db";
 
 export const settings: Evolu.Query = evolu.createQuery((db) =>
     db.selectFrom("settings").select(["id", "language", "theme", "calendarTimeFormat", "calendarShowWeekends"])
@@ -67,6 +67,30 @@ export const calendarEvents: Evolu.Query = evolu.createQuery((db) =>
 );
 
 export type TCalendarEventRow = typeof calendarEvents.Row;
+
+export const getCustomFieldValuesForCalendarEvent = (calendarEventId: CalendarEventId): Evolu.Query =>
+    evolu.createQuery((db) =>
+        db.selectFrom("customFieldValues")
+            .selectAll()
+            .where("calendarEventId", "==", calendarEventId)
+            .where("isDeleted", "is not", Evolu.sqliteTrue)
+    );
+
+export const calendarEventEmployees: Evolu.Query = evolu.createQuery((db) =>
+    db.selectFrom("calendarEventEmployees")
+        .selectAll()
+        .where("isDeleted", "is not", Evolu.sqliteTrue)
+);
+
+export type TCalendarEventEmployeeRow = typeof calendarEventEmployees.Row;
+
+export const getEmployeesForEvent = (calendarEventId: CalendarEventId): Evolu.Query =>
+    evolu.createQuery((db) =>
+        db.selectFrom("calendarEventEmployees")
+            .selectAll()
+            .where("calendarEventId", "==", calendarEventId)
+            .where("isDeleted", "is not", Evolu.sqliteTrue)
+    );
 
 export const services: Evolu.Query = evolu.createQuery((db) =>
     db.selectFrom("services")

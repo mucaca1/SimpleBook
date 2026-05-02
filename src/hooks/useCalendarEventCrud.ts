@@ -2,43 +2,55 @@ import { useCallback, useMemo } from "react";
 import { useQuery } from "@evolu/react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { sqliteTrue } from "@evolu/common";
 import { evolu } from "../evolu-init";
-import { calendarEvents } from "../evolu/evolu-query";
+import { calendarEvents, calendarEventEmployees } from "../evolu/evolu-query";
 import type { TCalendarEventRow } from "../evolu/evolu-query";
-import type { CalendarEventId } from "../evolu/evolu-db";
+import type { CalendarEventId, CalendarEventEmployeeId, EmployeeId } from "../evolu/evolu-db";
 import type { SchedulerEvent, SchedulerEventColor } from "@mui/x-scheduler/models";
 
 function toSchedulerEvent(row: TCalendarEventRow): SchedulerEvent {
     return {
-        id: row.id,
-        title: row.title,
-        description: row.description ?? undefined,
-        start: row.start,
-        end: row.end,
+        id: String(row.id),
+        title: String(row.title),
+        description: row.description != null ? String(row.description) : undefined,
+        start: String(row.start),
+        end: String(row.end),
         allDay: row.allDay ? true : undefined,
         color: (row.color as SchedulerEventColor) ?? undefined,
-        resource: row.resource ?? undefined,
+        resource: row.resource != null ? String(row.resource) : undefined,
     };
 }
 
 export function useCalendarEventCrud() {
     const { t } = useTranslation();
     const rows = useQuery(calendarEvents);
+    const assignmentRows = useQuery(calendarEventEmployees);
 
     const events: SchedulerEvent[] = useMemo(
         () => (rows ?? []).map(toSchedulerEvent),
         [rows]
     );
 
+    const employeeIdsByEvent = useMemo(() => {
+        const map = new Map<string, string[]>();
+        for (const row of assignmentRows ?? []) {
+            const eventId = String(row.calendarEventId);
+            const list = map.get(eventId) ?? [];
+            list.push(String(row.employeeId));
+            map.set(eventId, list);
+        }
+        return map;
+    }, [assignmentRows]);
+
+    const getEmployeeIdsForEvent = useCallback((eventId: string): string[] => {
+        return employeeIdsByEvent.get(eventId) ?? [];
+    }, [employeeIdsByEvent]);
+
     const handleEventsChange = useCallback(
         async (updatedEvents: SchedulerEvent[]) => {
             try {
                 const existingIds = new Set((rows ?? []).map((r) => r.id));
-
-                const currentMap = new Map<string, SchedulerEvent>();
-                for (const e of updatedEvents) {
-                    currentMap.set(String(e.id), e);
-                }
 
                 for (const event of updatedEvents) {
                     const id = String(event.id);
@@ -49,18 +61,28 @@ export function useCalendarEventCrud() {
                             description: event.description ?? null,
                             start: event.start,
                             end: event.end,
-                            allDay: event.allDay ?? false,
+                            allDay: event.allDay ? 1 : 0,
                             color: event.color ?? null,
                             resource: event.resource ?? null,
                         });
                         existingIds.delete(id as CalendarEventId);
+                    } else {
+                        await evolu.insert("calendarEvents", {
+                            title: event.title,
+                            description: event.description ?? null,
+                            start: event.start,
+                            end: event.end,
+                            allDay: event.allDay ? 1 : 0,
+                            color: event.color ?? null,
+                            resource: event.resource ?? null,
+                        });
                     }
                 }
 
-                for (const deletedId of existingIds) {
+                for (const deletedId of existingIds as Set<string>) {
                     await evolu.update("calendarEvents", {
                         id: deletedId,
-                        isDeleted: true,
+                        isDeleted: sqliteTrue,
                     });
                 }
             } catch (error) {
@@ -79,7 +101,7 @@ export function useCalendarEventCrud() {
                     description: event.description ?? null,
                     start: event.start,
                     end: event.end,
-                    allDay: event.allDay ?? false,
+                    allDay: event.allDay ? 1 : 0,
                     color: event.color ?? null,
                     resource: event.resource ?? null,
                 });
@@ -102,7 +124,7 @@ export function useCalendarEventCrud() {
             try {
                 const result = await evolu.update("calendarEvents", {
                     id: id as CalendarEventId,
-                    isDeleted: true,
+                    isDeleted: sqliteTrue,
                 });
                 if (result.ok) {
                     toast.success(t("scheduler.toast.deleted"));
@@ -117,11 +139,73 @@ export function useCalendarEventCrud() {
         [t]
     );
 
+    const updateEvent = useCallback(
+        async (id: string, data: Partial<SchedulerEvent>): Promise<void> => {
+            try {
+                await evolu.update("calendarEvents", {
+                    id: id as CalendarEventId,
+                    ...(data.title !== undefined && { title: data.title }),
+                    ...(data.description !== undefined && { description: data.description ?? null }),
+                    ...(data.start !== undefined && { start: data.start }),
+                    ...(data.end !== undefined && { end: data.end }),
+                    ...(data.allDay !== undefined && { allDay: data.allDay ? 1 : 0 }),
+                    ...(data.color !== undefined && { color: data.color ?? null }),
+                    ...(data.resource !== undefined && { resource: data.resource ?? null }),
+                });
+            } catch (error) {
+                console.error("Failed to update event:", error);
+                toast.error(t("scheduler.toast.createError"));
+            }
+        },
+        [t]
+    );
+
+    const assignEmployees = useCallback(
+        async (eventId: string, newEmployeeIds: string[]) => {
+            try {
+                const currentAssignments = (assignmentRows ?? [])
+                    .filter((r) => String(r.calendarEventId) === eventId);
+                const currentEmployeeIds = new Set(currentAssignments.map((r) => String(r.employeeId)));
+                const desiredIds = new Set(newEmployeeIds);
+
+                // Soft-delete removed assignments
+                for (const row of currentAssignments) {
+                    if (!desiredIds.has(String(row.employeeId))) {
+                        await evolu.update("calendarEventEmployees", {
+                            id: row.id as CalendarEventEmployeeId,
+                            isDeleted: sqliteTrue,
+                        });
+                    }
+                }
+
+                // Insert new assignments
+                for (const employeeId of newEmployeeIds) {
+                    if (!currentEmployeeIds.has(employeeId)) {
+                        await evolu.insert("calendarEventEmployees", {
+                            calendarEventId: eventId as CalendarEventId,
+                            employeeId: employeeId as EmployeeId,
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to assign employees:", error);
+                toast.error(t("scheduler.employeeAssignError"));
+            }
+        },
+        [assignmentRows, t]
+    );
+
+    const allEventRows = useMemo(() => rows ?? [], [rows]);
+
     return {
         events,
+        allEventRows,
         isLoading: rows === undefined || rows === null,
         handleEventsChange,
         createEvent,
+        updateEvent,
         deleteEvent,
+        assignEmployees,
+        getEmployeeIdsForEvent,
     };
 }

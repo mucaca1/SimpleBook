@@ -18,9 +18,11 @@ import {
     Visibility as VisibilityIcon,
     VisibilityOff as VisibilityOffIcon,
     ContentCopy as ContentCopyIcon,
+    PlayArrow as PlayArrowIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { sql } from "kysely";
 import { evolu } from "../../evolu-init";
 import { TypeConfirmDialog } from "../ui/TypeConfirmDialog";
 import { DeleteConfirmDialog } from "../ui/DeleteConfirmDialog";
@@ -53,6 +55,11 @@ export function DangerZone() {
     // Delete Owner state
     const [deleteStep, setDeleteStep] = useState<DeleteConfirmationStep>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    // Query Executor state
+    const [queryInput, setQueryInput] = useState("");
+    const [queryResult, setQueryResult] = useState("");
+    const [isExecuting, setIsExecuting] = useState(false);
 
     // Show Mnemonic handlers
     const handleShowMnemonic = async () => {
@@ -162,6 +169,27 @@ export function DangerZone() {
         setDeleteStep(null);
     };
 
+    // Query Executor handler
+    const handleExecuteQuery = async () => {
+        const q = queryInput.trim();
+        if (!q) return;
+
+        setIsExecuting(true);
+        setQueryResult("");
+        try {
+            const query = evolu.createQuery((db) =>
+                // @ts-expect-error dynamic query type
+                db.selectFrom(sql.raw(`(${q})`).as("result")).selectAll()
+            );
+            const rows = await evolu.loadQuery(query);
+            setQueryResult(JSON.stringify(rows, null, 2));
+        } catch (error) {
+            setQueryResult(`Error: ${error instanceof Error ? error.message : String(error)}`);
+        } finally {
+            setIsExecuting(false);
+        }
+    };
+
     return (
         <Stack spacing={3}>
             {/* Show Mnemonic */}
@@ -229,6 +257,65 @@ export function DangerZone() {
                         >
                             {t("settings.dangerZone.deleteOwner.button") || "Delete Owner"}
                         </Button>
+                    </Stack>
+                </CardContent>
+            </Card>
+
+            {/* Query Executor */}
+            <Card>
+                <CardContent>
+                    <Stack spacing={2}>
+                        <Typography variant="h6" gutterBottom>
+                            {t("settings.dangerZone.queryExecutor.title") || "Query Executor"}
+                        </Typography>
+                        <Alert severity="warning">
+                            {t("settings.dangerZone.queryExecutor.warning") ||
+                                "Execute raw SQL SELECT queries directly against the database. Use with caution."}
+                        </Alert>
+                        <TextField
+                            fullWidth
+                            multiline
+                            rows={4}
+                            label={t("settings.dangerZone.queryExecutor.inputLabel") || "SQL Query"}
+                            value={queryInput}
+                            onChange={(e) => setQueryInput(e.target.value)}
+                            placeholder="SELECT * FROM customers"
+                            spellCheck={false}
+                            sx={{ fontFamily: "monospace" }}
+                            slotProps={{
+                                input: {
+                                    sx: { fontFamily: "monospace", fontSize: "0.875rem" },
+                                },
+                            }}
+                        />
+                        <Button
+                            variant="contained"
+                            color="warning"
+                            onClick={handleExecuteQuery}
+                            disabled={!queryInput.trim() || isExecuting}
+                            startIcon={<PlayArrowIcon />}
+                            sx={{ alignSelf: "flex-start" }}
+                        >
+                            {isExecuting
+                                ? t("settings.dangerZone.queryExecutor.executing") || "Executing..."
+                                : t("settings.dangerZone.queryExecutor.executeButton") || "Execute"}
+                        </Button>
+                        {queryResult && (
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={8}
+                                label={t("settings.dangerZone.queryExecutor.resultLabel") || "Result"}
+                                value={queryResult}
+                                InputProps={{ readOnly: true }}
+                                spellCheck={false}
+                                slotProps={{
+                                    input: {
+                                        sx: { fontFamily: "monospace", fontSize: "0.8rem" },
+                                    },
+                                }}
+                            />
+                        )}
                     </Stack>
                 </CardContent>
             </Card>

@@ -9,7 +9,7 @@ export type CustomFieldType = 'Text' | 'Number' | 'Date' | 'Yes/No' | 'Dropdown'
 /**
  * Entity that custom field applies to
  */
-export type CustomFieldAppliesTo = 'Customer' | 'Employee';
+export type CustomFieldAppliesTo = 'Customer' | 'Employee' | 'CalendarEvent';
 
 /**
  * Map of language code to translated field name
@@ -83,6 +83,7 @@ export const CUSTOM_FIELD_TYPE_LABELS: Record<CustomFieldType, string> = {
 export const CUSTOM_FIELD_APPLIES_TO_LABELS: Record<CustomFieldAppliesTo, string> = {
     'Customer': 'Customer',
     'Employee': 'Employee',
+    'CalendarEvent': 'Calendar Event',
 };
 
 export const CONTAIN_EMPTY_VALUE_LABELS: Record<boolean, string> = {
