@@ -5,6 +5,7 @@
         "home": "Domov",
         "settings": "Nastavenia",
         "service": "Služby",
+        "services": "Služby",
         "subject": "Predmet",
         "save": "Uložiť",
         "saving": "Ukladá sa...",
@@ -388,6 +389,14 @@
             "updateError": "Nepodarilo sa aktualizovať službu",
             "deleteError": "Nepodarilo sa odstrániť službu"
         }
+    },
+    "services": {
+        "service": "Služby",
+        "prices": "Cenník"
+    },
+    "prices": {
+        "title": "Cenník",
+        "description": "Spravujte ceny vašich služieb"
     },
     "scheduler": {
         "toast": {

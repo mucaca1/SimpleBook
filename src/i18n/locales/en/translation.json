@@ -5,6 +5,7 @@
         "home": "Home",
         "settings": "Settings",
         "service": "Services",
+        "services": "Services",
         "subject": "Subject",
         "save": "Save",
         "saving": "Saving...",
@@ -388,6 +389,14 @@
             "updateError": "Failed to update service",
             "deleteError": "Failed to delete service"
         }
+    },
+    "services": {
+        "service": "Services",
+        "prices": "Prices"
+    },
+    "prices": {
+        "title": "Prices",
+        "description": "Manage your service prices"
     },
     "scheduler": {
         "toast": {

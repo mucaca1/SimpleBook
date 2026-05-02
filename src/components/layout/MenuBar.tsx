@@ -2,19 +2,29 @@ import React, { useState } from "react";
 import { AppBar, Toolbar, Button, Typography, Box, Menu, MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
-import { Home, Settings, ExpandMore, People, Badge, HomeRepairService } from "@mui/icons-material";
+import { Home, Settings, ExpandMore, People, Badge, HomeRepairService, AttachMoney } from "@mui/icons-material";
 
 export function MenuBar() {
     const { t } = useTranslation();
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
+    const [subjectAnchorEl, setSubjectAnchorEl] = useState<null | HTMLElement>(null);
+    const [servicesAnchorEl, setServicesAnchorEl] = useState<null | HTMLElement>(null);
+    const subjectOpen = Boolean(subjectAnchorEl);
+    const servicesOpen = Boolean(servicesAnchorEl);
 
-    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
+    const handleSubjectMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+        setSubjectAnchorEl(event.currentTarget);
     };
 
-    const handleMenuClose = () => {
-        setAnchorEl(null);
+    const handleSubjectMenuClose = () => {
+        setSubjectAnchorEl(null);
+    };
+
+    const handleServicesMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+        setServicesAnchorEl(event.currentTarget);
+    };
+
+    const handleServicesMenuClose = () => {
+        setServicesAnchorEl(null);
     };
 
     return (
@@ -30,17 +40,25 @@ export function MenuBar() {
                     </Button>
                     <Button
                         color="inherit"
-                        onClick={handleMenuClick}
+                        onClick={handleSubjectMenuClick}
                         startIcon={<People />}
                         endIcon={<ExpandMore />}
-                        aria-controls={open ? 'subject-menu' : undefined}
+                        aria-controls={subjectOpen ? 'subject-menu' : undefined}
                         aria-haspopup="true"
-                        aria-expanded={open ? 'true' : undefined}
+                        aria-expanded={subjectOpen ? 'true' : undefined}
                     >
                         { t('common.subject') }
                     </Button>
-                    <Button color="inherit" component={RouterLink} to="/service" startIcon={<HomeRepairService />}>
-                        { t('common.service') }
+                    <Button
+                        color="inherit"
+                        onClick={handleServicesMenuClick}
+                        startIcon={<HomeRepairService />}
+                        endIcon={<ExpandMore />}
+                        aria-controls={servicesOpen ? 'services-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={servicesOpen ? 'true' : undefined}
+                    >
+                        { t('common.services') }
                     </Button>
                     <Button color="inherit" component={RouterLink} to="/settings" startIcon={<Settings />}>
                         { t('common.settings') }
@@ -49,9 +67,9 @@ export function MenuBar() {
 
                 <Menu
                     id="subject-menu"
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleMenuClose}
+                    anchorEl={subjectAnchorEl}
+                    open={subjectOpen}
+                    onClose={handleSubjectMenuClose}
                     MenuListProps={{
                         'aria-labelledby': 'subject-button',
                     }}
@@ -59,7 +77,7 @@ export function MenuBar() {
                     <MenuItem
                         component={RouterLink}
                         to="/customers"
-                        onClick={handleMenuClose}
+                        onClick={handleSubjectMenuClose}
                     >
                         <Box sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
                             <People fontSize="small" />
@@ -69,12 +87,43 @@ export function MenuBar() {
                     <MenuItem
                         component={RouterLink}
                         to="/employee"
-                        onClick={handleMenuClose}
+                        onClick={handleSubjectMenuClose}
                     >
                         <Box sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
                             <Badge fontSize="small" />
                         </Box>
                         {t('subject.employee')}
+                    </MenuItem>
+                </Menu>
+
+                <Menu
+                    id="services-menu"
+                    anchorEl={servicesAnchorEl}
+                    open={servicesOpen}
+                    onClose={handleServicesMenuClose}
+                    MenuListProps={{
+                        'aria-labelledby': 'services-button',
+                    }}
+                >
+                    <MenuItem
+                        component={RouterLink}
+                        to="/service"
+                        onClick={handleServicesMenuClose}
+                    >
+                        <Box sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
+                            <HomeRepairService fontSize="small" />
+                        </Box>
+                        {t('services.service')}
+                    </MenuItem>
+                    <MenuItem
+                        component={RouterLink}
+                        to="/prices"
+                        onClick={handleServicesMenuClose}
+                    >
+                        <Box sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
+                            <AttachMoney fontSize="small" />
+                        </Box>
+                        {t('services.prices')}
                     </MenuItem>
                 </Menu>
             </Toolbar>
