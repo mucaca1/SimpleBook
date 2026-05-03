@@ -7,3 +7,4 @@ export { CustomFieldForm } from "./CustomFieldForm";
 export { CustomFieldsEditor } from "./CustomFieldsEditor";
 export type { CustomFieldsEditorRef } from "./CustomFieldsEditor";
 export { DangerZone } from "./DangerZone";
+export { TemplateData } from "./TemplateData";

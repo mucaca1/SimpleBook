@@ -215,6 +215,45 @@
                 "show": "Show Full Mnemonic",
                 "hide": "Hide Mnemonic"
             }
+        },
+        "templateData": {
+            "title": "Template Data",
+            "description": "Generate sample data to test the application. Each button creates a set of random records.",
+            "generating": "Generating...",
+            "customers": {
+                "title": "Customers",
+                "description": "Generate 1000 random customers with names, dates of birth, sex, and customer IDs.",
+                "button": "Generate 1000 Customers"
+            },
+            "employees": {
+                "title": "Employees",
+                "description": "Generate 50 random employees with names, phone numbers, and email addresses.",
+                "button": "Generate 50 Employees"
+            },
+            "services": {
+                "title": "Hospital Services & Prices",
+                "description": "Generate 10 hospital-themed services with associated prices (consultations, examinations, scans, therapy, surgery).",
+                "button": "Generate 10 Services"
+            },
+            "credits": {
+                "title": "Add Credit to Customers",
+                "description": "Add credit to all customers whose first name starts with the letter \"A\".",
+                "amountLabel": "Credit Amount",
+                "button": "Add Credit to \"A\" Customers"
+            },
+            "toast": {
+                "customersCreated": "{{count}} customers created successfully",
+                "customersError": "Failed to generate customers",
+                "employeesCreated": "{{count}} employees created successfully",
+                "employeesError": "Failed to generate employees",
+                "servicesCreated": "{{count}} services with prices created successfully",
+                "servicesError": "Failed to generate services",
+                "creditsCreated": "Credit of {{amount}} added to {{count}} customers",
+                "creditsError": "Failed to add credits",
+                "creditsNoCustomers": "No customers found. Generate customers first.",
+                "creditsNoMatch": "No customers with first name starting with \"A\" found.",
+                "creditsInvalidAmount": "Please enter a valid credit amount"
+            }
         }
     },
     "customer": {

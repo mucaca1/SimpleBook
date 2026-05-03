@@ -11,9 +11,10 @@ import {
     Settings as SettingsIcon,
     Tune as CustomFieldsIcon,
     Warning as WarningIcon,
+    DataObject as TemplateDataIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
-import { GeneralOptions, CustomFieldsList, DangerZone } from "../components/settings";
+import { GeneralOptions, CustomFieldsList, DangerZone, TemplateData } from "../components/settings";
 
 export function SettingsPage() {
     const { t } = useTranslation();
@@ -92,6 +93,24 @@ export function SettingsPage() {
                                 value="dangerZone"
                                 aria-label="danger zone"
                             />
+                            <Tab
+                                label={
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1,
+                                        }}
+                                    >
+                                        <TemplateDataIcon color="secondary" />
+                                        <Typography variant="body1">
+                                            {t("settings.templateData.title")}
+                                        </Typography>
+                                    </Box>
+                                }
+                                value="templateData"
+                                aria-label="template data"
+                            />
                         </Tabs>
                     </Box>
 
@@ -99,6 +118,7 @@ export function SettingsPage() {
                         {currentTab === "general" && <GeneralOptions />}
                         {currentTab === "customFields" && <CustomFieldsList />}
                         {currentTab === "dangerZone" && <DangerZone />}
+                        {currentTab === "templateData" && <TemplateData />}
                     </Box>
                 </Paper>
             </Box>

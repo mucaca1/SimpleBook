@@ -215,6 +215,45 @@
                 "show": "Zobraziť celú mnemotechnickú frázu",
                 "hide": "Skryť mnemotechnickú frázu"
             }
+        },
+        "templateData": {
+            "title": "Vzorové dáta",
+            "description": "Vygenerujte vzorové dáta na testovanie aplikácie. Každé tlačidlo vytvorí sadu náhodných záznamov.",
+            "generating": "Generujem...",
+            "customers": {
+                "title": "Zákazníci",
+                "description": "Vygenerovať 1000 náhodných zákazníkov s menami, dátumami narodenia, pohlavím a ID zákazníka.",
+                "button": "Vygenerovať 1000 zákazníkov"
+            },
+            "employees": {
+                "title": "Zamestnanci",
+                "description": "Vygenerovať 50 náhodných zamestnancov s menami, telefónnymi číslami a e-mailovými adresami.",
+                "button": "Vygenerovať 50 zamestnancov"
+            },
+            "services": {
+                "title": "Nemocničné služby a ceny",
+                "description": "Vygenerovať 10 nemocničných služieb s pridelenými cenami (konzultácie, vyšetrenia, skeny, terapia, operácie).",
+                "button": "Vygenerovať 10 služieb"
+            },
+            "credits": {
+                "title": "Pridať kredit zákazníkom",
+                "description": "Pridať kredit všetkým zákazníkom, ktorých meno začína písmenom \"A\".",
+                "amountLabel": "Suma kreditu",
+                "button": "Pridať kredit zákazníkom s menom na \"A\""
+            },
+            "toast": {
+                "customersCreated": "{{count}} zákazníkov bolo úspešne vytvorených",
+                "customersError": "Nepodarilo sa vygenerovať zákazníkov",
+                "employeesCreated": "{{count}} zamestnancov bolo úspešne vytvorených",
+                "employeesError": "Nepodarilo sa vygenerovať zamestnancov",
+                "servicesCreated": "{{count}} služieb s cenami bolo úspešne vytvorených",
+                "servicesError": "Nepodarilo sa vygenerovať služby",
+                "creditsCreated": "Kredit {{amount}} bol pridaný {{count}} zákazníkom",
+                "creditsError": "Nepodarilo sa pridať kredity",
+                "creditsNoCustomers": "Nenašli sa žiadni zákazníci. Najprv vygenerujte zákazníkov.",
+                "creditsNoMatch": "Nenašli sa žiadni zákazníci s menom začínajúcim na \"A\".",
+                "creditsInvalidAmount": "Zadajte platnú sumu kreditu"
+            }
         }
     },
     "customer": {
