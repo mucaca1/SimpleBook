@@ -449,5 +449,47 @@
             "createError": "Failed to create event",
             "deleteError": "Failed to delete event"
         }
+    },
+    "creditLedger": {
+        "title": "Credit Ledger",
+        "description": "View and manage credit transactions for {customerName}",
+        "balance": "Current Balance",
+        "noTransactions": "No credit transactions yet",
+        "addCredit": "Add Credit",
+        "backToCustomers": "Back to Customers",
+        "form": {
+            "date": "Date",
+            "amount": "Amount",
+            "employee": "Handled by",
+            "note": "Note",
+            "notePlaceholder": "Optional note about this transaction",
+            "noEmployees": "No employees available",
+            "addCredit": "Add Credit"
+        },
+        "table": {
+            "date": "Date",
+            "amount": "Amount",
+            "employee": "Employee",
+            "note": "Note",
+            "actions": "Actions",
+            "empty": "No transactions found",
+            "loading": "Loading transactions..."
+        },
+        "toast": {
+            "created": "Credit added successfully",
+            "deleted": "Credit transaction deleted successfully",
+            "createError": "Failed to add credit",
+            "deleteError": "Failed to delete credit transaction"
+        },
+        "deleteConfirm": {
+            "title": "Delete Credit Transaction",
+            "message": "Are you sure you want to delete this credit transaction of {amount}?",
+            "confirm": "Delete",
+            "cancel": "Cancel"
+        },
+        "actions": {
+            "viewLedger": "Credit Ledger",
+            "delete": "Delete"
+        }
     }
 }

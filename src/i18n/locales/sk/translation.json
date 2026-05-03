@@ -449,5 +449,47 @@
             "createError": "Nepodarilo sa vytvoriť udalosť",
             "deleteError": "Nepodarilo sa odstrániť udalosť"
         }
+    },
+    "creditLedger": {
+        "title": "Kreditná kniha",
+        "description": "Zobraziť a spravovať kreditné transakcie pre {customerName}",
+        "balance": "Aktuálny zostatok",
+        "noTransactions": "Zatiaľ žiadne kreditné transakcie",
+        "addCredit": "Pridať kredit",
+        "backToCustomers": "Späť na zákazníkov",
+        "form": {
+            "date": "Dátum",
+            "amount": "Suma",
+            "employee": "Spracoval",
+            "note": "Poznámka",
+            "notePlaceholder": "Voliteľná poznámka k tejto transakcii",
+            "noEmployees": "Žiadni zamestnanci nie sú k dispozícii",
+            "addCredit": "Pridať kredit"
+        },
+        "table": {
+            "date": "Dátum",
+            "amount": "Suma",
+            "employee": "Zamestnanec",
+            "note": "Poznámka",
+            "actions": "Akcie",
+            "empty": "Nenašli sa žiadne transakcie",
+            "loading": "Načítavam transakcie..."
+        },
+        "toast": {
+            "created": "Kredit bol úspešne pridaný",
+            "deleted": "Kreditná transakcia bola úspešne odstránená",
+            "createError": "Nepodarilo sa pridať kredit",
+            "deleteError": "Nepodarilo sa odstrániť kreditnú transakciu"
+        },
+        "deleteConfirm": {
+            "title": "Odstrániť kreditnú transakciu",
+            "message": "Naozaj chcete odstrániť túto kreditnú transakciu vo výške {amount}?",
+            "confirm": "Odstrániť",
+            "cancel": "Zrušiť"
+        },
+        "actions": {
+            "viewLedger": "Kreditná kniha",
+            "delete": "Odstrániť"
+        }
     }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
-import { IconButton } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
+import { Edit as EditIcon, Delete as DeleteIcon, AccountBalanceWallet as WalletIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { Customer } from '../../types/customer';
 
@@ -8,24 +8,27 @@ interface CustomerActionsProps {
     customer: Customer;
     onEdit: (customer: Customer) => void;
     onDelete: (customer: Customer) => void;
+    onLedger: (customer: Customer) => void;
 }
 
-export function CustomerActions({ customer, onEdit, onDelete }: CustomerActionsProps) {
+export function CustomerActions({ customer, onEdit, onDelete, onLedger }: CustomerActionsProps) {
     const { t } = useTranslation();
-
-    const handleEdit = () => {
-        onEdit(customer);
-    };
-
-    const handleDelete = () => {
-        onDelete(customer);
-    };
 
     return (
         <>
+            <Tooltip title={t('creditLedger.actions.viewLedger')}>
+                <IconButton
+                    aria-label={t('creditLedger.actions.viewLedger')}
+                    onClick={() => onLedger(customer)}
+                    size="small"
+                    color="success"
+                >
+                    <WalletIcon fontSize="small" />
+                </IconButton>
+            </Tooltip>
             <IconButton
                 aria-label={t('customer.actions.edit')}
-                onClick={handleEdit}
+                onClick={() => onEdit(customer)}
                 size="small"
                 color="primary"
             >
@@ -33,7 +36,7 @@ export function CustomerActions({ customer, onEdit, onDelete }: CustomerActionsP
             </IconButton>
             <IconButton
                 aria-label={t('customer.actions.delete')}
-                onClick={handleDelete}
+                onClick={() => onDelete(customer)}
                 size="small"
                 color="error"
             >

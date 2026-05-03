@@ -106,6 +106,18 @@ const Price = {
     expirationAction: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
+const CreditTransactionId = Evolu.id("CreditTransactionId");
+export type CreditTransactionId = typeof CreditTransactionId.Type;
+
+const CreditTransaction = {
+    id: CreditTransactionId,
+    customerId: CustomerId,
+    employeeId: Evolu.nullOr(EmployeeId),
+    amount: Evolu.PositiveNumber,
+    date: Evolu.NonEmptyString100,
+    note: Evolu.nullOr(Evolu.NonEmptyString1000),
+}
+
 export const Schema = {
     settings: Settings,
     customers: Customer,
@@ -115,4 +127,5 @@ export const Schema = {
     calendarEvents: CalendarEvent,
     services: Service,
     prices: Price,
+    creditTransactions: CreditTransaction,
 };
