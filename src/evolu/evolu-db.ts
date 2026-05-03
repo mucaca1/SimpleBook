@@ -9,6 +9,7 @@ const Settings = {
     theme: Evolu.NonEmptyString100,
     calendarTimeFormat: Evolu.NonEmptyString100,
     calendarShowWeekends: Evolu.SqliteBoolean,
+    currency: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
 const CustomerId = Evolu.id("CustomerId");
@@ -90,6 +91,21 @@ const Service = {
     color: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
+const PriceId = Evolu.id("PriceId");
+export type PriceId = typeof PriceId.Type;
+
+const Price = {
+    id: PriceId,
+    serviceId: ServiceId,
+    price: Evolu.PositiveNumber,
+    unitType: Evolu.NonEmptyString100,
+    actualInTime: Evolu.SqliteBoolean,
+    validFrom: Evolu.nullOr(Evolu.DateIso),
+    validTo: Evolu.nullOr(Evolu.DateIso),
+    preOrderAllowed: Evolu.SqliteBoolean,
+    expirationAction: Evolu.nullOr(Evolu.NonEmptyString100),
+}
+
 export const Schema = {
     settings: Settings,
     customers: Customer,
@@ -98,4 +114,5 @@ export const Schema = {
     customFieldValues: CustomFieldValue,
     calendarEvents: CalendarEvent,
     services: Service,
+    prices: Price,
 };

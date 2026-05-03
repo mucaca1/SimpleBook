@@ -27,6 +27,7 @@ interface UseSettingsSyncReturn {
     isInitialized: boolean;
     language: Language | null;
     theme: ThemeMode | null;
+    currency: string | null;
     id: SettingsId | null;
 }
 
@@ -67,6 +68,7 @@ export function useSettingsSync(): UseSettingsSyncReturn {
         isInitialized: settingsRow !== null,
         language: settingsRow?.language as Language | null,
         theme: settingsRow?.theme as ThemeMode | null,
+        currency: settingsRow?.currency as string | null,
         id: settingsRow?.id as SettingsId | null,
     };
 }
@@ -151,7 +153,6 @@ export async function updateLanguage(id: SettingsId | null, language: string): P
 export async function updateTheme(id: SettingsId | null, theme: string): Promise<void> {
     try {
         if (id) {
-            // Update existing settings
             const updateResult = await evolu.update("settings", {
                 id: id,
                 theme,
@@ -163,6 +164,24 @@ export async function updateTheme(id: SettingsId | null, theme: string): Promise
         }
     } catch (error) {
         console.error("Failed to update theme:", error);
+        throw error;
+    }
+}
+
+export async function updateCurrency(id: SettingsId | null, currency: string): Promise<void> {
+    try {
+        if (id) {
+            const updateResult = await evolu.update("settings", {
+                id: id,
+                currency,
+            });
+
+            if (!updateResult.ok) {
+                throw new Error(updateResult.error.message);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to update currency:", error);
         throw error;
     }
 }

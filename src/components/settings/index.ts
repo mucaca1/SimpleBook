@@ -1,5 +1,6 @@
 export { GeneralOptions } from "./GeneralOptions";
 export { ThemeSelector } from "./ThemeSelector";
+export { CurrencySelector } from "./CurrencySelector";
 export { CustomFieldsList } from "./CustomFieldsList";
 export { CustomFieldFormModal } from "./CustomFieldFormModal";
 export { CustomFieldForm } from "./CustomFieldForm";

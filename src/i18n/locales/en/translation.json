@@ -89,6 +89,7 @@
             "appearance": "Appearance",
             "language": "Language",
             "theme": "Theme",
+            "currency": "Currency",
             "languageChanged": "Language changed successfully",
             "themeChanged": "Theme changed successfully"
         },
@@ -396,7 +397,49 @@
     },
     "prices": {
         "title": "Prices",
-        "description": "Manage your service prices"
+        "description": "Manage your service prices",
+        "add": "Add Price",
+        "empty": "No prices found. Add your first price!",
+        "noServices": "Please create a service first before adding prices.",
+        "unknownService": "Unknown Service",
+        "filterByService": "Filter by service",
+        "infinity": "∞",
+        "preorder": "Pre-order",
+        "form": {
+            "service": "Service",
+            "price": "Price",
+            "unitType": "Unit Type",
+            "actualInTime": "Actual in time",
+            "validFrom": "Valid From",
+            "validTo": "Valid To",
+            "dateHint": "Leave empty for infinity (no limit to past or future).",
+            "preOrderAllowed": "Allow pre-order",
+            "expirationAction": "After price expiration",
+            "addPrice": "Add Price",
+            "updatePrice": "Update Price"
+        },
+        "unitTypes": {
+            "15m": "15 min",
+            "30m": "30 min",
+            "45m": "45 min",
+            "1h": "1 hour",
+            "8h": "8 hours",
+            "session": "1 session",
+            "other": "Other"
+        },
+        "expirationActions": {
+            "keepPreorders": "Keep preorders",
+            "cancelPreorders": "Cancel preorders",
+            "payDifference": "Need pay difference"
+        },
+        "toast": {
+            "created": "Price created successfully",
+            "updated": "Price updated successfully",
+            "deleted": "Price deleted successfully",
+            "createError": "Failed to create price",
+            "updateError": "Failed to update price",
+            "deleteError": "Failed to delete price"
+        }
     },
     "scheduler": {
         "toast": {

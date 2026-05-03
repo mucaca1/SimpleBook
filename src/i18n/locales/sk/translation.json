@@ -89,6 +89,7 @@
             "appearance": "Vzhľad",
             "language": "Jazyk",
             "theme": "Téma",
+            "currency": "Mena",
             "languageChanged": "Jazyk bol úspešne zmenený",
             "themeChanged": "Téma bola úspešne zmenená"
         },
@@ -396,7 +397,49 @@
     },
     "prices": {
         "title": "Cenník",
-        "description": "Spravujte ceny vašich služieb"
+        "description": "Spravujte ceny vašich služieb",
+        "add": "Pridať cenu",
+        "empty": "Nenašli sa žiadne ceny. Pridajte svoju prvú cenu!",
+        "noServices": "Najprv vytvorte službu pred pridaním cien.",
+        "unknownService": "Neznáma služba",
+        "filterByService": "Filtrovať podľa služby",
+        "infinity": "∞",
+        "preorder": "Predobjednávka",
+        "form": {
+            "service": "Služba",
+            "price": "Cena",
+            "unitType": "Typ jednotky",
+            "actualInTime": "Platná v čase",
+            "validFrom": "Platná od",
+            "validTo": "Platná do",
+            "dateHint": "Nechajte prázdne pre nekonečno (bez obmedzenia do minulosti alebo budúcnosti).",
+            "preOrderAllowed": "Povoliť predobjednávku",
+            "expirationAction": "Po vypršaní platnosti ceny",
+            "addPrice": "Pridať cenu",
+            "updatePrice": "Aktualizovať cenu"
+        },
+        "unitTypes": {
+            "15m": "15 min",
+            "30m": "30 min",
+            "45m": "45 min",
+            "1h": "1 hodina",
+            "8h": "8 hodín",
+            "session": "1 sedenie",
+            "other": "Iné"
+        },
+        "expirationActions": {
+            "keepPreorders": "Ponechať predobjednávky",
+            "cancelPreorders": "Zrušiť predobjednávky",
+            "payDifference": "Doplatiť rozdiel"
+        },
+        "toast": {
+            "created": "Cena bola úspešne vytvorená",
+            "updated": "Cena bola úspešne aktualizovaná",
+            "deleted": "Cena bola úspešne odstránená",
+            "createError": "Nepodarilo sa vytvoriť cenu",
+            "updateError": "Nepodarilo sa aktualizovať cenu",
+            "deleteError": "Nepodarilo sa odstrániť cenu"
+        }
     },
     "scheduler": {
         "toast": {
