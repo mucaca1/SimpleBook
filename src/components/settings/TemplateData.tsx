@@ -16,14 +16,15 @@ import {
     Badge as BadgeIcon,
     MedicalServices as MedicalServicesIcon,
     AccountBalanceWallet as CreditIcon,
+    ShoppingCart as PreOrderIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@evolu/react";
 import { toast } from "react-toastify";
 import { evolu } from "../../evolu-init";
-import { customers } from "../../evolu/evolu-query";
+import { customers, preOrderPrices, services } from "../../evolu/evolu-query";
 import * as Evolu from "@evolu/common";
-import { ServiceId, CustomerId } from "../../evolu/evolu-db";
+import { ServiceId, CustomerId, PriceId } from "../../evolu/evolu-db";
 
 const FIRST_NAMES_MALE = [
     "James", "John", "Robert", "Michael", "William", "David", "Richard",
@@ -100,7 +101,7 @@ function randomEmail(first: string, last: string): string {
     return `${first.toLowerCase()}.${last.toLowerCase()}@${pick(domains)}`;
 }
 
-type SeedOperation = "customers" | "employees" | "services" | "credits";
+type SeedOperation = "customers" | "employees" | "services" | "credits" | "preOrders";
 
 export function TemplateData() {
     const { t } = useTranslation();
@@ -109,16 +110,20 @@ export function TemplateData() {
         employees: 0,
         services: 0,
         credits: 0,
+        preOrders: 0,
     });
     const [isSeeding, setIsSeeding] = useState<Record<SeedOperation, boolean>>({
         customers: false,
         employees: false,
         services: false,
         credits: false,
+        preOrders: false,
     });
 
     const [creditAmount, setCreditAmount] = useState("100");
     const allCustomers = useQuery(customers);
+    const allServices = useQuery(services);
+    const allPreOrderPrices = useQuery(preOrderPrices);
 
     const isAnySeeding = Object.values(isSeeding).some(Boolean);
 
@@ -312,6 +317,74 @@ export function TemplateData() {
             toast.error(t("settings.templateData.toast.creditsError"));
         } finally {
             setIsSeeding((prev) => ({ ...prev, credits: false }));
+        }
+    };
+
+    const handleSeedPreOrders = async () => {
+        if (!allCustomers || allCustomers.length === 0) {
+            toast.error(t("settings.templateData.toast.preOrdersNoCustomers", "No customers found. Generate customers first."));
+            return;
+        }
+
+        const matched = allCustomers.filter((c) => {
+            const first = (c.firstName || "").toUpperCase();
+            const last = (c.lastName || "").toUpperCase();
+            return first.includes("C") || last.includes("C");
+        });
+
+        if (matched.length === 0) {
+            toast.warning(t("settings.templateData.toast.preOrdersNoMatch"));
+            return;
+        }
+
+        if (!allPreOrderPrices || allPreOrderPrices.length === 0) {
+            toast.error(t("settings.templateData.toast.preOrdersNoPrices"));
+            return;
+        }
+
+        setIsSeeding((prev) => ({ ...prev, preOrders: true }));
+        setProgress((prev) => ({ ...prev, preOrders: 0 }));
+        let created = 0;
+        const today = new Date().toISOString();
+
+        try {
+            for (const customer of matched) {
+                const numOrders = randomInt(1, 3);
+                for (let i = 0; i < numOrders; i++) {
+                    const price = pick(allPreOrderPrices);
+                    const quantity = randomInt(1, 2);
+                    const amount = parseFloat(String(price.price)) * quantity;
+
+                    const result = await evolu.insert("creditTransactions", {
+                        customerId: customer.id as CustomerId,
+                        employeeId: null,
+                        amount,
+                        date: today,
+                        note: "Template pre-order",
+                        priceId: price.id as PriceId,
+                        serviceId: price.serviceId as ServiceId,
+                        quantity,
+                    });
+
+                    if (!result.ok) {
+                        console.error(`Failed to add pre-order for customer ${customer.firstName}:`, result.error);
+                    }
+
+                    created++;
+                }
+
+                if (created % 10 === 0 || created === matched.length * 3) {
+                    setProgress((prev) => ({ ...prev, preOrders: Math.round((created / (matched.length * 3)) * 100) }));
+                    await new Promise((r) => setTimeout(r, 0));
+                }
+            }
+
+            toast.success(t("settings.templateData.toast.preOrdersCreated", { count: created, customerCount: matched.length }));
+        } catch (error) {
+            console.error("Failed to seed pre-orders:", error);
+            toast.error(t("settings.templateData.toast.preOrdersError"));
+        } finally {
+            setIsSeeding((prev) => ({ ...prev, preOrders: false }));
         }
     };
 
@@ -519,6 +592,47 @@ export function TemplateData() {
                             {isSeeding.credits
                                 ? t("settings.templateData.generating")
                                 : t("settings.templateData.credits.button")}
+                        </Button>
+                    </Stack>
+                </CardContent>
+            </Card>
+
+            {/* Add Pre-orders for customers containing "C" */}
+            <Card>
+                <CardContent>
+                    <Stack spacing={2}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <PreOrderIcon color="primary" />
+                            <Typography variant="h6">
+                                {t("settings.templateData.preOrders.title")}
+                            </Typography>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                            {t("settings.templateData.preOrders.description")}
+                        </Typography>
+                        {isSeeding.preOrders && (
+                            <Box>
+                                <LinearProgress
+                                    variant="determinate"
+                                    value={progress.preOrders}
+                                    sx={{ mb: 1 }}
+                                />
+                                <Typography variant="caption" color="text.secondary">
+                                    {progress.preOrders}%
+                                </Typography>
+                            </Box>
+                        )}
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            startIcon={<PreOrderIcon />}
+                            onClick={handleSeedPreOrders}
+                            disabled={isAnySeeding}
+                            sx={{ alignSelf: "flex-start" }}
+                        >
+                            {isSeeding.preOrders
+                                ? t("settings.templateData.generating")
+                                : t("settings.templateData.preOrders.button")}
                         </Button>
                     </Stack>
                 </CardContent>

@@ -144,14 +144,17 @@ export function CreditLedgerView({
                 if (!row.serviceId) return '—';
                 const service = serviceMap.get(row.serviceId as string);
                 const price = priceMap.get(row.priceId as string);
-                const quantity = row.quantity || 1;
-                const serviceName = service?.name || '—';
+                const quantity = Number(row.quantity) || 1;
+                const serviceName = String(service?.name || '—');
+                const priceValue = price?.price != null ? String(price.price) : '—';
                 return (
-                    <Box sx={{ py: 0.5 }}>
-                        <Typography variant="body2">{serviceName}</Typography>
-                        <Typography variant="caption" color="text.secondary">
-                            {quantity}x {currencySymbol}{price?.price || '—'}
-                        </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', lineHeight: 1.2 }}>
+                        <Box>
+                            <Typography variant="body2">{serviceName}</Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                {quantity}x {currencySymbol}{priceValue}
+                            </Typography>
+                        </Box>
                     </Box>
                 );
             },

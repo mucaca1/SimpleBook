@@ -241,6 +241,11 @@
                 "amountLabel": "Credit Amount",
                 "button": "Add Credit to \"A\" Customers"
             },
+            "preOrders": {
+                "title": "Add Pre-orders to Customers",
+                "description": "Add random pre-order services to customers whose first or last name contains the letter \"C\". Each customer gets 1–3 random pre-orderable services.",
+                "button": "Add Pre-orders to \"C\" Customers"
+            },
             "toast": {
                 "customersCreated": "{{count}} customers created successfully",
                 "customersError": "Failed to generate customers",
@@ -252,7 +257,11 @@
                 "creditsError": "Failed to add credits",
                 "creditsNoCustomers": "No customers found. Generate customers first.",
                 "creditsNoMatch": "No customers with first name starting with \"A\" found.",
-                "creditsInvalidAmount": "Please enter a valid credit amount"
+                "creditsInvalidAmount": "Please enter a valid credit amount",
+                "preOrdersCreated": "{{count}} pre-orders added to {{customerCount}} customers",
+                "preOrdersError": "Failed to add pre-orders",
+                "preOrdersNoMatch": "No customers with letter \"C\" in name found.",
+                "preOrdersNoPrices": "No pre-order prices found. Generate services first."
             }
         }
     },

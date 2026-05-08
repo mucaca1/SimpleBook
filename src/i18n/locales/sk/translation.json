@@ -241,6 +241,11 @@
                 "amountLabel": "Suma kreditu",
                 "button": "Pridať kredit zákazníkom s menom na \"A\""
             },
+            "preOrders": {
+                "title": "Pridať predobjednávky zákazníkom",
+                "description": "Pridať náhodné predobjednávky služieb zákazníkom, ktorých meno alebo priezvisko obsahuje písmeno \"C\". Každý zákazník dostane 1–3 náhodné predobjednávateľné služby.",
+                "button": "Pridať predobjednávky zákazníkom s písmenom \"C\""
+            },
             "toast": {
                 "customersCreated": "{{count}} zákazníkov bolo úspešne vytvorených",
                 "customersError": "Nepodarilo sa vygenerovať zákazníkov",
@@ -252,7 +257,11 @@
                 "creditsError": "Nepodarilo sa pridať kredity",
                 "creditsNoCustomers": "Nenašli sa žiadni zákazníci. Najprv vygenerujte zákazníkov.",
                 "creditsNoMatch": "Nenašli sa žiadni zákazníci s menom začínajúcim na \"A\".",
-                "creditsInvalidAmount": "Zadajte platnú sumu kreditu"
+                "creditsInvalidAmount": "Zadajte platnú sumu kreditu",
+                "preOrdersCreated": "{{count}} predobjednávok pridaných {{customerCount}} zákazníkom",
+                "preOrdersError": "Nepodarilo sa pridať predobjednávky",
+                "preOrdersNoMatch": "Nenašli sa žiadni zákazníci s písmenom \"C\" v mene.",
+                "preOrdersNoPrices": "Nenašli sa žiadne predobjednávateľné ceny. Najprv vygenerujte služby."
             }
         }
     },
