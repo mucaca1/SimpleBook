@@ -495,19 +495,31 @@
         "balance": "Current Balance",
         "noTransactions": "No credit transactions yet",
         "addCredit": "Add Credit",
+        "addPreOrder": "Add Pre-order",
         "backToCustomers": "Back to Customers",
         "form": {
             "date": "Date",
             "amount": "Amount",
+            "amountAuto": "Amount (auto-calculated)",
             "employee": "Handled by",
             "note": "Note",
             "notePlaceholder": "Optional note about this transaction",
             "noEmployees": "No employees available",
-            "addCredit": "Add Credit"
+            "addCredit": "Add Credit",
+            "addPreOrder": "Add Pre-order",
+            "service": "Service",
+            "price": "Price",
+            "quantity": "Quantity",
+            "unitPrice": "Unit price",
+            "noPreOrderPrices": "No pre-order prices available",
+            "selectService": "Select a service",
+            "selectPrice": "Select a price"
         },
         "table": {
             "date": "Date",
             "amount": "Amount",
+            "preOrderInfo": "Pre-order",
+            "quantity": "Qty",
             "employee": "Employee",
             "note": "Note",
             "actions": "Actions",
@@ -516,6 +528,7 @@
         },
         "toast": {
             "created": "Credit added successfully",
+            "preOrderCreated": "Pre-order added successfully",
             "deleted": "Credit transaction deleted successfully",
             "createError": "Failed to add credit",
             "deleteError": "Failed to delete credit transaction"

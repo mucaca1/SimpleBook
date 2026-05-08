@@ -495,19 +495,31 @@
         "balance": "Aktuálny zostatok",
         "noTransactions": "Zatiaľ žiadne kreditné transakcie",
         "addCredit": "Pridať kredit",
+        "addPreOrder": "Pridať predobjednávku",
         "backToCustomers": "Späť na zákazníkov",
         "form": {
             "date": "Dátum",
             "amount": "Suma",
+            "amountAuto": "Suma (automaticky vypočítaná)",
             "employee": "Spracoval",
             "note": "Poznámka",
             "notePlaceholder": "Voliteľná poznámka k tejto transakcii",
             "noEmployees": "Žiadni zamestnanci nie sú k dispozícii",
-            "addCredit": "Pridať kredit"
+            "addCredit": "Pridať kredit",
+            "addPreOrder": "Pridať predobjednávku",
+            "service": "Služba",
+            "price": "Cena",
+            "quantity": "Množstvo",
+            "unitPrice": "Jednotková cena",
+            "noPreOrderPrices": "Žiadne predobjednávky nie sú k dispozícii",
+            "selectService": "Vyberte službu",
+            "selectPrice": "Vyberte cenu"
         },
         "table": {
             "date": "Dátum",
             "amount": "Suma",
+            "preOrderInfo": "Predobjednávka",
+            "quantity": "Ks",
             "employee": "Zamestnanec",
             "note": "Poznámka",
             "actions": "Akcie",
@@ -516,6 +528,7 @@
         },
         "toast": {
             "created": "Kredit bol úspešne pridaný",
+            "preOrderCreated": "Predobjednávka bola úspešne pridaná",
             "deleted": "Kreditná transakcia bola úspešne odstránená",
             "createError": "Nepodarilo sa pridať kredit",
             "deleteError": "Nepodarilo sa odstrániť kreditnú transakciu"

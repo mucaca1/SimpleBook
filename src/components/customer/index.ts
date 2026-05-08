@@ -2,6 +2,7 @@ export { CustomerTable } from './CustomerTable';
 export { CustomerActions } from './CustomerActions';
 export { CustomerForm } from './CustomerForm';
 export { AddCreditForm } from './AddCreditForm';
+export { AddPreOrderForm } from './AddPreOrderForm';
 export { CreditLedgerView } from './CreditLedgerView';
 // Re-export CustomFieldsEditor from settings for convenience
 export { CustomFieldsEditor } from '../settings/CustomFieldsEditor';

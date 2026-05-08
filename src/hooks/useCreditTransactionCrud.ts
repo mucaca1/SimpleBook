@@ -27,6 +27,9 @@ export function useCreditTransactionCrud(): UseCreditTransactionCrudReturn {
                 amount: parseFloat(data.amount),
                 date: data.date,
                 note: data.note || null,
+                priceId: data.priceId || null,
+                serviceId: data.serviceId || null,
+                quantity: data.quantity || null,
             });
 
             if (result.ok) {

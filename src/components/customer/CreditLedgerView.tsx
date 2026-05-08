@@ -9,17 +9,17 @@ import {
     Tooltip,
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { ArrowBack as BackIcon, Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { ArrowBack as BackIcon, Add as AddIcon, Delete as DeleteIcon, ShoppingCart as ShoppingCartIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@evolu/react';
 import dayjs from 'dayjs';
 import { Customer } from '../../types/customer';
 import { CreditTransactionFormData } from '../../types/creditTransaction';
 import { CustomerId, CreditTransactionId } from '../../evolu/evolu-db';
-import { getCreditTransactionsForCustomer } from '../../evolu/evolu-query';
-import type { TCreditTransactionRow, TEmployeeRow } from '../../evolu/evolu-query';
-import { employees } from '../../evolu/evolu-query';
+import { getCreditTransactionsForCustomer, employees, services, preOrderPrices } from '../../evolu/evolu-query';
+import type { TCreditTransactionRow, TEmployeeRow, TServiceRow, TPreOrderPriceRow } from '../../evolu/evolu-query';
 import { AddCreditForm } from './AddCreditForm';
+import { AddPreOrderForm } from './AddPreOrderForm';
 import { DeleteConfirmDialog } from '../ui/DeleteConfirmDialog';
 import { getCurrencySymbol } from '../../types/price';
 
@@ -39,19 +39,33 @@ export function CreditLedgerView({
     onDeleteTransaction,
 }: CreditLedgerViewProps) {
     const { t } = useTranslation();
-    const [showForm, setShowForm] = useState(false);
+    const [formMode, setFormMode] = useState<'none' | 'credit' | 'preorder'>('none');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [transactionToDelete, setTransactionToDelete] = useState<TCreditTransactionRow | null>(null);
 
     const transactions = useQuery(getCreditTransactionsForCustomer(customer.id)) as TCreditTransactionRow[];
     const allEmployees = useQuery(employees) as TEmployeeRow[];
+    const allServices = useQuery(services) as TServiceRow[];
+    const allPreOrderPrices = useQuery(preOrderPrices) as TPreOrderPriceRow[];
 
     const employeeMap = useMemo(() => {
         const map = new Map<string, TEmployeeRow>();
         allEmployees.forEach((emp) => map.set(emp.id, emp));
         return map;
     }, [allEmployees]);
+
+    const serviceMap = useMemo(() => {
+        const map = new Map<string, TServiceRow>();
+        allServices.forEach((s) => map.set(s.id, s));
+        return map;
+    }, [allServices]);
+
+    const priceMap = useMemo(() => {
+        const map = new Map<string, TPreOrderPriceRow>();
+        allPreOrderPrices.forEach((p) => map.set(p.id, p));
+        return map;
+    }, [allPreOrderPrices]);
 
     const balance = useMemo(() => {
         if (!transactions) return 0;
@@ -64,7 +78,19 @@ export function CreditLedgerView({
         setIsSubmitting(true);
         try {
             await onAddCredit(data);
-            setShowForm(false);
+            setFormMode('none');
+        } catch {
+            // Error handled in hook
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleAddPreOrder = async (data: CreditTransactionFormData) => {
+        setIsSubmitting(true);
+        try {
+            await onAddCredit(data);
+            setFormMode('none');
         } catch {
             // Error handled in hook
         } finally {
@@ -108,6 +134,29 @@ export function CreditLedgerView({
                 if (params == null) return '';
                 return `${currencySymbol} ${Number(params).toFixed(2)}`;
             },
+        },
+        {
+            field: 'preOrderInfo',
+            headerName: t('creditLedger.table.preOrderInfo'),
+            width: 220,
+            renderCell: (params) => {
+                const row = params.row as TCreditTransactionRow;
+                if (!row.serviceId) return '—';
+                const service = serviceMap.get(row.serviceId as string);
+                const price = priceMap.get(row.priceId as string);
+                const quantity = row.quantity || 1;
+                const serviceName = service?.name || '—';
+                return (
+                    <Box sx={{ py: 0.5 }}>
+                        <Typography variant="body2">{serviceName}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                            {quantity}x {currencySymbol}{price?.price || '—'}
+                        </Typography>
+                    </Box>
+                );
+            },
+            sortable: false,
+            filterable: false,
         },
         {
             field: 'employeeId',
@@ -174,16 +223,26 @@ export function CreditLedgerView({
             </Paper>
 
             <Box sx={{ mb: 3 }}>
-                {!showForm ? (
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<AddIcon />}
-                        onClick={() => setShowForm(true)}
-                    >
-                        {t('creditLedger.addCredit')}
-                    </Button>
-                ) : (
+                {formMode === 'none' ? (
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<AddIcon />}
+                            onClick={() => setFormMode('credit')}
+                        >
+                            {t('creditLedger.addCredit')}
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            startIcon={<ShoppingCartIcon />}
+                            onClick={() => setFormMode('preorder')}
+                        >
+                            {t('creditLedger.addPreOrder')}
+                        </Button>
+                    </Box>
+                ) : formMode === 'credit' ? (
                     <Paper sx={{ p: 3, mb: 2 }}>
                         <Typography variant="h6" gutterBottom>
                             {t('creditLedger.addCredit')}
@@ -193,7 +252,23 @@ export function CreditLedgerView({
                             employees={allEmployees}
                             currencySymbol={currencySymbol}
                             onSubmit={handleAddCredit}
-                            onCancel={() => setShowForm(false)}
+                            onCancel={() => setFormMode('none')}
+                            isSubmitting={isSubmitting}
+                        />
+                    </Paper>
+                ) : (
+                    <Paper sx={{ p: 3, mb: 2 }}>
+                        <Typography variant="h6" gutterBottom>
+                            {t('creditLedger.addPreOrder')}
+                        </Typography>
+                        <AddPreOrderForm
+                            customerId={customer.id}
+                            employees={allEmployees}
+                            currencySymbol={currencySymbol}
+                            services={allServices}
+                            preOrderPrices={allPreOrderPrices}
+                            onSubmit={handleAddPreOrder}
+                            onCancel={() => setFormMode('none')}
                             isSubmitting={isSubmitting}
                         />
                     </Paper>

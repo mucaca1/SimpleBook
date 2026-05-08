@@ -116,6 +116,9 @@ const CreditTransaction = {
     amount: Evolu.PositiveNumber,
     date: Evolu.NonEmptyString100,
     note: Evolu.nullOr(Evolu.NonEmptyString1000),
+    priceId: Evolu.nullOr(PriceId),
+    serviceId: Evolu.nullOr(ServiceId),
+    quantity: Evolu.nullOr(Evolu.PositiveNumber),
 }
 
 export const Schema = {
