@@ -411,6 +411,10 @@
         "description": "Spravujte svoje typy služieb",
         "add": "Pridať službu",
         "empty": "Nenašli sa žiadne služby. Pridajte svoju prvú službu!",
+        "prices": "Cenník",
+        "pricesTitle": "Cenník pre {name}",
+        "addPrice": "Pridať cenu",
+        "noPrices": "Žiadne ceny pre túto službu",
         "form": {
             "name": "Názov služby",
             "description": "Popis",

@@ -411,6 +411,10 @@
         "description": "Manage your service types",
         "add": "Add Service",
         "empty": "No services found. Add your first service!",
+        "prices": "Prices",
+        "pricesTitle": "Prices for {name}",
+        "addPrice": "Add Price",
+        "noPrices": "No prices for this service",
         "form": {
             "name": "Service Name",
             "description": "Description",
