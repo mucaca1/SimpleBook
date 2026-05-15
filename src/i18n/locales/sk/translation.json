@@ -512,6 +512,8 @@
         "toggleEmployees": "Zamestnanci",
         "toggleCustomers": "Zákazníci",
         "unnamedEmployee": "Bez mena",
+        "unnamedCustomer": "Bez mena",
+        "noCustomers": "Žiadni zákazníci. Najprv pridajte zákazníkov.",
         "employeeAssignError": "Nepodarilo sa priradiť zamestnancov",
         "toolbar": {
             "menu": "Prepnúť kalendár",
@@ -542,6 +544,8 @@
             "searchEmployees": "Hľadať zamestnancov...",
             "room": "Miestnosť",
             "selectRoom": "Vyberte miestnosť",
+            "customers": "Zákazníci",
+            "searchCustomers": "Hľadať zákazníkov...",
             "customFields": "Vlastné polia",
             "save": "Uložiť",
             "cancel": "Zrušiť",

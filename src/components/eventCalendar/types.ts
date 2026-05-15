@@ -13,6 +13,7 @@ export interface CalendarEventFormData {
     resource: string | null;
     roomId?: string | null;
     employeeIds: string[];
+    customerIds: string[];
     customFieldValues: Record<string, string | boolean | null>;
 }
 

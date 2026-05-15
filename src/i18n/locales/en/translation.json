@@ -512,6 +512,8 @@
         "toggleEmployees": "Employees",
         "toggleCustomers": "Customers",
         "unnamedEmployee": "Unnamed",
+        "unnamedCustomer": "Unnamed",
+        "noCustomers": "No customers found. Add customers first.",
         "employeeAssignError": "Failed to assign employees",
         "toolbar": {
             "menu": "Toggle calendar",
@@ -542,6 +544,8 @@
             "searchEmployees": "Search employees...",
             "room": "Room",
             "selectRoom": "Select room",
+            "customers": "Customers",
+            "searchCustomers": "Search customers...",
             "customFields": "Custom Fields",
             "save": "Save",
             "cancel": "Cancel",
