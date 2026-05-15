@@ -94,15 +94,17 @@ export function CalendarWeekView({
         [days, locale]
     );
 
+    // Shared sx for hiding scrollbar while reserving its space, keeping columns aligned
+    const scrollbarGutterSx = {
+        overflowY: 'scroll' as const,
+        scrollbarColor: 'transparent transparent',
+        '&::-webkit-scrollbar': { background: 'transparent' },
+    };
+
     return (
-        <Box ref={gridRef} sx={{ flex: 1, overflow: 'auto', height: '100%' }}>
-            {/* Sticky header + all-day section — shares scroll container width so columns align */}
-            <Box sx={{
-                position: 'sticky',
-                top: 0,
-                zIndex: 10,
-                bgcolor: 'background.paper',
-            }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            {/* Fixed header section — hidden scrollbar reserves space to match grid below */}
+            <Box sx={{ flexShrink: 0, ...scrollbarGutterSx }}>
                 {/* Day column headers */}
                 <Box sx={{
                     display: 'flex',
@@ -186,145 +188,147 @@ export function CalendarWeekView({
                 </Box>
             </Box>
 
-            {/* Time grid — same scroll container, so columns stay aligned */}
-            <Box sx={{ display: 'flex', position: 'relative', height: 24 * HOUR_HEIGHT }}>
-                {/* Time gutter */}
-                <Box sx={{
-                    width: GUTTER_WIDTH, flexShrink: 0, position: 'relative',
-                    bgcolor: 'background.default',
-                    borderRight: `1px solid ${BORDER_COLOR}`,
-                }}>
-                    {HOURS.map((hour) => (
-                        <Box key={hour} sx={{
-                            position: 'absolute',
-                            top: hour * HOUR_HEIGHT,
-                            right: 12,
-                            transform: 'translateY(-50%)',
-                        }}>
-                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem', lineHeight: 1 }}>
-                                {formatHour(hour, ampm)}
-                            </Typography>
-                        </Box>
-                    ))}
-                </Box>
+            {/* Scrollable time grid — scrollbar only here */}
+            <Box ref={gridRef} sx={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
+                <Box sx={{ display: 'flex', position: 'relative', height: 24 * HOUR_HEIGHT }}>
+                    {/* Time gutter */}
+                    <Box sx={{
+                        width: GUTTER_WIDTH, flexShrink: 0, position: 'relative',
+                        bgcolor: 'background.default',
+                        borderRight: `1px solid ${BORDER_COLOR}`,
+                    }}>
+                        {HOURS.map((hour) => (
+                            <Box key={hour} sx={{
+                                position: 'absolute',
+                                top: hour * HOUR_HEIGHT,
+                                right: 12,
+                                transform: 'translateY(-50%)',
+                            }}>
+                                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem', lineHeight: 1 }}>
+                                    {formatHour(hour, ampm)}
+                                </Typography>
+                            </Box>
+                        ))}
+                    </Box>
 
-                {/* Day columns */}
-                {days.map((day) => {
-                    const dayEvents = getTimedEventsForDay(enrichedEvents, day);
-                    const layouted = layoutEvents(dayEvents);
-                    const today = isToday(day);
+                    {/* Day columns */}
+                    {days.map((day) => {
+                        const dayEvents = getTimedEventsForDay(enrichedEvents, day);
+                        const layouted = layoutEvents(dayEvents);
+                        const today = isToday(day);
 
-                    const showDraft = draftEvent && !draftEvent.allDay && dayjs(draftEvent.start).isSame(day, 'day');
-                    let draftTop = 0, draftHeight = 0, draftLeft = 0, draftWidth = 1;
-                    if (showDraft) {
-                        const startMin = getMinutesFromISO(draftEvent!.start);
-                        const endMin = getMinutesFromISO(draftEvent!.end);
-                        draftTop = (startMin / 60) * HOUR_HEIGHT;
-                        draftHeight = Math.max(((endMin - startMin) / 60) * HOUR_HEIGHT, MIN_EVENT_HEIGHT);
+                        const showDraft = draftEvent && !draftEvent.allDay && dayjs(draftEvent.start).isSame(day, 'day');
+                        let draftTop = 0, draftHeight = 0, draftLeft = 0, draftWidth = 1;
+                        if (showDraft) {
+                            const startMin = getMinutesFromISO(draftEvent!.start);
+                            const endMin = getMinutesFromISO(draftEvent!.end);
+                            draftTop = (startMin / 60) * HOUR_HEIGHT;
+                            draftHeight = Math.max(((endMin - startMin) / 60) * HOUR_HEIGHT, MIN_EVENT_HEIGHT);
 
-                        const hasOverlap = layouted.some(({ top, height }) => {
-                            const eTop = top;
-                            const eBottom = top + height;
-                            const dTop = draftTop;
-                            const dBottom = draftTop + draftHeight;
-                            return dTop < eBottom && dBottom > eTop;
-                        });
-                        if (hasOverlap) {
-                            draftLeft = 0.5;
-                            draftWidth = 0.5;
+                            const hasOverlap = layouted.some(({ top, height }) => {
+                                const eTop = top;
+                                const eBottom = top + height;
+                                const dTop = draftTop;
+                                const dBottom = draftTop + draftHeight;
+                                return dTop < eBottom && dBottom > eTop;
+                            });
+                            if (hasOverlap) {
+                                draftLeft = 0.5;
+                                draftWidth = 0.5;
+                            }
                         }
-                    }
 
-                    return (
-                        <Box
-                            key={day.format('YYYY-MM-DD')}
-                            onClick={(e) => handleDayClick(day, e)}
-                            sx={{
-                                flex: 1,
-                                position: 'relative',
-                                borderLeft: `1px solid ${BORDER_COLOR}`,
-                                cursor: 'pointer',
-                                bgcolor: today ? 'rgba(25, 118, 210, 0.03)' : 'transparent',
-                                '&:hover': {
-                                    bgcolor: today ? 'rgba(25, 118, 210, 0.05)' : 'rgba(0, 0, 0, 0.01)',
-                                },
-                            }}
-                        >
-                            {/* Hour grid lines */}
-                            {HOURS.map((hour) => (
-                                <Box key={hour} sx={{
-                                    position: 'absolute',
-                                    top: hour * HOUR_HEIGHT,
-                                    left: 0, right: 0,
-                                    borderTop: `1px solid ${BORDER_COLOR}`,
-                                }} />
-                            ))}
-
-                            {/* Half-hour lines */}
-                            {HOURS.map((hour) => (
-                                <Box key={`h-${hour}`} sx={{
-                                    position: 'absolute',
-                                    top: hour * HOUR_HEIGHT + HOUR_HEIGHT / 2,
-                                    left: 0, right: 0,
-                                    borderTop: `1px solid rgba(0, 0, 0, 0.04)`,
-                                }} />
-                            ))}
-
-                            {/* Existing events */}
-                            {layouted.map(({ event, top, height, left, width }) => (
-                                <Box key={String(event.id)} data-event-id={String(event.id)}>
-                                    <CalendarEventBlock
-                                        event={event}
-                                        top={top}
-                                        height={height}
-                                        left={left}
-                                        width={width}
-                                        ampm={ampm}
-                                        onClick={handleEventClick}
-                                    />
-                                </Box>
-                            ))}
-
-                            {/* Draft event overlay */}
-                            {showDraft && (
-                                <Box ref={draftAnchorRef} sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none' }}>
-                                    <CalendarEventBlock
-                                        event={draftEvent!}
-                                        top={draftTop}
-                                        height={draftHeight}
-                                        left={draftLeft}
-                                        width={draftWidth}
-                                        ampm={ampm}
-                                        onClick={() => {}}
-                                        isDraft
-                                    />
-                                </Box>
-                            )}
-
-                            {/* Now indicator */}
-                            {today && nowTop !== null && (
-                                <Box sx={{
-                                    position: 'absolute',
-                                    top: nowTop,
-                                    left: 0, right: 0,
-                                    height: 2,
-                                    bgcolor: '#ef5350',
-                                    zIndex: 5,
-                                    '&::before': {
-                                        content: '""',
-                                        position: 'absolute',
-                                        left: 0,
-                                        top: -4,
-                                        width: 8,
-                                        height: 8,
-                                        borderRadius: '50%',
-                                        bgcolor: '#ef5350',
+                        return (
+                            <Box
+                                key={day.format('YYYY-MM-DD')}
+                                onClick={(e) => handleDayClick(day, e)}
+                                sx={{
+                                    flex: 1,
+                                    position: 'relative',
+                                    borderLeft: `1px solid ${BORDER_COLOR}`,
+                                    cursor: 'pointer',
+                                    bgcolor: today ? 'rgba(25, 118, 210, 0.03)' : 'transparent',
+                                    '&:hover': {
+                                        bgcolor: today ? 'rgba(25, 118, 210, 0.05)' : 'rgba(0, 0, 0, 0.01)',
                                     },
-                                }} />
-                            )}
-                        </Box>
-                    );
-                })}
+                                }}
+                            >
+                                {/* Hour grid lines */}
+                                {HOURS.map((hour) => (
+                                    <Box key={hour} sx={{
+                                        position: 'absolute',
+                                        top: hour * HOUR_HEIGHT,
+                                        left: 0, right: 0,
+                                        borderTop: `1px solid ${BORDER_COLOR}`,
+                                    }} />
+                                ))}
+
+                                {/* Half-hour lines */}
+                                {HOURS.map((hour) => (
+                                    <Box key={`h-${hour}`} sx={{
+                                        position: 'absolute',
+                                        top: hour * HOUR_HEIGHT + HOUR_HEIGHT / 2,
+                                        left: 0, right: 0,
+                                        borderTop: `1px solid rgba(0, 0, 0, 0.04)`,
+                                    }} />
+                                ))}
+
+                                {/* Existing events */}
+                                {layouted.map(({ event, top, height, left, width }) => (
+                                    <Box key={String(event.id)} data-event-id={String(event.id)}>
+                                        <CalendarEventBlock
+                                            event={event}
+                                            top={top}
+                                            height={height}
+                                            left={left}
+                                            width={width}
+                                            ampm={ampm}
+                                            onClick={handleEventClick}
+                                        />
+                                    </Box>
+                                ))}
+
+                                {/* Draft event overlay */}
+                                {showDraft && (
+                                    <Box ref={draftAnchorRef} sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none' }}>
+                                        <CalendarEventBlock
+                                            event={draftEvent!}
+                                            top={draftTop}
+                                            height={draftHeight}
+                                            left={draftLeft}
+                                            width={draftWidth}
+                                            ampm={ampm}
+                                            onClick={() => {}}
+                                            isDraft
+                                        />
+                                    </Box>
+                                )}
+
+                                {/* Now indicator */}
+                                {today && nowTop !== null && (
+                                    <Box sx={{
+                                        position: 'absolute',
+                                        top: nowTop,
+                                        left: 0, right: 0,
+                                        height: 2,
+                                        bgcolor: '#ef5350',
+                                        zIndex: 5,
+                                        '&::before': {
+                                            content: '""',
+                                            position: 'absolute',
+                                            left: 0,
+                                            top: -4,
+                                            width: 8,
+                                            height: 8,
+                                            borderRadius: '50%',
+                                            bgcolor: '#ef5350',
+                                        },
+                                    }} />
+                                )}
+                            </Box>
+                        );
+                    })}
+                </Box>
             </Box>
         </Box>
     );
