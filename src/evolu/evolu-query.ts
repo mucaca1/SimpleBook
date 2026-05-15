@@ -68,6 +68,30 @@ export const calendarEvents: Evolu.Query = evolu.createQuery((db) =>
 
 export type TCalendarEventRow = typeof calendarEvents.Row;
 
+export const getCustomFieldValuesForCalendarEvent = (calendarEventId: CalendarEventId): Evolu.Query =>
+    evolu.createQuery((db) =>
+        db.selectFrom("customFieldValues")
+            .selectAll()
+            .where("calendarEventId", "==", calendarEventId)
+            .where("isDeleted", "is not", Evolu.sqliteTrue)
+    );
+
+export const calendarEventEmployees: Evolu.Query = evolu.createQuery((db) =>
+    db.selectFrom("calendarEventEmployees")
+        .selectAll()
+        .where("isDeleted", "is not", Evolu.sqliteTrue)
+);
+
+export type TCalendarEventEmployeeRow = typeof calendarEventEmployees.Row;
+
+export const getEmployeesForEvent = (calendarEventId: CalendarEventId): Evolu.Query =>
+    evolu.createQuery((db) =>
+        db.selectFrom("calendarEventEmployees")
+            .selectAll()
+            .where("calendarEventId", "==", calendarEventId)
+            .where("isDeleted", "is not", Evolu.sqliteTrue)
+    );
+
 export const services: Evolu.Query = evolu.createQuery((db) =>
     db.selectFrom("services")
         .selectAll()

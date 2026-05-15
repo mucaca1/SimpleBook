@@ -126,7 +126,8 @@
             },
             "appliesToOptions": {
                 "customer": "Customer",
-                "employee": "Employee"
+                "employee": "Employee",
+                "calendarEvent": "Calendar Event"
             },
             "validation": {
                 "fieldNameRequired": "Field name is required",
@@ -214,6 +215,14 @@
                 "copied": "Copied!",
                 "show": "Show Full Mnemonic",
                 "hide": "Hide Mnemonic"
+            },
+            "queryExecutor": {
+                "title": "Query Executor",
+                "warning": "Execute raw SQL SELECT queries directly against the database. Use with caution.",
+                "inputLabel": "SQL Query",
+                "executeButton": "Execute",
+                "executing": "Executing...",
+                "resultLabel": "Result"
             }
         },
         "templateData": {
@@ -494,12 +503,49 @@
         }
     },
     "scheduler": {
+        "assignEmployees": "Assign Employees",
+        "upcomingEvents": "Upcoming Events",
+        "noEmployees": "No employees found. Add employees first.",
+        "noEmployeesAssigned": "No employees",
+        "unnamedEmployee": "Unnamed",
+        "employeeAssignError": "Failed to assign employees",
+        "toolbar": {
+            "menu": "Toggle calendar",
+            "today": "Today",
+            "day": "Day",
+            "week": "Week"
+        },
         "toast": {
             "created": "Event created successfully",
             "deleted": "Event deleted successfully",
             "syncError": "Failed to sync events",
             "createError": "Failed to create event",
             "deleteError": "Failed to delete event"
+        },
+        "eventForm": {
+            "createEvent": "Create Event",
+            "editEvent": "Edit Event",
+            "title": "Title",
+            "titleRequired": "Title is required",
+            "description": "Description",
+            "startDate": "Start",
+            "endDate": "End",
+            "allDay": "All Day",
+            "color": "Color",
+            "service": "Service",
+            "noService": "None",
+            "employees": "Assigned Employees",
+            "customFields": "Custom Fields",
+            "save": "Save",
+            "cancel": "Cancel",
+            "delete": "Delete Event"
+        },
+        "settings": {
+            "title": "Calendar Settings",
+            "timeFormat": "Time Format",
+            "12h": "12-hour (1:00 PM)",
+            "24h": "24-hour (13:00)",
+            "showWeekends": "Show Weekends"
         }
     },
     "creditLedger": {
