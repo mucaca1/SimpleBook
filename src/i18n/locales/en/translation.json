@@ -5,6 +5,7 @@
         "home": "Home",
         "settings": "Settings",
         "service": "Services",
+        "services": "Services",
         "subject": "Subject",
         "save": "Save",
         "saving": "Saving...",
@@ -88,6 +89,7 @@
             "appearance": "Appearance",
             "language": "Language",
             "theme": "Theme",
+            "currency": "Currency",
             "languageChanged": "Language changed successfully",
             "themeChanged": "Theme changed successfully"
         },
@@ -221,6 +223,54 @@
                 "executeButton": "Execute",
                 "executing": "Executing...",
                 "resultLabel": "Result"
+            }
+        },
+        "templateData": {
+            "title": "Template Data",
+            "description": "Generate sample data to test the application. Each button creates a set of random records.",
+            "generating": "Generating...",
+            "customers": {
+                "title": "Customers",
+                "description": "Generate 1000 random customers with names, dates of birth, sex, and customer IDs.",
+                "button": "Generate 1000 Customers"
+            },
+            "employees": {
+                "title": "Employees",
+                "description": "Generate 50 random employees with names, phone numbers, and email addresses.",
+                "button": "Generate 50 Employees"
+            },
+            "services": {
+                "title": "Hospital Services & Prices",
+                "description": "Generate 10 hospital-themed services with associated prices (consultations, examinations, scans, therapy, surgery).",
+                "button": "Generate 10 Services"
+            },
+            "credits": {
+                "title": "Add Credit to Customers",
+                "description": "Add credit to all customers whose first name starts with the letter \"A\".",
+                "amountLabel": "Credit Amount",
+                "button": "Add Credit to \"A\" Customers"
+            },
+            "preOrders": {
+                "title": "Add Pre-orders to Customers",
+                "description": "Add random pre-order services to customers whose first or last name contains the letter \"C\". Each customer gets 1–3 random pre-orderable services.",
+                "button": "Add Pre-orders to \"C\" Customers"
+            },
+            "toast": {
+                "customersCreated": "{{count}} customers created successfully",
+                "customersError": "Failed to generate customers",
+                "employeesCreated": "{{count}} employees created successfully",
+                "employeesError": "Failed to generate employees",
+                "servicesCreated": "{{count}} services with prices created successfully",
+                "servicesError": "Failed to generate services",
+                "creditsCreated": "Credit of {{amount}} added to {{count}} customers",
+                "creditsError": "Failed to add credits",
+                "creditsNoCustomers": "No customers found. Generate customers first.",
+                "creditsNoMatch": "No customers with first name starting with \"A\" found.",
+                "creditsInvalidAmount": "Please enter a valid credit amount",
+                "preOrdersCreated": "{{count}} pre-orders added to {{customerCount}} customers",
+                "preOrdersError": "Failed to add pre-orders",
+                "preOrdersNoMatch": "No customers with letter \"C\" in name found.",
+                "preOrdersNoPrices": "No pre-order prices found. Generate services first."
             }
         }
     },
@@ -379,6 +429,10 @@
         "description": "Manage your service types",
         "add": "Add Service",
         "empty": "No services found. Add your first service!",
+        "prices": "Prices",
+        "pricesTitle": "Prices for {name}",
+        "addPrice": "Add Price",
+        "noPrices": "No prices for this service",
         "form": {
             "name": "Service Name",
             "description": "Description",
@@ -396,6 +450,56 @@
             "createError": "Failed to create service",
             "updateError": "Failed to update service",
             "deleteError": "Failed to delete service"
+        }
+    },
+    "services": {
+        "service": "Services",
+        "prices": "Prices"
+    },
+    "prices": {
+        "title": "Prices",
+        "description": "Manage your service prices",
+        "add": "Add Price",
+        "empty": "No prices found. Add your first price!",
+        "noServices": "Please create a service first before adding prices.",
+        "unknownService": "Unknown Service",
+        "filterByService": "Filter by service",
+        "infinity": "∞",
+        "preorder": "Pre-order",
+        "form": {
+            "service": "Service",
+            "price": "Price",
+            "unitType": "Unit Type",
+            "actualInTime": "Actual in time",
+            "validFrom": "Valid From",
+            "validTo": "Valid To",
+            "dateHint": "Leave empty for infinity (no limit to past or future).",
+            "preOrderAllowed": "Allow pre-order",
+            "expirationAction": "After price expiration",
+            "addPrice": "Add Price",
+            "updatePrice": "Update Price"
+        },
+        "unitTypes": {
+            "15m": "15 min",
+            "30m": "30 min",
+            "45m": "45 min",
+            "1h": "1 hour",
+            "8h": "8 hours",
+            "session": "1 session",
+            "other": "Other"
+        },
+        "expirationActions": {
+            "keepPreorders": "Keep preorders",
+            "cancelPreorders": "Cancel preorders",
+            "payDifference": "Need pay difference"
+        },
+        "toast": {
+            "created": "Price created successfully",
+            "updated": "Price updated successfully",
+            "deleted": "Price deleted successfully",
+            "createError": "Failed to create price",
+            "updateError": "Failed to update price",
+            "deleteError": "Failed to delete price"
         }
     },
     "scheduler": {
@@ -442,6 +546,61 @@
             "12h": "12-hour (1:00 PM)",
             "24h": "24-hour (13:00)",
             "showWeekends": "Show Weekends"
+        }
+    },
+    "creditLedger": {
+        "title": "Credit Ledger",
+        "description": "View and manage credit transactions for {customerName}",
+        "balance": "Current Balance",
+        "noTransactions": "No credit transactions yet",
+        "addCredit": "Add Credit",
+        "addPreOrder": "Add Pre-order",
+        "backToCustomers": "Back to Customers",
+        "form": {
+            "date": "Date",
+            "amount": "Amount",
+            "amountAuto": "Amount (auto-calculated)",
+            "employee": "Handled by",
+            "note": "Note",
+            "notePlaceholder": "Optional note about this transaction",
+            "noEmployees": "No employees available",
+            "addCredit": "Add Credit",
+            "addPreOrder": "Add Pre-order",
+            "service": "Service",
+            "price": "Price",
+            "quantity": "Quantity",
+            "unitPrice": "Unit price",
+            "noPreOrderPrices": "No pre-order prices available",
+            "selectService": "Select a service",
+            "selectPrice": "Select a price"
+        },
+        "table": {
+            "date": "Date",
+            "amount": "Amount",
+            "preOrderInfo": "Pre-order",
+            "quantity": "Qty",
+            "employee": "Employee",
+            "note": "Note",
+            "actions": "Actions",
+            "empty": "No transactions found",
+            "loading": "Loading transactions..."
+        },
+        "toast": {
+            "created": "Credit added successfully",
+            "preOrderCreated": "Pre-order added successfully",
+            "deleted": "Credit transaction deleted successfully",
+            "createError": "Failed to add credit",
+            "deleteError": "Failed to delete credit transaction"
+        },
+        "deleteConfirm": {
+            "title": "Delete Credit Transaction",
+            "message": "Are you sure you want to delete this credit transaction of {amount}?",
+            "confirm": "Delete",
+            "cancel": "Cancel"
+        },
+        "actions": {
+            "viewLedger": "Credit Ledger",
+            "delete": "Delete"
         }
     }
 }

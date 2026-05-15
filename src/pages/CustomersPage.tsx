@@ -3,10 +3,14 @@ import { Box, Typography, Container, Button } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useCustomerCrud } from "../hooks/useCustomerCrud";
-import { CustomerTable, CustomerForm } from "../components/customer";
+import { useCreditTransactionCrud } from "../hooks/useCreditTransactionCrud";
+import { useSettingsSync } from "../hooks/useSettingsSync";
+import { CustomerTable, CustomerForm, CreditLedgerView } from "../components/customer";
 import { Customer, CustomerFormData } from "../types/customer";
+import { CreditTransactionFormData } from "../types/creditTransaction";
 import { DeleteConfirmDialog } from "../components/ui/DeleteConfirmDialog";
 import { CustomerId } from "../evolu/evolu-db";
+import { getCurrencySymbol } from "../types/price";
 
 export function CustomersPage() {
     const { t } = useTranslation();
@@ -18,9 +22,14 @@ export function CustomersPage() {
         deleteCustomer,
     } = useCustomerCrud();
 
-    // View mode: 'table' shows the table, 'add'/'edit' shows the form inline
-    const [viewMode, setViewMode] = useState<"table" | "add" | "edit">("table");
+    const { addCredit, deleteCreditTransaction } = useCreditTransactionCrud();
+    const { currency } = useSettingsSync();
+    const currencySymbol = getCurrencySymbol(currency || "EUR");
+
+    // View mode: 'table' shows the table, 'add'/'edit' shows the form inline, 'ledger' shows credit ledger
+    const [viewMode, setViewMode] = useState<"table" | "add" | "edit" | "ledger">("table");
     const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+    const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
     // Delete confirmation state management
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -52,6 +61,15 @@ export function CustomersPage() {
     const handleCancel = () => {
         setViewMode("table");
         setEditingCustomer(null);
+        setSelectedCustomer(null);
+    };
+
+    /**
+     * Switch to ledger view for the selected customer
+     */
+    const handleLedger = (customer: Customer) => {
+        setViewMode("ledger");
+        setSelectedCustomer(customer);
     };
 
     /**
@@ -176,11 +194,12 @@ export function CustomersPage() {
                         isLoading={isLoading}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onLedger={handleLedger}
                         onAdd={handleAddClick}
                     />
                 </Box>
 
-                <Box sx={{ display: viewMode !== "table" ? "block" : "none" }}>
+                <Box sx={{ display: (viewMode === "add" || viewMode === "edit") ? "block" : "none" }}>
                     <Typography variant="h4" component="h1" gutterBottom>
                         {formTitle}
                     </Typography>
@@ -196,6 +215,16 @@ export function CustomersPage() {
                         />
                     </Box>
                 </Box>
+
+                {viewMode === "ledger" && selectedCustomer && (
+                    <CreditLedgerView
+                        customer={selectedCustomer}
+                        currencySymbol={currencySymbol}
+                        onBack={handleCancel}
+                        onAddCredit={addCredit}
+                        onDeleteTransaction={deleteCreditTransaction}
+                    />
+                )}
             </Box>
 
             <DeleteConfirmDialog

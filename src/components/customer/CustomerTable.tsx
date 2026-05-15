@@ -19,10 +19,11 @@ interface CustomerTableProps {
     isLoading: boolean;
     onEdit: (customer: Customer) => void;
     onDelete: (customer: Customer) => void;
+    onLedger: (customer: Customer) => void;
     onAdd?: () => void;
 }
 
-export const CustomerTable = memo(({ customers, isLoading, onEdit, onDelete, onAdd }: CustomerTableProps) => {
+export const CustomerTable = memo(({ customers, isLoading, onEdit, onDelete, onLedger, onAdd }: CustomerTableProps) => {
     const { t, i18n } = useTranslation();
     const currentLanguage = (i18n.language?.split('-')[0] || 'en') as Language;
 
@@ -147,7 +148,7 @@ export const CustomerTable = memo(({ customers, isLoading, onEdit, onDelete, onA
         {
             field: 'actions',
             headerName: t('customer.table.actions'),
-            width: 120,
+            width: 160,
             renderCell: (params) => {
                 const customer = mapRowToCustomer(params.row);
                 return (
@@ -155,6 +156,7 @@ export const CustomerTable = memo(({ customers, isLoading, onEdit, onDelete, onA
                         customer={customer}
                         onEdit={onEdit}
                         onDelete={onDelete}
+                        onLedger={onLedger}
                     />
                 );
             },

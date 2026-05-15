@@ -7,7 +7,7 @@ import { createUseEvolu } from "@evolu/react";
 const DB_VERSION_KEY = "evolu_db_version";
 
 // Current database version - increment when schema changes require migration
-const CURRENT_DB_VERSION = 9;
+const CURRENT_DB_VERSION = 10;
 
 /**
  * Get the current database version from localStorage
@@ -32,8 +32,9 @@ function getDatabaseVersion(): number {
  * - Version 5: Added CalendarEvents table for scheduler feature
  * - Version 6: Added calendarTimeFormat and calendarShowWeekends to Settings
  * - Version 7: Added Services table for service type management
- * - Version 8: Added employeeIds to CalendarEvents for employee assignment
- * - Version 9: Added calendarEventId to CustomFieldValue for event custom fields
+ * - Version 8: Added Prices table and currency setting for pricing management
+ * - Version 9: Added CreditTransaction table for customer credit ledger feature
+ * - Version 10: Added priceId, serviceId, quantity to CreditTransaction for pre-order service
  */
 function needsDatabaseReset(): boolean {
     const currentVersion = getDatabaseVersion();

@@ -1,9 +1,9 @@
 import * as Evolu from "@evolu/common";
 import { evolu } from "../evolu-init";
-import type { CustomerId, EmployeeId, CalendarEventId, CalendarEventEmployeeId } from "./evolu-db";
+import type { CustomerId, EmployeeId, CalendarEventId, ServiceId, CreditTransactionId, PriceId } from "./evolu-db";
 
 export const settings: Evolu.Query = evolu.createQuery((db) =>
-    db.selectFrom("settings").select(["id", "language", "theme", "calendarTimeFormat", "calendarShowWeekends"])
+    db.selectFrom("settings").select(["id", "language", "theme", "calendarTimeFormat", "calendarShowWeekends", "currency"])
 );
 
 export type TSettingsRow = typeof settings.Row;
@@ -100,3 +100,49 @@ export const services: Evolu.Query = evolu.createQuery((db) =>
 );
 
 export type TServiceRow = typeof services.Row;
+
+export const prices: Evolu.Query = evolu.createQuery((db) =>
+    db.selectFrom("prices")
+        .selectAll()
+        .where("isDeleted", "is not", Evolu.sqliteTrue)
+        .orderBy("createdAt", "desc")
+);
+
+export type TPriceRow = typeof prices.Row;
+
+export const getPricesForService = (serviceId: ServiceId): Evolu.Query =>
+    evolu.createQuery((db) =>
+        db.selectFrom("prices")
+            .selectAll()
+            .where("serviceId", "==", serviceId)
+            .where("isDeleted", "is not", Evolu.sqliteTrue)
+            .orderBy("createdAt", "desc")
+    );
+
+export const preOrderPrices: Evolu.Query = evolu.createQuery((db) =>
+    db.selectFrom("prices")
+        .selectAll()
+        .where("preOrderAllowed", "==", 1)
+        .where("isDeleted", "is not", Evolu.sqliteTrue)
+        .orderBy("createdAt", "desc")
+);
+
+export type TPreOrderPriceRow = typeof preOrderPrices.Row;
+
+export const creditTransactions: Evolu.Query = evolu.createQuery((db) =>
+    db.selectFrom("creditTransactions")
+        .selectAll()
+        .where("isDeleted", "is not", Evolu.sqliteTrue)
+        .orderBy("createdAt", "desc")
+);
+
+export type TCreditTransactionRow = typeof creditTransactions.Row;
+
+export const getCreditTransactionsForCustomer = (customerId: CustomerId): Evolu.Query =>
+    evolu.createQuery((db) =>
+        db.selectFrom("creditTransactions")
+            .selectAll()
+            .where("customerId", "==", customerId)
+            .where("isDeleted", "is not", Evolu.sqliteTrue)
+            .orderBy("createdAt", "desc")
+    );

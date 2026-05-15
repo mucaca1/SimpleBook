@@ -9,6 +9,7 @@ const Settings = {
     theme: Evolu.NonEmptyString100,
     calendarTimeFormat: Evolu.NonEmptyString100,
     calendarShowWeekends: Evolu.SqliteBoolean,
+    currency: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
 const CustomerId = Evolu.id("CustomerId");
@@ -100,6 +101,36 @@ const Service = {
     color: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
+const PriceId = Evolu.id("PriceId");
+export type PriceId = typeof PriceId.Type;
+
+const Price = {
+    id: PriceId,
+    serviceId: ServiceId,
+    price: Evolu.PositiveNumber,
+    unitType: Evolu.NonEmptyString100,
+    actualInTime: Evolu.SqliteBoolean,
+    validFrom: Evolu.nullOr(Evolu.DateIso),
+    validTo: Evolu.nullOr(Evolu.DateIso),
+    preOrderAllowed: Evolu.SqliteBoolean,
+    expirationAction: Evolu.nullOr(Evolu.NonEmptyString100),
+}
+
+const CreditTransactionId = Evolu.id("CreditTransactionId");
+export type CreditTransactionId = typeof CreditTransactionId.Type;
+
+const CreditTransaction = {
+    id: CreditTransactionId,
+    customerId: CustomerId,
+    employeeId: Evolu.nullOr(EmployeeId),
+    amount: Evolu.PositiveNumber,
+    date: Evolu.NonEmptyString100,
+    note: Evolu.nullOr(Evolu.NonEmptyString1000),
+    priceId: Evolu.nullOr(PriceId),
+    serviceId: Evolu.nullOr(ServiceId),
+    quantity: Evolu.nullOr(Evolu.PositiveNumber),
+}
+
 export const Schema = {
     settings: Settings,
     customers: Customer,
@@ -109,4 +140,6 @@ export const Schema = {
     calendarEvents: CalendarEvent,
     calendarEventEmployees: CalendarEventEmployee,
     services: Service,
+    prices: Price,
+    creditTransactions: CreditTransaction,
 };

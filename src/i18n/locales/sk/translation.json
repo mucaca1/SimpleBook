@@ -5,6 +5,7 @@
         "home": "Domov",
         "settings": "Nastavenia",
         "service": "Služby",
+        "services": "Služby",
         "subject": "Predmet",
         "save": "Uložiť",
         "saving": "Ukladá sa...",
@@ -88,6 +89,7 @@
             "appearance": "Vzhľad",
             "language": "Jazyk",
             "theme": "Téma",
+            "currency": "Mena",
             "languageChanged": "Jazyk bol úspešne zmenený",
             "themeChanged": "Téma bola úspešne zmenená"
         },
@@ -221,6 +223,54 @@
                 "executeButton": "Vykonať",
                 "executing": "Vykonáva sa...",
                 "resultLabel": "Výsledok"
+            }
+        },
+        "templateData": {
+            "title": "Vzorové dáta",
+            "description": "Vygenerujte vzorové dáta na testovanie aplikácie. Každé tlačidlo vytvorí sadu náhodných záznamov.",
+            "generating": "Generujem...",
+            "customers": {
+                "title": "Zákazníci",
+                "description": "Vygenerovať 1000 náhodných zákazníkov s menami, dátumami narodenia, pohlavím a ID zákazníka.",
+                "button": "Vygenerovať 1000 zákazníkov"
+            },
+            "employees": {
+                "title": "Zamestnanci",
+                "description": "Vygenerovať 50 náhodných zamestnancov s menami, telefónnymi číslami a e-mailovými adresami.",
+                "button": "Vygenerovať 50 zamestnancov"
+            },
+            "services": {
+                "title": "Nemocničné služby a ceny",
+                "description": "Vygenerovať 10 nemocničných služieb s pridelenými cenami (konzultácie, vyšetrenia, skeny, terapia, operácie).",
+                "button": "Vygenerovať 10 služieb"
+            },
+            "credits": {
+                "title": "Pridať kredit zákazníkom",
+                "description": "Pridať kredit všetkým zákazníkom, ktorých meno začína písmenom \"A\".",
+                "amountLabel": "Suma kreditu",
+                "button": "Pridať kredit zákazníkom s menom na \"A\""
+            },
+            "preOrders": {
+                "title": "Pridať predobjednávky zákazníkom",
+                "description": "Pridať náhodné predobjednávky služieb zákazníkom, ktorých meno alebo priezvisko obsahuje písmeno \"C\". Každý zákazník dostane 1–3 náhodné predobjednávateľné služby.",
+                "button": "Pridať predobjednávky zákazníkom s písmenom \"C\""
+            },
+            "toast": {
+                "customersCreated": "{{count}} zákazníkov bolo úspešne vytvorených",
+                "customersError": "Nepodarilo sa vygenerovať zákazníkov",
+                "employeesCreated": "{{count}} zamestnancov bolo úspešne vytvorených",
+                "employeesError": "Nepodarilo sa vygenerovať zamestnancov",
+                "servicesCreated": "{{count}} služieb s cenami bolo úspešne vytvorených",
+                "servicesError": "Nepodarilo sa vygenerovať služby",
+                "creditsCreated": "Kredit {{amount}} bol pridaný {{count}} zákazníkom",
+                "creditsError": "Nepodarilo sa pridať kredity",
+                "creditsNoCustomers": "Nenašli sa žiadni zákazníci. Najprv vygenerujte zákazníkov.",
+                "creditsNoMatch": "Nenašli sa žiadni zákazníci s menom začínajúcim na \"A\".",
+                "creditsInvalidAmount": "Zadajte platnú sumu kreditu",
+                "preOrdersCreated": "{{count}} predobjednávok pridaných {{customerCount}} zákazníkom",
+                "preOrdersError": "Nepodarilo sa pridať predobjednávky",
+                "preOrdersNoMatch": "Nenašli sa žiadni zákazníci s písmenom \"C\" v mene.",
+                "preOrdersNoPrices": "Nenašli sa žiadne predobjednávateľné ceny. Najprv vygenerujte služby."
             }
         }
     },
@@ -379,6 +429,10 @@
         "description": "Spravujte svoje typy služieb",
         "add": "Pridať službu",
         "empty": "Nenašli sa žiadne služby. Pridajte svoju prvú službu!",
+        "prices": "Cenník",
+        "pricesTitle": "Cenník pre {name}",
+        "addPrice": "Pridať cenu",
+        "noPrices": "Žiadne ceny pre túto službu",
         "form": {
             "name": "Názov služby",
             "description": "Popis",
@@ -396,6 +450,56 @@
             "createError": "Nepodarilo sa vytvoriť službu",
             "updateError": "Nepodarilo sa aktualizovať službu",
             "deleteError": "Nepodarilo sa odstrániť službu"
+        }
+    },
+    "services": {
+        "service": "Služby",
+        "prices": "Cenník"
+    },
+    "prices": {
+        "title": "Cenník",
+        "description": "Spravujte ceny vašich služieb",
+        "add": "Pridať cenu",
+        "empty": "Nenašli sa žiadne ceny. Pridajte svoju prvú cenu!",
+        "noServices": "Najprv vytvorte službu pred pridaním cien.",
+        "unknownService": "Neznáma služba",
+        "filterByService": "Filtrovať podľa služby",
+        "infinity": "∞",
+        "preorder": "Predobjednávka",
+        "form": {
+            "service": "Služba",
+            "price": "Cena",
+            "unitType": "Typ jednotky",
+            "actualInTime": "Platná v čase",
+            "validFrom": "Platná od",
+            "validTo": "Platná do",
+            "dateHint": "Nechajte prázdne pre nekonečno (bez obmedzenia do minulosti alebo budúcnosti).",
+            "preOrderAllowed": "Povoliť predobjednávku",
+            "expirationAction": "Po vypršaní platnosti ceny",
+            "addPrice": "Pridať cenu",
+            "updatePrice": "Aktualizovať cenu"
+        },
+        "unitTypes": {
+            "15m": "15 min",
+            "30m": "30 min",
+            "45m": "45 min",
+            "1h": "1 hodina",
+            "8h": "8 hodín",
+            "session": "1 sedenie",
+            "other": "Iné"
+        },
+        "expirationActions": {
+            "keepPreorders": "Ponechať predobjednávky",
+            "cancelPreorders": "Zrušiť predobjednávky",
+            "payDifference": "Doplatiť rozdiel"
+        },
+        "toast": {
+            "created": "Cena bola úspešne vytvorená",
+            "updated": "Cena bola úspešne aktualizovaná",
+            "deleted": "Cena bola úspešne odstránená",
+            "createError": "Nepodarilo sa vytvoriť cenu",
+            "updateError": "Nepodarilo sa aktualizovať cenu",
+            "deleteError": "Nepodarilo sa odstrániť cenu"
         }
     },
     "scheduler": {
@@ -442,6 +546,61 @@
             "12h": "12-hodinový (1:00 PM)",
             "24h": "24-hodinový (13:00)",
             "showWeekends": "Zobraziť víkendy"
+        }
+    },
+    "creditLedger": {
+        "title": "Kreditná kniha",
+        "description": "Zobraziť a spravovať kreditné transakcie pre {customerName}",
+        "balance": "Aktuálny zostatok",
+        "noTransactions": "Zatiaľ žiadne kreditné transakcie",
+        "addCredit": "Pridať kredit",
+        "addPreOrder": "Pridať predobjednávku",
+        "backToCustomers": "Späť na zákazníkov",
+        "form": {
+            "date": "Dátum",
+            "amount": "Suma",
+            "amountAuto": "Suma (automaticky vypočítaná)",
+            "employee": "Spracoval",
+            "note": "Poznámka",
+            "notePlaceholder": "Voliteľná poznámka k tejto transakcii",
+            "noEmployees": "Žiadni zamestnanci nie sú k dispozícii",
+            "addCredit": "Pridať kredit",
+            "addPreOrder": "Pridať predobjednávku",
+            "service": "Služba",
+            "price": "Cena",
+            "quantity": "Množstvo",
+            "unitPrice": "Jednotková cena",
+            "noPreOrderPrices": "Žiadne predobjednávky nie sú k dispozícii",
+            "selectService": "Vyberte službu",
+            "selectPrice": "Vyberte cenu"
+        },
+        "table": {
+            "date": "Dátum",
+            "amount": "Suma",
+            "preOrderInfo": "Predobjednávka",
+            "quantity": "Ks",
+            "employee": "Zamestnanec",
+            "note": "Poznámka",
+            "actions": "Akcie",
+            "empty": "Nenašli sa žiadne transakcie",
+            "loading": "Načítavam transakcie..."
+        },
+        "toast": {
+            "created": "Kredit bol úspešne pridaný",
+            "preOrderCreated": "Predobjednávka bola úspešne pridaná",
+            "deleted": "Kreditná transakcia bola úspešne odstránená",
+            "createError": "Nepodarilo sa pridať kredit",
+            "deleteError": "Nepodarilo sa odstrániť kreditnú transakciu"
+        },
+        "deleteConfirm": {
+            "title": "Odstrániť kreditnú transakciu",
+            "message": "Naozaj chcete odstrániť túto kreditnú transakciu vo výške {amount}?",
+            "confirm": "Odstrániť",
+            "cancel": "Zrušiť"
+        },
+        "actions": {
+            "viewLedger": "Kreditná kniha",
+            "delete": "Odstrániť"
         }
     }
 }

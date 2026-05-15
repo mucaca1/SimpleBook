@@ -27,6 +27,7 @@ interface UseSettingsSyncReturn {
     isInitialized: boolean;
     language: Language | null;
     theme: ThemeMode | null;
+    currency: string | null;
     id: SettingsId | null;
 }
 
@@ -67,6 +68,7 @@ export function useSettingsSync(): UseSettingsSyncReturn {
         isInitialized: settingsRow !== null,
         language: settingsRow?.language as Language | null,
         theme: settingsRow?.theme as ThemeMode | null,
+        currency: settingsRow?.currency as string | null,
         id: settingsRow?.id as SettingsId | null,
     };
 }
@@ -166,12 +168,12 @@ export async function updateTheme(id: SettingsId | null, theme: string): Promise
     }
 }
 
-export async function updateCalendarTimeFormat(id: SettingsId | null, calendarTimeFormat: string): Promise<void> {
+export async function updateCurrency(id: SettingsId | null, currency: string): Promise<void> {
     try {
         if (id) {
             const updateResult = await evolu.update("settings", {
                 id: id,
-                calendarTimeFormat,
+                currency,
             });
 
             if (!updateResult.ok) {
@@ -179,25 +181,7 @@ export async function updateCalendarTimeFormat(id: SettingsId | null, calendarTi
             }
         }
     } catch (error) {
-        console.error("Failed to update calendar time format:", error);
-        throw error;
-    }
-}
-
-export async function updateCalendarShowWeekends(id: SettingsId | null, calendarShowWeekends: number): Promise<void> {
-    try {
-        if (id) {
-            const updateResult = await evolu.update("settings", {
-                id: id,
-                calendarShowWeekends,
-            });
-
-            if (!updateResult.ok) {
-                throw new Error(updateResult.error.message);
-            }
-        }
-    } catch (error) {
-        console.error("Failed to update calendar show weekends:", error);
+        console.error("Failed to update currency:", error);
         throw error;
     }
 }
