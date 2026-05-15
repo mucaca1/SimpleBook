@@ -8,6 +8,7 @@ import { useQuery } from '@evolu/react';
 import { sqliteFalse } from '@evolu/common';
 import { useCalendarEventCrud } from '../../hooks/useCalendarEventCrud';
 import { useServiceCrud } from '../../hooks/useServiceCrud';
+import { updateCalendarTimeFormat, updateCalendarShowWeekends } from '../../hooks/useSettingsSync';
 import { settings } from '../../evolu/evolu-query';
 import { hexToSchedulerColor } from '../../utils/colorMapping';
 import { saveCustomFieldValuesForCalendarEvent } from '../../evolu/customFieldUtils';
@@ -87,6 +88,14 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
         setCurrentDate(date);
         setView('week');
     }, []);
+
+    const handleTimeFormatChange = useCallback((isAmpm: boolean) => {
+        updateCalendarTimeFormat(settingsRow?.id as any, isAmpm ? '12h' : '24h');
+    }, [settingsRow?.id]);
+
+    const handleShowWeekendsChange = useCallback((show: boolean) => {
+        updateCalendarShowWeekends(settingsRow?.id as any, show ? 1 : 0);
+    }, [settingsRow?.id]);
 
     const handleSlotClick = useCallback((day: dayjs.Dayjs, startTime: dayjs.Dayjs, anchorEl: HTMLElement, _clickEvent: React.MouseEvent) => {
         if (onSlotClickExternal) {
@@ -221,6 +230,10 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
                 locale={locale}
                 miniCalendarOpen={miniCalendarOpen}
                 onToggleMiniCalendar={() => setMiniCalendarOpen(prev => !prev)}
+                ampm={ampm}
+                showWeekends={showWeekends}
+                onTimeFormatChange={handleTimeFormatChange}
+                onShowWeekendsChange={handleShowWeekendsChange}
             />
 
             {/* Main content: mini month calendar + scheduler grid */}

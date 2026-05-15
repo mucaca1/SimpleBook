@@ -151,7 +151,6 @@ export async function updateLanguage(id: SettingsId | null, language: string): P
 export async function updateTheme(id: SettingsId | null, theme: string): Promise<void> {
     try {
         if (id) {
-            // Update existing settings
             const updateResult = await evolu.update("settings", {
                 id: id,
                 theme,
@@ -163,6 +162,42 @@ export async function updateTheme(id: SettingsId | null, theme: string): Promise
         }
     } catch (error) {
         console.error("Failed to update theme:", error);
+        throw error;
+    }
+}
+
+export async function updateCalendarTimeFormat(id: SettingsId | null, calendarTimeFormat: string): Promise<void> {
+    try {
+        if (id) {
+            const updateResult = await evolu.update("settings", {
+                id: id,
+                calendarTimeFormat,
+            });
+
+            if (!updateResult.ok) {
+                throw new Error(updateResult.error.message);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to update calendar time format:", error);
+        throw error;
+    }
+}
+
+export async function updateCalendarShowWeekends(id: SettingsId | null, calendarShowWeekends: number): Promise<void> {
+    try {
+        if (id) {
+            const updateResult = await evolu.update("settings", {
+                id: id,
+                calendarShowWeekends,
+            });
+
+            if (!updateResult.ok) {
+                throw new Error(updateResult.error.message);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to update calendar show weekends:", error);
         throw error;
     }
 }

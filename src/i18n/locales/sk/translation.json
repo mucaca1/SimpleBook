@@ -435,6 +435,13 @@
             "save": "Uložiť",
             "cancel": "Zrušiť",
             "delete": "Odstrániť udalosť"
+        },
+        "settings": {
+            "title": "Nastavenia kalendára",
+            "timeFormat": "Formát času",
+            "12h": "12-hodinový (1:00 PM)",
+            "24h": "24-hodinový (13:00)",
+            "showWeekends": "Zobraziť víkendy"
         }
     }
 }

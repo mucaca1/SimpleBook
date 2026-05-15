@@ -1,5 +1,6 @@
-import { IconButton, Button, ButtonGroup, Typography, Box } from '@mui/material';
-import { ChevronLeft, ChevronRight, Menu as MenuIcon, MenuOpen } from '@mui/icons-material';
+import { useState, useRef } from 'react';
+import { IconButton, Button, ButtonGroup, Typography, Box, Popover, FormControlLabel, Checkbox, Radio, RadioGroup, Divider } from '@mui/material';
+import { ChevronLeft, ChevronRight, Menu as MenuIcon, MenuOpen, Settings } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 
@@ -11,6 +12,10 @@ interface CalendarToolbarProps {
     locale: string;
     miniCalendarOpen: boolean;
     onToggleMiniCalendar: () => void;
+    ampm: boolean;
+    showWeekends: boolean;
+    onTimeFormatChange: (ampm: boolean) => void;
+    onShowWeekendsChange: (show: boolean) => void;
 }
 
 export function CalendarToolbar({
@@ -21,9 +26,15 @@ export function CalendarToolbar({
     locale,
     miniCalendarOpen,
     onToggleMiniCalendar,
+    ampm,
+    showWeekends,
+    onTimeFormatChange,
+    onShowWeekendsChange,
 }: CalendarToolbarProps) {
     const { t } = useTranslation();
     const d = currentDate.locale(locale);
+    const settingsRef = useRef<HTMLButtonElement>(null);
+    const [settingsOpen, setSettingsOpen] = useState(false);
 
     const handleToday = () => onNavigate(dayjs());
     const handlePrev = () => {
@@ -115,6 +126,64 @@ export function CalendarToolbar({
                     {t('scheduler.toolbar.week', 'Week')}
                 </Button>
             </ButtonGroup>
+            <IconButton
+                size="small"
+                onClick={() => setSettingsOpen(true)}
+                ref={settingsRef}
+                aria-label={t('scheduler.settings.title')}
+            >
+                <Settings fontSize="small" />
+            </IconButton>
+
+            <Popover
+                open={settingsOpen}
+                anchorEl={settingsRef.current}
+                onClose={() => setSettingsOpen(false)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{
+                    paper: {
+                        sx: { width: 260, p: 2 },
+                    },
+                }}
+            >
+                <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600 }}>
+                    {t('scheduler.settings.title')}
+                </Typography>
+
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+                    {t('scheduler.settings.timeFormat')}
+                </Typography>
+                <RadioGroup
+                    value={ampm ? '12h' : '24h'}
+                    onChange={(e) => onTimeFormatChange(e.target.value === '12h')}
+                    sx={{ mt: 0.5 }}
+                >
+                    <FormControlLabel
+                        value="24h"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">{t('scheduler.settings.24h')}</Typography>}
+                    />
+                    <FormControlLabel
+                        value="12h"
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">{t('scheduler.settings.12h')}</Typography>}
+                    />
+                </RadioGroup>
+
+                <Divider sx={{ my: 1.5 }} />
+
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            size="small"
+                            checked={showWeekends}
+                            onChange={(e) => onShowWeekendsChange(e.target.checked)}
+                        />
+                    }
+                    label={<Typography variant="body2">{t('scheduler.settings.showWeekends')}</Typography>}
+                />
+            </Popover>
         </Box>
     );
 }
