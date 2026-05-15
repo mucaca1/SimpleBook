@@ -90,6 +90,15 @@ const CalendarEventEmployee = {
     employeeId: EmployeeId,
 }
 
+const CalendarEventCustomerId = Evolu.id("CalendarEventCustomerId");
+export type CalendarEventCustomerId = typeof CalendarEventCustomerId.Type;
+
+const CalendarEventCustomer = {
+    id: CalendarEventCustomerId,
+    calendarEventId: CalendarEventId,
+    customerId: CustomerId,
+}
+
 const ServiceId = Evolu.id("ServiceId");
 export type ServiceId = typeof ServiceId.Type;
 
@@ -139,6 +148,7 @@ export const Schema = {
     customFieldValues: CustomFieldValue,
     calendarEvents: CalendarEvent,
     calendarEventEmployees: CalendarEventEmployee,
+    calendarEventCustomers: CalendarEventCustomer,
     services: Service,
     prices: Price,
     creditTransactions: CreditTransaction,

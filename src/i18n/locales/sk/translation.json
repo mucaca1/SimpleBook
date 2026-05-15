@@ -507,6 +507,9 @@
         "upcomingEvents": "Nadchádzajúce udalosti",
         "noEmployees": "Nenašli sa žiadni zamestnanci. Najprv pridajte zamestnancov.",
         "noEmployeesAssigned": "Žiadni zamestnanci",
+        "noOneAssigned": "Nepriradené",
+        "toggleEmployees": "Zamestnanci",
+        "toggleCustomers": "Zákazníci",
         "unnamedEmployee": "Bez mena",
         "employeeAssignError": "Nepodarilo sa priradiť zamestnancov",
         "toolbar": {

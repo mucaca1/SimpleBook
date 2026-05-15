@@ -1,21 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import {
-    Box, Typography, IconButton, Avatar, Tooltip,
+    Box, Typography, Avatar, Tooltip, IconButton, ToggleButtonGroup, ToggleButton,
 } from "@mui/material";
-import { PersonAdd } from "@mui/icons-material";
+import { People, Person } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useEmployeeCrud } from "../../hooks/useEmployeeCrud";
+import { useCustomerCrud } from "../../hooks/useCustomerCrud";
 import type { TCalendarEventRow } from "../../evolu/evolu-query";
+
+const MAX_VISIBLE = 3;
 
 interface EventListProps {
     events: readonly TCalendarEventRow[];
     getEmployeeIdsForEvent: (eventId: string) => string[];
-    onAssignClick: (event: TCalendarEventRow) => void;
+    getCustomerIdsForEvent: (eventId: string) => string[];
 }
 
-export function EventList({ events, getEmployeeIdsForEvent, onAssignClick }: EventListProps) {
+export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEvent }: EventListProps) {
     const { t } = useTranslation();
     const { employees } = useEmployeeCrud();
+    const { customers } = useCustomerCrud();
+    const [showCustomers, setShowCustomers] = useState(false);
 
     const employeeMap = React.useMemo(() => {
         const map = new Map<string, { name: string; initials: string }>();
@@ -27,17 +32,50 @@ export function EventList({ events, getEmployeeIdsForEvent, onAssignClick }: Eve
         return map;
     }, [employees]);
 
+    const customerMap = React.useMemo(() => {
+        const map = new Map<string, { name: string; initials: string }>();
+        for (const cust of customers ?? []) {
+            const name = `${cust.firstName ?? ""} ${cust.lastName ?? ""}`.trim() || "?";
+            const initials = `${String(cust.firstName ?? "")[0]}${String(cust.lastName ?? "")[0]}`.trim() || "?";
+            map.set(String(cust.id), { name, initials });
+        }
+        return map;
+    }, [customers]);
+
     if (events.length === 0) return null;
 
     return (
         <Box sx={{ mt: 2 }}>
-            <Typography variant="h6" sx={{ mb: 1 }}>
-                {t("scheduler.upcomingEvents")}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                <Typography variant="h6" sx={{ flex: 1 }}>
+                    {t("scheduler.upcomingEvents")}
+                </Typography>
+                <ToggleButtonGroup
+                    size="small"
+                    value={showCustomers ? "customers" : "employees"}
+                    exclusive
+                    onChange={(_, v) => { if (v) setShowCustomers(v === "customers"); }}
+                >
+                    <ToggleButton value="employees" sx={{ px: 1.25, py: 0.25 }}>
+                        <Tooltip title={t("scheduler.toggleEmployees")}>
+                            <Person sx={{ fontSize: 18 }} />
+                        </Tooltip>
+                    </ToggleButton>
+                    <ToggleButton value="customers" sx={{ px: 1.25, py: 0.25 }}>
+                        <Tooltip title={t("scheduler.toggleCustomers")}>
+                            <People sx={{ fontSize: 18 }} />
+                        </Tooltip>
+                    </ToggleButton>
+                </ToggleButtonGroup>
+            </Box>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
                 {events.map((event) => {
-                    const eIds = getEmployeeIdsForEvent(String(event.id));
-                    const hasAssigned = eIds.length > 0;
+                    const personMap = showCustomers ? customerMap : employeeMap;
+                    const ids = showCustomers
+                        ? getCustomerIdsForEvent(String(event.id))
+                        : getEmployeeIdsForEvent(String(event.id));
+                    const visible = ids.slice(0, MAX_VISIBLE);
+                    const overflow = ids.slice(MAX_VISIBLE);
 
                     return (
                         <Box
@@ -71,29 +109,35 @@ export function EventList({ events, getEmployeeIdsForEvent, onAssignClick }: Eve
                                     {String(event.start).replace("T", " ").slice(0, 16)}
                                 </Typography>
                             </Box>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexShrink: 0 }}>
-                                {hasAssigned ? (
-                                    eIds.map((eid) => {
-                                        const emp = employeeMap.get(eid);
-                                        if (!emp) return null;
-                                        return (
-                                            <Tooltip key={eid} title={emp.name}>
-                                                <Avatar sx={{ width: 24, height: 24, fontSize: 11 }}>
-                                                    {emp.initials}
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.25, flexShrink: 0 }}>
+                                {ids.length === 0 ? (
+                                    <Typography variant="caption" color="text.disabled">
+                                        {t("scheduler.noOneAssigned")}
+                                    </Typography>
+                                ) : (
+                                    <>
+                                        {visible.map((id) => {
+                                            const person = personMap.get(id);
+                                            if (!person) return null;
+                                            return (
+                                                <Tooltip key={id} title={person.name}>
+                                                    <Avatar sx={{ width: 24, height: 24, fontSize: 11 }}>
+                                                        {person.initials}
+                                                    </Avatar>
+                                                </Tooltip>
+                                            );
+                                        })}
+                                        {overflow.length > 0 && (
+                                            <Tooltip
+                                                title={overflow.map(id => personMap.get(id)?.name).filter(Boolean).join(", ")}
+                                            >
+                                                <Avatar sx={{ width: 24, height: 24, fontSize: 10, bgcolor: "grey.400" }}>
+                                                    +{overflow.length}
                                                 </Avatar>
                                             </Tooltip>
-                                        );
-                                    })
-                                ) : (
-                                    <Typography variant="caption" color="text.disabled">
-                                        {t("scheduler.noEmployeesAssigned")}
-                                    </Typography>
+                                        )}
+                                    </>
                                 )}
-                                <Tooltip title={t("scheduler.assignEmployees")}>
-                                    <IconButton size="small" onClick={() => onAssignClick(event)}>
-                                        <PersonAdd fontSize="small" />
-                                    </IconButton>
-                                </Tooltip>
                             </Box>
                         </Box>
                     );

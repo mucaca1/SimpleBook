@@ -24,6 +24,7 @@ export function HomePage() {
         allEventRows,
         isLoading,
         getEmployeeIdsForEvent,
+        getCustomerIdsForEvent,
         createEvent,
         updateEvent,
         deleteEvent,
@@ -154,7 +155,7 @@ export function HomePage() {
                         <EventList
                             events={allEventRows}
                             getEmployeeIdsForEvent={getEmployeeIdsForEvent}
-                            onAssignClick={() => {}}
+                            getCustomerIdsForEvent={getCustomerIdsForEvent}
                         />
                     </Box>
                 )}

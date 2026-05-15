@@ -507,6 +507,9 @@
         "upcomingEvents": "Upcoming Events",
         "noEmployees": "No employees found. Add employees first.",
         "noEmployeesAssigned": "No employees",
+        "noOneAssigned": "Unassigned",
+        "toggleEmployees": "Employees",
+        "toggleCustomers": "Customers",
         "unnamedEmployee": "Unnamed",
         "employeeAssignError": "Failed to assign employees",
         "toolbar": {

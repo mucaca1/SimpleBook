@@ -4,9 +4,9 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { sqliteTrue } from "@evolu/common";
 import { evolu } from "../evolu-init";
-import { calendarEvents, calendarEventEmployees } from "../evolu/evolu-query";
+import { calendarEvents, calendarEventEmployees, calendarEventCustomers } from "../evolu/evolu-query";
 import type { TCalendarEventRow } from "../evolu/evolu-query";
-import type { CalendarEventId, CalendarEventEmployeeId, EmployeeId } from "../evolu/evolu-db";
+import type { CalendarEventId, CalendarEventEmployeeId, CalendarEventCustomerId, EmployeeId, CustomerId } from "../evolu/evolu-db";
 import type { SchedulerEvent, SchedulerEventColor } from "@mui/x-scheduler/models";
 
 function toSchedulerEvent(row: TCalendarEventRow): SchedulerEvent {
@@ -26,6 +26,7 @@ export function useCalendarEventCrud() {
     const { t } = useTranslation();
     const rows = useQuery(calendarEvents);
     const assignmentRows = useQuery(calendarEventEmployees);
+    const customerAssignmentRows = useQuery(calendarEventCustomers);
 
     const events: SchedulerEvent[] = useMemo(
         () => (rows ?? []).map(toSchedulerEvent),
@@ -195,6 +196,53 @@ export function useCalendarEventCrud() {
         [assignmentRows, t]
     );
 
+    const customerIdsByEvent = useMemo(() => {
+        const map = new Map<string, string[]>();
+        for (const row of customerAssignmentRows ?? []) {
+            const eventId = String(row.calendarEventId);
+            const list = map.get(eventId) ?? [];
+            list.push(String(row.customerId));
+            map.set(eventId, list);
+        }
+        return map;
+    }, [customerAssignmentRows]);
+
+    const getCustomerIdsForEvent = useCallback((eventId: string): string[] => {
+        return customerIdsByEvent.get(eventId) ?? [];
+    }, [customerIdsByEvent]);
+
+    const assignCustomers = useCallback(
+        async (eventId: string, newCustomerIds: string[]) => {
+            try {
+                const currentAssignments = (customerAssignmentRows ?? [])
+                    .filter((r) => String(r.calendarEventId) === eventId);
+                const currentCustomerIds = new Set(currentAssignments.map((r) => String(r.customerId)));
+                const desiredIds = new Set(newCustomerIds);
+
+                for (const row of currentAssignments) {
+                    if (!desiredIds.has(String(row.customerId))) {
+                        await evolu.update("calendarEventCustomers", {
+                            id: row.id as CalendarEventCustomerId,
+                            isDeleted: sqliteTrue,
+                        });
+                    }
+                }
+
+                for (const customerId of newCustomerIds) {
+                    if (!currentCustomerIds.has(customerId)) {
+                        await evolu.insert("calendarEventCustomers", {
+                            calendarEventId: eventId as CalendarEventId,
+                            customerId: customerId as CustomerId,
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to assign customers:", error);
+            }
+        },
+        [customerAssignmentRows, t]
+    );
+
     const allEventRows = useMemo(() => rows ?? [], [rows]);
 
     return {
@@ -207,5 +255,7 @@ export function useCalendarEventCrud() {
         deleteEvent,
         assignEmployees,
         getEmployeeIdsForEvent,
+        assignCustomers,
+        getCustomerIdsForEvent,
     };
 }
