@@ -1,5 +1,5 @@
 import { IconButton, Button, ButtonGroup, Typography, Box } from '@mui/material';
-import { ChevronLeft, ChevronRight, Menu as MenuIcon } from '@mui/icons-material';
+import { ChevronLeft, ChevronRight, Menu as MenuIcon, MenuOpen } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 
@@ -64,14 +64,9 @@ export function CalendarToolbar({
             <IconButton
                 size="small"
                 onClick={onToggleMiniCalendar}
-                sx={{
-                    color: miniCalendarOpen ? 'primary.main' : 'text.secondary',
-                    bgcolor: miniCalendarOpen ? 'primary.light' : 'transparent',
-                    '&:hover': { bgcolor: miniCalendarOpen ? 'primary.light' : 'action.hover' },
-                }}
                 aria-label={t('scheduler.toolbar.menu')}
             >
-                <MenuIcon fontSize="small" />
+                {miniCalendarOpen ? <MenuOpen fontSize="small" /> : <MenuIcon fontSize="small" />}
             </IconButton>
             <Button
                 size="small"
