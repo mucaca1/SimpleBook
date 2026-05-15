@@ -454,7 +454,8 @@
     },
     "services": {
         "service": "Services",
-        "prices": "Prices"
+        "prices": "Prices",
+        "rooms": "Rooms"
     },
     "prices": {
         "title": "Prices",
@@ -549,6 +550,35 @@
             "12h": "12-hour (1:00 PM)",
             "24h": "24-hour (13:00)",
             "showWeekends": "Show Weekends"
+        }
+    },
+    "rooms": {
+        "title": "Rooms"
+    },
+    "room": {
+        "title": "Rooms",
+        "description": "Manage your rooms",
+        "add": "Add Room",
+        "empty": "No rooms found. Add your first room!",
+        "form": {
+            "name": "Room Name",
+            "color": "Color",
+            "maxCapacity": "Max Capacity",
+            "countChildrenAsPerson": "Count children as person",
+            "addRoom": "Add Room",
+            "updateRoom": "Update Room"
+        },
+        "card": {
+            "capacity": "{{count}} persons",
+            "childrenFree": "Children free"
+        },
+        "toast": {
+            "created": "Room created successfully",
+            "updated": "Room updated successfully",
+            "deleted": "Room deleted successfully",
+            "createError": "Failed to create room",
+            "updateError": "Failed to update room",
+            "deleteError": "Failed to delete room"
         }
     },
     "creditLedger": {

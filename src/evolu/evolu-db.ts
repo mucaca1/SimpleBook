@@ -99,6 +99,17 @@ const CalendarEventCustomer = {
     customerId: CustomerId,
 }
 
+const RoomId = Evolu.id("RoomId");
+export type RoomId = typeof RoomId.Type;
+
+const Room = {
+    id: RoomId,
+    name: Evolu.NonEmptyString100,
+    color: Evolu.nullOr(Evolu.NonEmptyString100),
+    maxCapacity: Evolu.PositiveNumber,
+    countChildrenAsPerson: Evolu.SqliteBoolean,
+}
+
 const ServiceId = Evolu.id("ServiceId");
 export type ServiceId = typeof ServiceId.Type;
 
@@ -149,6 +160,7 @@ export const Schema = {
     calendarEvents: CalendarEvent,
     calendarEventEmployees: CalendarEventEmployee,
     calendarEventCustomers: CalendarEventCustomer,
+    rooms: Room,
     services: Service,
     prices: Price,
     creditTransactions: CreditTransaction,

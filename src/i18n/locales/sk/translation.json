@@ -454,7 +454,8 @@
     },
     "services": {
         "service": "Služby",
-        "prices": "Cenník"
+        "prices": "Cenník",
+        "rooms": "Miestnosti"
     },
     "prices": {
         "title": "Cenník",
@@ -549,6 +550,35 @@
             "12h": "12-hodinový (1:00 PM)",
             "24h": "24-hodinový (13:00)",
             "showWeekends": "Zobraziť víkendy"
+        }
+    },
+    "rooms": {
+        "title": "Miestnosti"
+    },
+    "room": {
+        "title": "Miestnosti",
+        "description": "Spravujte svoje miestnosti",
+        "add": "Pridať miestnosť",
+        "empty": "Nenašli sa žiadne miestnosti. Pridajte svoju prvú miestnosť!",
+        "form": {
+            "name": "Názov miestnosti",
+            "color": "Farba",
+            "maxCapacity": "Maximálna kapacita",
+            "countChildrenAsPerson": "Počítať deti ako osoby",
+            "addRoom": "Pridať miestnosť",
+            "updateRoom": "Aktualizovať miestnosť"
+        },
+        "card": {
+            "capacity": "{{count}} osôb",
+            "childrenFree": "Deti zadarmo"
+        },
+        "toast": {
+            "created": "Miestnosť bola úspešne vytvorená",
+            "updated": "Miestnosť bola úspešne aktualizovaná",
+            "deleted": "Miestnosť bola úspešne odstránená",
+            "createError": "Nepodarilo sa vytvoriť miestnosť",
+            "updateError": "Nepodarilo sa aktualizovať miestnosť",
+            "deleteError": "Nepodarilo sa odstrániť miestnosť"
         }
     },
     "creditLedger": {
