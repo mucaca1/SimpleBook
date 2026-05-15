@@ -57,14 +57,6 @@ const Employee = {
     email: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
-const CustomFieldValue = {
-    id: CustomFieldValueId,
-    customFieldId: CustomFieldId,
-    customerId: Evolu.nullOr(CustomerId),
-    employeeId: Evolu.nullOr(EmployeeId),
-    value: Evolu.nullOr(Evolu.NonEmptyString1000)
-}
-
 const CalendarEventId = Evolu.id("CalendarEventId");
 export type CalendarEventId = typeof CalendarEventId.Type;
 
@@ -79,6 +71,35 @@ const CalendarEvent = {
     resource: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
+const CustomFieldValue = {
+    id: CustomFieldValueId,
+    customFieldId: CustomFieldId,
+    customerId: Evolu.nullOr(CustomerId),
+    employeeId: Evolu.nullOr(EmployeeId),
+    calendarEventId: Evolu.nullOr(CalendarEventId),
+    value: Evolu.nullOr(Evolu.NonEmptyString1000)
+}
+
+const CalendarEventEmployeeId = Evolu.id("CalendarEventEmployeeId");
+export type CalendarEventEmployeeId = typeof CalendarEventEmployeeId.Type;
+
+const CalendarEventEmployee = {
+    id: CalendarEventEmployeeId,
+    calendarEventId: CalendarEventId,
+    employeeId: EmployeeId,
+}
+
+const ServiceId = Evolu.id("ServiceId");
+export type ServiceId = typeof ServiceId.Type;
+
+const Service = {
+    id: ServiceId,
+    name: Evolu.NonEmptyString100,
+    description: Evolu.nullOr(Evolu.NonEmptyString1000),
+    duration: Evolu.NonEmptyString100,
+    color: Evolu.nullOr(Evolu.NonEmptyString100),
+}
+
 export const Schema = {
     settings: Settings,
     customers: Customer,
@@ -86,4 +107,6 @@ export const Schema = {
     customFields: CustomField,
     customFieldValues: CustomFieldValue,
     calendarEvents: CalendarEvent,
+    calendarEventEmployees: CalendarEventEmployee,
+    services: Service,
 };

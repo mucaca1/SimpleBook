@@ -4,6 +4,7 @@
         "hello": "Ahoj",
         "home": "Domov",
         "settings": "Nastavenia",
+        "service": "Služby",
         "subject": "Predmet",
         "save": "Uložiť",
         "saving": "Ukladá sa...",
@@ -123,7 +124,8 @@
             },
             "appliesToOptions": {
                 "customer": "Zákazník",
-                "employee": "Zamestnanec"
+                "employee": "Zamestnanec",
+                "calendarEvent": "Kalendárová udalosť"
             },
             "validation": {
                 "fieldNameRequired": "Názov poľa je povinný",
@@ -211,6 +213,14 @@
                 "copied": "Skopírované!",
                 "show": "Zobraziť celú mnemotechnickú frázu",
                 "hide": "Skryť mnemotechnickú frázu"
+            },
+            "queryExecutor": {
+                "title": "Vykonať dotaz",
+                "warning": "Vykonajte priame SQL SELECT dotazy na databázu. Používajte s opatrnosťou.",
+                "inputLabel": "SQL dotaz",
+                "executeButton": "Vykonať",
+                "executing": "Vykonáva sa...",
+                "resultLabel": "Výsledok"
             }
         }
     },
@@ -364,13 +374,74 @@
             "invalidDate": "Prosím, zadajte platný dátum"
         }
     },
+    "service": {
+        "title": "Služby",
+        "description": "Spravujte svoje typy služieb",
+        "add": "Pridať službu",
+        "empty": "Nenašli sa žiadne služby. Pridajte svoju prvú službu!",
+        "form": {
+            "name": "Názov služby",
+            "description": "Popis",
+            "duration": "Predvolená doba trvania",
+            "customDuration": "Vlastná...",
+            "customDurationLabel": "Trvanie (minúty)",
+            "color": "Farba",
+            "addService": "Pridať službu",
+            "updateService": "Aktualizovať službu"
+        },
+        "toast": {
+            "created": "Služba bola úspešne vytvorená",
+            "updated": "Služba bola úspešne aktualizovaná",
+            "deleted": "Služba bola úspešne odstránená",
+            "createError": "Nepodarilo sa vytvoriť službu",
+            "updateError": "Nepodarilo sa aktualizovať službu",
+            "deleteError": "Nepodarilo sa odstrániť službu"
+        }
+    },
     "scheduler": {
+        "assignEmployees": "Priradiť zamestnancov",
+        "upcomingEvents": "Nadchádzajúce udalosti",
+        "noEmployees": "Nenašli sa žiadni zamestnanci. Najprv pridajte zamestnancov.",
+        "noEmployeesAssigned": "Žiadni zamestnanci",
+        "unnamedEmployee": "Bez mena",
+        "employeeAssignError": "Nepodarilo sa priradiť zamestnancov",
+        "toolbar": {
+            "menu": "Prepnúť kalendár",
+            "today": "Dnes",
+            "day": "Deň",
+            "week": "Týždeň"
+        },
         "toast": {
             "created": "Udalosť bola úspešne vytvorená",
             "deleted": "Udalosť bola úspešne odstránená",
             "syncError": "Nepodarilo sa synchronizovať udalosti",
             "createError": "Nepodarilo sa vytvoriť udalosť",
             "deleteError": "Nepodarilo sa odstrániť udalosť"
+        },
+        "eventForm": {
+            "createEvent": "Vytvoriť udalosť",
+            "editEvent": "Upraviť udalosť",
+            "title": "Názov",
+            "titleRequired": "Názov je povinný",
+            "description": "Popis",
+            "startDate": "Začiatok",
+            "endDate": "Koniec",
+            "allDay": "Celý deň",
+            "color": "Farba",
+            "service": "Služba",
+            "noService": "Žiadna",
+            "employees": "Priradení zamestnanci",
+            "customFields": "Vlastné polia",
+            "save": "Uložiť",
+            "cancel": "Zrušiť",
+            "delete": "Odstrániť udalosť"
+        },
+        "settings": {
+            "title": "Nastavenia kalendára",
+            "timeFormat": "Formát času",
+            "12h": "12-hodinový (1:00 PM)",
+            "24h": "24-hodinový (13:00)",
+            "showWeekends": "Zobraziť víkendy"
         }
     }
 }

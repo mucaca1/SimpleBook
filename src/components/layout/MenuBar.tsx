@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AppBar, Toolbar, Button, Typography, Box, Menu, MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
-import { Home, Settings, ExpandMore, People, Badge } from "@mui/icons-material";
+import { Home, Settings, ExpandMore, People, Badge, HomeRepairService } from "@mui/icons-material";
 
 export function MenuBar() {
     const { t } = useTranslation();
@@ -38,6 +38,9 @@ export function MenuBar() {
                         aria-expanded={open ? 'true' : undefined}
                     >
                         { t('common.subject') }
+                    </Button>
+                    <Button color="inherit" component={RouterLink} to="/service" startIcon={<HomeRepairService />}>
+                        { t('common.service') }
                     </Button>
                     <Button color="inherit" component={RouterLink} to="/settings" startIcon={<Settings />}>
                         { t('common.settings') }
