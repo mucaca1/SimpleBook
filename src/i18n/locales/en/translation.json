@@ -539,6 +539,7 @@
             "service": "Service",
             "noService": "None",
             "employees": "Assigned Employees",
+            "searchEmployees": "Search employees...",
             "customFields": "Custom Fields",
             "save": "Save",
             "cancel": "Cancel",

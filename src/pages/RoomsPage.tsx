@@ -393,6 +393,7 @@ export function RoomsPage() {
                     </Typography>
                     <Box sx={{ mt: 3 }}>
                         <RoomForm
+                            key={viewMode === "edit" ? `edit-${editingRoom?.id}` : "add"}
                             mode={viewMode as "add" | "edit"}
                             initialData={initialData}
                             onSubmit={handleSubmit}

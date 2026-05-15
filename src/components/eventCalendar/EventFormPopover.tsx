@@ -60,6 +60,7 @@ export function EventFormPopover({
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<Set<string>>(new Set());
     const [saving, setSaving] = useState(false);
     const [titleError, setTitleError] = useState('');
+    const [employeeSearch, setEmployeeSearch] = useState('');
 
     useEffect(() => {
         if (open && initialData) {
@@ -82,6 +83,7 @@ export function EventFormPopover({
             setSelectedEmployeeIds(new Set());
         }
         setTitleError('');
+        setEmployeeSearch('');
     }, [open, initialData]);
 
     // Push draft changes for pre-drawing
@@ -328,8 +330,24 @@ export function EventFormPopover({
                                 {t('scheduler.noEmployees')}
                             </Typography>
                         ) : (
-                            <List dense disablePadding sx={{ maxHeight: 150, overflow: 'auto' }}>
-                                {(employees ?? []).map((emp) => {
+                            <>
+                                <TextField
+                                    size="small"
+                                    placeholder={t('scheduler.eventForm.searchEmployees')}
+                                    value={employeeSearch}
+                                    onChange={(e) => setEmployeeSearch(e.target.value)}
+                                    fullWidth
+                                    disabled={saving}
+                                    sx={{ mb: 0.5 }}
+                                />
+                                <List dense disablePadding sx={{ maxHeight: 150, overflow: 'auto' }}>
+                                {(employees ?? [])
+                                    .filter((emp) => {
+                                        if (!employeeSearch.trim()) return true;
+                                        const name = `${emp.firstName ?? ''} ${emp.lastName ?? ''}`.trim().toLowerCase();
+                                        return name.includes(employeeSearch.trim().toLowerCase());
+                                    })
+                                    .map((emp) => {
                                     const id = String(emp.id);
                                     return (
                                         <ListItem
@@ -360,6 +378,7 @@ export function EventFormPopover({
                                     );
                                 })}
                             </List>
+                            </>
                         )}
 
                         {/* Custom Fields */}

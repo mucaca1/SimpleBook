@@ -539,6 +539,7 @@
             "service": "Služba",
             "noService": "Žiadna",
             "employees": "Priradení zamestnanci",
+            "searchEmployees": "Hľadať zamestnancov...",
             "customFields": "Vlastné polia",
             "save": "Uložiť",
             "cancel": "Zrušiť",
