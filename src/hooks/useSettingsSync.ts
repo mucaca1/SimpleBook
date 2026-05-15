@@ -185,3 +185,40 @@ export async function updateCurrency(id: SettingsId | null, currency: string): P
         throw error;
     }
 }
+
+export async function updateCalendarTimeFormat(id: SettingsId | null, calendarTimeFormat: string): Promise<void> {
+    try {
+        if (id) {
+            const updateResult = await evolu.update("settings", {
+                id: id,
+                calendarTimeFormat
+            });
+
+            if (!updateResult.ok) {
+                throw new Error(updateResult.error.message);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to update calendar time format:", error);
+        throw error;
+    }
+}
+
+export async function updateCalendarShowWeekends(id: SettingsId | null, calendarShowWeekends: number): Promise<void> {
+    try {
+        if (id) {
+            const updateResult = await evolu.update("settings", {
+                id: id,
+                calendarShowWeekends,
+            });
+
+            if (!updateResult.ok) {
+                throw new Error(updateResult.error.message);
+            }
+        }
+    } catch (error) {
+        console.error("Failed to update calendar show weekends:", error);
+        console.error("Failed to update currency:", error);
+        throw error;
+    }
+}
