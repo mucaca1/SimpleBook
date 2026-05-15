@@ -9,7 +9,7 @@ import { CustomEventCalendar } from "../components/eventCalendar";
 import { EventFormPanel } from "../components/eventCalendar/EventFormPanel";
 import { saveCustomFieldValuesForCalendarEvent } from "../evolu/customFieldUtils";
 import type { CalendarEventId } from "../evolu/evolu-db";
-import type { CalendarEventFormData } from "../components/eventCalendar/types";
+import type { CalendarEventFormData, ExternalDraftData } from "../components/eventCalendar/types";
 
 interface FormState {
     open: boolean;
@@ -33,6 +33,11 @@ export function HomePage() {
     const { services } = useServiceCrud();
 
     const [formState, setFormState] = useState<FormState>(INITIAL_FORM_STATE);
+    const [draftData, setDraftData] = useState<ExternalDraftData | null>(null);
+
+    const handleDraftChange = useCallback((draft: ExternalDraftData) => {
+        setDraftData(draft);
+    }, []);
 
     const handleSlotClick = useCallback((_day: dayjs.Dayjs, startTime: dayjs.Dayjs) => {
         setFormState({
@@ -104,15 +109,18 @@ export function HomePage() {
             }
         }
         setFormState(INITIAL_FORM_STATE);
+        setDraftData(null);
     }, [formState.mode, createEvent, updateEvent, assignEmployees]);
 
     const handleFormDelete = useCallback(async (id: string) => {
         await deleteEvent(id);
         setFormState(INITIAL_FORM_STATE);
+        setDraftData(null);
     }, [deleteEvent]);
 
     const handleFormClose = useCallback(() => {
         setFormState(INITIAL_FORM_STATE);
+        setDraftData(null);
     }, []);
 
     if (isLoading) {
@@ -131,6 +139,7 @@ export function HomePage() {
                     onSlotClick={handleSlotClick}
                     onEventClick={handleEventClick}
                     externalFormOpen={formState.open}
+                    externalDraftData={draftData}
                 />
             </Box>
             <Box sx={{
@@ -149,6 +158,7 @@ export function HomePage() {
                         onSave={handleFormSave}
                         onDelete={handleFormDelete}
                         onClose={handleFormClose}
+                        onDraftChange={handleDraftChange}
                     />
                 ) : (
                     <Box sx={{ flex: 1, overflowY: "auto", pl: 1 }}>

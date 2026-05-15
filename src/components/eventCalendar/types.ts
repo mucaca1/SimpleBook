@@ -15,11 +15,20 @@ export interface CalendarEventFormData {
     customFieldValues: Record<string, string | boolean | null>;
 }
 
+export interface ExternalDraftData {
+    title: string;
+    start: string;
+    end: string;
+    color: SchedulerEventColor | null;
+    allDay: boolean;
+}
+
 export interface CustomEventCalendarProps {
     sx?: object;
     onSlotClick?: (day: dayjs.Dayjs, startTime: dayjs.Dayjs) => void;
     onEventClick?: (event: SchedulerEvent) => void;
     externalFormOpen?: boolean;
+    externalDraftData?: ExternalDraftData | null;
 }
 
 export interface CustomEventFormDialogProps {

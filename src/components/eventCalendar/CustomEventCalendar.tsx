@@ -18,7 +18,7 @@ import { CalendarToolbar } from './CalendarToolbar';
 import { CalendarWeekView } from './CalendarWeekView';
 import { MiniMonthCalendar } from './MiniMonthCalendar';
 import { EventFormPopover } from './EventFormPopover';
-import type { CalendarEventFormData, CustomEventCalendarProps } from './types';
+import type { CalendarEventFormData, CustomEventCalendarProps, ExternalDraftData } from './types';
 
 interface DraftEventData {
     title: string;
@@ -28,7 +28,7 @@ interface DraftEventData {
     allDay: boolean;
 }
 
-export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEventClick: onEventClickExternal, externalFormOpen }: CustomEventCalendarProps) {
+export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEventClick: onEventClickExternal, externalFormOpen, externalDraftData }: CustomEventCalendarProps) {
     const { i18n } = useTranslation();
     const {
         events,
@@ -69,6 +69,20 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
             setDraftEvent(null);
         }
     }, [onSlotClickExternal, externalFormOpen]);
+
+    // Sync external draft data (from right panel form) to calendar preview
+    useEffect(() => {
+        if (externalDraftData && externalFormOpen) {
+            setDraftEvent(prev => prev ? {
+                ...prev,
+                title: externalDraftData.title || '(New Event)',
+                start: externalDraftData.start,
+                end: externalDraftData.end,
+                color: externalDraftData.color ?? undefined,
+                allDay: externalDraftData.allDay,
+            } : null);
+        }
+    }, [externalDraftData, externalFormOpen]);
 
     const days = useMemo(() => {
         if (view === 'week') return getWeekDays(currentDate, showWeekends, locale);
@@ -132,6 +146,10 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
 
     const handleEventClick = useCallback((event: SchedulerEvent, anchorEl: HTMLElement) => {
         if (onEventClickExternal) {
+            setDraftEvent({
+                ...event,
+                title: event.title || '(New Event)',
+            });
             onEventClickExternal(event);
             return;
         }
