@@ -405,6 +405,12 @@
         "noEmployeesAssigned": "No employees",
         "unnamedEmployee": "Unnamed",
         "employeeAssignError": "Failed to assign employees",
+        "toolbar": {
+            "menu": "Toggle calendar",
+            "today": "Today",
+            "day": "Day",
+            "week": "Week"
+        },
         "toast": {
             "created": "Event created successfully",
             "deleted": "Event deleted successfully",

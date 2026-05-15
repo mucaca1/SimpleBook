@@ -15,6 +15,7 @@ import type { CalendarEventId } from '../../evolu/evolu-db';
 import { getWeekDays } from './utils';
 import { CalendarToolbar } from './CalendarToolbar';
 import { CalendarWeekView } from './CalendarWeekView';
+import { MiniMonthCalendar } from './MiniMonthCalendar';
 import { EventFormPopover } from './EventFormPopover';
 import type { CalendarEventFormData, CustomEventCalendarProps } from './types';
 
@@ -49,6 +50,7 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
     // Calendar state
     const [currentDate, setCurrentDate] = useState(dayjs());
     const [view, setView] = useState<'day' | 'week'>('week');
+    const [miniCalendarOpen, setMiniCalendarOpen] = useState(true);
 
     // Popover state
     const [popoverOpen, setPopoverOpen] = useState(false);
@@ -80,6 +82,11 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
         })),
         [services]
     );
+
+    const handleDaySelect = useCallback((date: dayjs.Dayjs) => {
+        setCurrentDate(date);
+        setView('week');
+    }, []);
 
     const handleSlotClick = useCallback((day: dayjs.Dayjs, startTime: dayjs.Dayjs, anchorEl: HTMLElement, _clickEvent: React.MouseEvent) => {
         if (onSlotClickExternal) {
@@ -212,21 +219,40 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
                 onViewChange={setView}
                 onNavigate={setCurrentDate}
                 locale={locale}
+                miniCalendarOpen={miniCalendarOpen}
+                onToggleMiniCalendar={() => setMiniCalendarOpen(prev => !prev)}
             />
 
-            {/* Calendar grid with integrated headers */}
-            <Box sx={{ flex: 1, minHeight: 0 }}>
-                <CalendarWeekView
-                    days={days}
-                    events={events}
-                    resources={resources}
-                    onSlotClick={handleSlotClick}
-                    onEventClick={handleEventClick}
-                    ampm={ampm}
-                    locale={locale}
-                    draftEvent={draftEvent}
-                    draftAnchorRef={draftAnchorRef}
-                />
+            {/* Main content: mini month calendar + scheduler grid */}
+            <Box sx={{ display: 'flex', flex: 1, minHeight: 0 }}>
+                {miniCalendarOpen && (
+                    <Box sx={{
+                        flexShrink: 0,
+                        borderRight: 1,
+                        borderColor: 'divider',
+                    }}>
+                        <MiniMonthCalendar
+                            currentDate={currentDate}
+                            events={events}
+                            locale={locale}
+                            onDaySelect={handleDaySelect}
+                        />
+                    </Box>
+                )}
+
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <CalendarWeekView
+                        days={days}
+                        events={events}
+                        resources={resources}
+                        onSlotClick={handleSlotClick}
+                        onEventClick={handleEventClick}
+                        ampm={ampm}
+                        locale={locale}
+                        draftEvent={draftEvent}
+                        draftAnchorRef={draftAnchorRef}
+                    />
+                </Box>
             </Box>
 
             {!onSlotClickExternal && (

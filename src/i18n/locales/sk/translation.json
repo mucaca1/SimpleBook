@@ -405,6 +405,12 @@
         "noEmployeesAssigned": "Žiadni zamestnanci",
         "unnamedEmployee": "Bez mena",
         "employeeAssignError": "Nepodarilo sa priradiť zamestnancov",
+        "toolbar": {
+            "menu": "Prepnúť kalendár",
+            "today": "Dnes",
+            "day": "Deň",
+            "week": "Týždeň"
+        },
         "toast": {
             "created": "Udalosť bola úspešne vytvorená",
             "deleted": "Udalosť bola úspešne odstránená",
