@@ -3,7 +3,7 @@ import {
     TextField, FormControlLabel, Checkbox,
     Box, Stack, Typography, Button, CircularProgress,
     List, ListItem, ListItemAvatar, ListItemText, Avatar,
-    Divider, IconButton,
+    Divider, IconButton, Autocomplete,
 } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { useEmployeeCrud } from '../../hooks/useEmployeeCrud';
 import { useServiceCrud } from '../../hooks/useServiceCrud';
+import { useRoomCrud } from '../../hooks/useRoomCrud';
 import type { SchedulerEventColor } from '@mui/x-scheduler/models';
 import { CustomFieldSection } from './CustomFieldSection';
 import type { CustomFieldSectionRef } from './CustomFieldSection';
@@ -44,6 +45,7 @@ export function EventFormPanel({
     const { t } = useTranslation();
     const { employees, isLoading: employeesLoading } = useEmployeeCrud();
     const { services } = useServiceCrud();
+    const { rooms } = useRoomCrud();
     const customFieldRef = useRef<CustomFieldSectionRef>(null);
 
     const [title, setTitle] = useState('');
@@ -54,6 +56,7 @@ export function EventFormPanel({
     const [color, setColor] = useState<SchedulerEventColor | null>('teal');
     const [resource, setResource] = useState<string | null>(null);
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<Set<string>>(new Set());
+    const [roomId, setRoomId] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const [titleError, setTitleError] = useState('');
     const [employeeSearch, setEmployeeSearch] = useState('');
@@ -68,6 +71,7 @@ export function EventFormPanel({
             setColor(initialData.color ?? 'teal');
             setResource(initialData.resource ?? null);
             setSelectedEmployeeIds(new Set(initialData.employeeIds || []));
+            setRoomId(initialData.roomId ?? null);
         } else {
             setTitle('');
             setDescription('');
@@ -77,6 +81,7 @@ export function EventFormPanel({
             setColor('teal');
             setResource(null);
             setSelectedEmployeeIds(new Set());
+            setRoomId(null);
         }
         setTitleError('');
         setEmployeeSearch('');
@@ -123,6 +128,7 @@ export function EventFormPanel({
                 allDay,
                 color,
                 resource,
+                roomId,
                 employeeIds: Array.from(selectedEmployeeIds),
                 customFieldValues: customValues,
             };
@@ -279,6 +285,35 @@ export function EventFormPanel({
                                 />
                             ))}
                         </Box>
+
+                        <Divider />
+
+                        {/* Room */}
+                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+                            {t('scheduler.eventForm.room')}
+                        </Typography>
+                        <Autocomplete
+                            size="small"
+                            options={(rooms ?? []).map((r) => ({ id: String(r.id), label: String(r.name), color: r.color }))}
+                            getOptionLabel={(option) => option.label}
+                            value={(rooms ?? []).map((r) => ({ id: String(r.id), label: String(r.name), color: r.color })).find((r) => r.id === roomId) ?? null}
+                            onChange={(_e, newValue) => setRoomId(newValue?.id ?? null)}
+                            renderInput={(params) => (
+                                <TextField {...params} placeholder={t('scheduler.eventForm.selectRoom')} size="small" />
+                            )}
+                            renderOption={(props, option) => (
+                                <li {...props}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        {option.color && (
+                                            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: option.color }} />
+                                        )}
+                                        {option.label}
+                                    </Box>
+                                </li>
+                            )}
+                            disabled={saving}
+                            isOptionEqualToValue={(o, v) => o.id === v.id}
+                        />
 
                         <Divider />
 

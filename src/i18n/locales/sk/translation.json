@@ -540,6 +540,8 @@
             "noService": "Žiadna",
             "employees": "Priradení zamestnanci",
             "searchEmployees": "Hľadať zamestnancov...",
+            "room": "Miestnosť",
+            "selectRoom": "Vyberte miestnosť",
             "customFields": "Vlastné polia",
             "save": "Uložiť",
             "cancel": "Zrušiť",

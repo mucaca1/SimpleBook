@@ -58,6 +58,17 @@ const Employee = {
     email: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
+const RoomId = Evolu.id("RoomId");
+export type RoomId = typeof RoomId.Type;
+
+const Room = {
+    id: RoomId,
+    name: Evolu.NonEmptyString100,
+    color: Evolu.nullOr(Evolu.NonEmptyString100),
+    maxCapacity: Evolu.PositiveNumber,
+    countChildrenAsPerson: Evolu.SqliteBoolean,
+}
+
 const CalendarEventId = Evolu.id("CalendarEventId");
 export type CalendarEventId = typeof CalendarEventId.Type;
 
@@ -70,6 +81,7 @@ const CalendarEvent = {
     allDay: Evolu.SqliteBoolean,
     color: Evolu.nullOr(Evolu.NonEmptyString100),
     resource: Evolu.nullOr(Evolu.NonEmptyString100),
+    roomId: Evolu.nullOr(RoomId),
 }
 
 const CustomFieldValue = {
@@ -97,17 +109,6 @@ const CalendarEventCustomer = {
     id: CalendarEventCustomerId,
     calendarEventId: CalendarEventId,
     customerId: CustomerId,
-}
-
-const RoomId = Evolu.id("RoomId");
-export type RoomId = typeof RoomId.Type;
-
-const Room = {
-    id: RoomId,
-    name: Evolu.NonEmptyString100,
-    color: Evolu.nullOr(Evolu.NonEmptyString100),
-    maxCapacity: Evolu.PositiveNumber,
-    countChildrenAsPerson: Evolu.SqliteBoolean,
 }
 
 const ServiceId = Evolu.id("ServiceId");

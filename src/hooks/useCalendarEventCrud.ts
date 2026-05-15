@@ -6,7 +6,7 @@ import { sqliteTrue } from "@evolu/common";
 import { evolu } from "../evolu-init";
 import { calendarEvents, calendarEventEmployees, calendarEventCustomers } from "../evolu/evolu-query";
 import type { TCalendarEventRow } from "../evolu/evolu-query";
-import type { CalendarEventId, CalendarEventEmployeeId, CalendarEventCustomerId, EmployeeId, CustomerId } from "../evolu/evolu-db";
+import type { CalendarEventId, CalendarEventEmployeeId, CalendarEventCustomerId, EmployeeId, CustomerId, RoomId } from "../evolu/evolu-db";
 import type { SchedulerEvent, SchedulerEventColor } from "@mui/x-scheduler/models";
 
 function toSchedulerEvent(row: TCalendarEventRow): SchedulerEvent {
@@ -65,6 +65,7 @@ export function useCalendarEventCrud() {
                             allDay: event.allDay ? 1 : 0,
                             color: event.color ?? null,
                             resource: event.resource ?? null,
+                            roomId: (event as any).roomId ? ((event as any).roomId as RoomId) : null,
                         });
                         existingIds.delete(id as CalendarEventId);
                     } else {
@@ -95,7 +96,7 @@ export function useCalendarEventCrud() {
     );
 
     const createEvent = useCallback(
-        async (event: Omit<SchedulerEvent, "id">): Promise<string | undefined> => {
+        async (event: Omit<SchedulerEvent, "id">, roomId?: string | null): Promise<string | undefined> => {
             try {
                 const result = await evolu.insert("calendarEvents", {
                     title: event.title,
@@ -105,6 +106,7 @@ export function useCalendarEventCrud() {
                     allDay: event.allDay ? 1 : 0,
                     color: event.color ?? null,
                     resource: event.resource ?? null,
+                    roomId: roomId ? (roomId as RoomId) : null,
                 });
                 if (result.ok) {
                     toast.success(t("scheduler.toast.created"));
@@ -141,7 +143,7 @@ export function useCalendarEventCrud() {
     );
 
     const updateEvent = useCallback(
-        async (id: string, data: Partial<SchedulerEvent>): Promise<void> => {
+        async (id: string, data: Partial<SchedulerEvent>, roomId?: string | null): Promise<void> => {
             try {
                 await evolu.update("calendarEvents", {
                     id: id as CalendarEventId,
@@ -152,6 +154,7 @@ export function useCalendarEventCrud() {
                     ...(data.allDay !== undefined && { allDay: data.allDay ? 1 : 0 }),
                     ...(data.color !== undefined && { color: data.color ?? null }),
                     ...(data.resource !== undefined && { resource: data.resource ?? null }),
+                    ...(roomId !== undefined && { roomId: roomId ? (roomId as RoomId) : null }),
                 });
             } catch (error) {
                 console.error("Failed to update event:", error);

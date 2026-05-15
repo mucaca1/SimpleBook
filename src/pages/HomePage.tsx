@@ -53,6 +53,7 @@ export function HomePage() {
     const handleEventClick = useCallback((event: SchedulerEvent) => {
         const eventId = String(event.id);
         const employeeIds = getEmployeeIdsForEvent(eventId);
+        const eventRow = allEventRows.find((r) => String(r.id) === eventId);
         setFormState({
             open: true,
             mode: "edit",
@@ -65,10 +66,11 @@ export function HomePage() {
                 allDay: event.allDay ?? false,
                 color: event.color ?? null,
                 resource: event.resource ?? null,
+                roomId: eventRow?.roomId ? String(eventRow.roomId) : null,
                 employeeIds,
             },
         });
-    }, [getEmployeeIdsForEvent]);
+    }, [getEmployeeIdsForEvent, allEventRows]);
 
     const handleFormSave = useCallback(async (formData: CalendarEventFormData) => {
         if (formState.mode === "create") {
@@ -80,7 +82,7 @@ export function HomePage() {
                 allDay: formData.allDay || undefined,
                 color: formData.color ?? undefined,
                 resource: formData.resource ?? undefined,
-            });
+            }, formData.roomId);
             if (newId) {
                 await assignEmployees(newId, formData.employeeIds);
                 if (Object.keys(formData.customFieldValues).length > 0) {
@@ -99,7 +101,7 @@ export function HomePage() {
                 allDay: formData.allDay || undefined,
                 color: formData.color ?? undefined,
                 resource: formData.resource ?? undefined,
-            });
+            }, formData.roomId);
             await assignEmployees(formData.id, formData.employeeIds);
             if (Object.keys(formData.customFieldValues).length > 0) {
                 await saveCustomFieldValuesForCalendarEvent(

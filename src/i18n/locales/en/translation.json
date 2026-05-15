@@ -540,6 +540,8 @@
             "noService": "None",
             "employees": "Assigned Employees",
             "searchEmployees": "Search employees...",
+            "room": "Room",
+            "selectRoom": "Select room",
             "customFields": "Custom Fields",
             "save": "Save",
             "cancel": "Cancel",
