@@ -1,5 +1,6 @@
-import type { SchedulerEventColor } from "@mui/x-scheduler/models";
+import type { SchedulerEventColor, SchedulerEvent } from "@mui/x-scheduler/models";
 import type { CalendarEventId } from "../../evolu/evolu-db";
+import type dayjs from "dayjs";
 
 export interface CalendarEventFormData {
     id?: string;
@@ -16,6 +17,9 @@ export interface CalendarEventFormData {
 
 export interface CustomEventCalendarProps {
     sx?: object;
+    onSlotClick?: (day: dayjs.Dayjs, startTime: dayjs.Dayjs) => void;
+    onEventClick?: (event: SchedulerEvent) => void;
+    externalFormOpen?: boolean;
 }
 
 export interface CustomEventFormDialogProps {

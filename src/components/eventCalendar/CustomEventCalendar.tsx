@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Box } from '@mui/material';
 import dayjs from 'dayjs';
 import type { SchedulerEvent } from '@mui/x-scheduler/models';
@@ -26,7 +26,7 @@ interface DraftEventData {
     allDay: boolean;
 }
 
-export function CustomEventCalendar({ sx }: CustomEventCalendarProps) {
+export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEventClick: onEventClickExternal, externalFormOpen }: CustomEventCalendarProps) {
     const { i18n } = useTranslation();
     const {
         events,
@@ -60,6 +60,13 @@ export function CustomEventCalendar({ sx }: CustomEventCalendarProps) {
     const [draftEvent, setDraftEvent] = useState<SchedulerEvent | null>(null);
     const draftAnchorRef = useRef<HTMLDivElement | null>(null);
 
+    // Clear draft when external form closes
+    useEffect(() => {
+        if (onSlotClickExternal && !externalFormOpen) {
+            setDraftEvent(null);
+        }
+    }, [onSlotClickExternal, externalFormOpen]);
+
     const days = useMemo(() => {
         if (view === 'week') return getWeekDays(currentDate, showWeekends, locale);
         return [currentDate];
@@ -75,6 +82,18 @@ export function CustomEventCalendar({ sx }: CustomEventCalendarProps) {
     );
 
     const handleSlotClick = useCallback((day: dayjs.Dayjs, startTime: dayjs.Dayjs, anchorEl: HTMLElement, _clickEvent: React.MouseEvent) => {
+        if (onSlotClickExternal) {
+            setDraftEvent({
+                id: '__draft__',
+                title: '',
+                start: startTime.toISOString(),
+                end: startTime.add(1, 'hour').toISOString(),
+                color: 'teal',
+                allDay: false,
+            });
+            onSlotClickExternal(day, startTime);
+            return;
+        }
         setPopoverMode('create');
         setPopoverData({
             start: startTime.toISOString(),
@@ -93,9 +112,13 @@ export function CustomEventCalendar({ sx }: CustomEventCalendarProps) {
             setPopoverAnchorEl(draftAnchorRef.current ?? anchorEl);
             setPopoverOpen(true);
         });
-    }, []);
+    }, [onSlotClickExternal]);
 
     const handleEventClick = useCallback((event: SchedulerEvent, anchorEl: HTMLElement) => {
+        if (onEventClickExternal) {
+            onEventClickExternal(event);
+            return;
+        }
         const eventId = String(event.id);
         const employeeIds = getEmployeeIdsForEvent(eventId);
         setPopoverMode('edit');
@@ -113,7 +136,7 @@ export function CustomEventCalendar({ sx }: CustomEventCalendarProps) {
         });
         setDraftEvent(null);
         setPopoverOpen(true);
-    }, [getEmployeeIdsForEvent]);
+    }, [getEmployeeIdsForEvent, onEventClickExternal]);
 
     const handleDraftChange = useCallback((draft: DraftEventData) => {
         setDraftEvent(prev => prev ? {
@@ -206,16 +229,18 @@ export function CustomEventCalendar({ sx }: CustomEventCalendarProps) {
                 />
             </Box>
 
-            <EventFormPopover
-                open={popoverOpen}
-                anchorEl={popoverAnchorEl}
-                mode={popoverMode}
-                initialData={popoverData}
-                onSave={handlePopoverSave}
-                onDelete={handlePopoverDelete}
-                onClose={handlePopoverClose}
-                onDraftChange={handleDraftChange}
-            />
+            {!onSlotClickExternal && (
+                <EventFormPopover
+                    open={popoverOpen}
+                    anchorEl={popoverAnchorEl}
+                    mode={popoverMode}
+                    initialData={popoverData}
+                    onSave={handlePopoverSave}
+                    onDelete={handlePopoverDelete}
+                    onClose={handlePopoverClose}
+                    onDraftChange={handleDraftChange}
+                />
+            )}
         </Box>
     );
 }
