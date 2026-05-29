@@ -22,7 +22,9 @@
         "confirm": "Potvrdiť",
         "loading": "Načítavam...",
         "error": "Chyba",
-        "success": "Úspech"
+        "success": "Úspech",
+        "showMore": "... ({count} ďalších)",
+        "showLess": "Zobraziť menej"
     },
     "app": {
         "title": "SimpleBook",

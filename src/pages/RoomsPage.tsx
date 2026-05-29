@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useRoomCrud } from "../hooks/useRoomCrud";
 import { RoomFormData } from "../types/room";
 import { DeleteConfirmDialog } from "../components/ui/DeleteConfirmDialog";
+import { ShowMore } from "../components/ui/ShowMore";
 import type { TRoomRow } from "../evolu/evolu-query";
 import { RoomId } from "../evolu/evolu-db";
 
@@ -369,17 +370,22 @@ export function RoomsPage() {
                             <CircularProgress />
                         </Box>
                     ) : rooms && rooms.length > 0 ? (
-                        <Grid container spacing={2}>
-                            {rooms.map((room) => (
-                                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={room.id}>
-                                    <RoomCard
-                                        room={room}
-                                        onEdit={handleEdit}
-                                        onDelete={handleDelete}
-                                    />
+                        <ShowMore
+                            items={rooms}
+                            renderItems={(visible) => (
+                                <Grid container spacing={2}>
+                                    {visible.map((room) => (
+                                        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={room.id}>
+                                            <RoomCard
+                                                room={room}
+                                                onEdit={handleEdit}
+                                                onDelete={handleDelete}
+                                            />
+                                        </Grid>
+                                    ))}
                                 </Grid>
-                            ))}
-                        </Grid>
+                            )}
+                        />
                     ) : (
                         <Typography variant="body1" color="text.secondary" sx={{ py: 4, textAlign: "center" }}>
                             {t("room.empty")}

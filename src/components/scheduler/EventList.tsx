@@ -6,6 +6,7 @@ import { Edit, People, Person } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useEmployeeCrud } from "../../hooks/useEmployeeCrud";
 import { useCustomerCrud } from "../../hooks/useCustomerCrud";
+import { ShowMore } from "../ui/ShowMore";
 import type { TCalendarEventRow } from "../../evolu/evolu-query";
 
 const MAX_VISIBLE = 3;
@@ -50,8 +51,8 @@ export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEve
         const futureEvents = sorted.filter((e) => String(e.start) >= now);
         const pastEvents = sorted.filter((e) => String(e.start) < now).reverse();
         return {
-            upcoming: futureEvents.slice(0, MAX_ITEMS),
-            past: pastEvents.slice(0, MAX_ITEMS),
+            upcoming: futureEvents,
+            past: pastEvents,
         };
     }, [events]);
 
@@ -167,9 +168,14 @@ export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEve
                 {renderToggle()}
             </Box>
             {upcoming.length > 0 ? (
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                    {upcoming.map(renderEventItem)}
-                </Box>
+                <ShowMore
+                    items={upcoming}
+                    renderItems={(visible) => (
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                            {visible.map(renderEventItem)}
+                        </Box>
+                    )}
+                />
             ) : (
                 <Typography variant="body2" color="text.disabled" sx={{ pl: 1 }}>
                     —
@@ -183,9 +189,14 @@ export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEve
                             {t("scheduler.pastEvents")}
                         </Typography>
                     </Box>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                        {past.map(renderEventItem)}
-                    </Box>
+                    <ShowMore
+                        items={past}
+                        renderItems={(visible) => (
+                            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                                {visible.map(renderEventItem)}
+                            </Box>
+                        )}
+                    />
                 </>
             )}
         </Box>

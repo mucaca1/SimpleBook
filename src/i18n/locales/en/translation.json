@@ -22,7 +22,9 @@
         "confirm": "Confirm",
         "loading": "Loading...",
         "error": "Error",
-        "success": "Success"
+        "success": "Success",
+        "showMore": "... ({count} more)",
+        "showLess": "Show less"
     },
     "app": {
         "title": "SimpleBook",
