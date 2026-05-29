@@ -506,6 +506,7 @@
     "scheduler": {
         "assignEmployees": "Assign Employees",
         "upcomingEvents": "Upcoming Events",
+        "pastEvents": "Past Events",
         "noEmployees": "No employees found. Add employees first.",
         "noEmployeesAssigned": "No employees",
         "noOneAssigned": "Unassigned",

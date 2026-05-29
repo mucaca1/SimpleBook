@@ -506,6 +506,7 @@
     "scheduler": {
         "assignEmployees": "Priradiť zamestnancov",
         "upcomingEvents": "Nadchádzajúce udalosti",
+        "pastEvents": "Minulé udalosti",
         "noEmployees": "Nenašli sa žiadni zamestnanci. Najprv pridajte zamestnancov.",
         "noEmployeesAssigned": "Žiadni zamestnanci",
         "noOneAssigned": "Nepriradené",
