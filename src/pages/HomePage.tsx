@@ -130,6 +130,29 @@ export function HomePage() {
         setDraftData(null);
     }, []);
 
+    const handleEditFromList = useCallback((eventRow: typeof allEventRows[number]) => {
+        const eventId = String(eventRow.id);
+        const employeeIds = getEmployeeIdsForEvent(eventId);
+        const customerIds = getCustomerIdsForEvent(eventId);
+        setFormState({
+            open: true,
+            mode: "edit",
+            data: {
+                id: eventId,
+                title: String(eventRow.title ?? ""),
+                description: String(eventRow.description ?? ""),
+                start: String(eventRow.start),
+                end: String(eventRow.end),
+                allDay: Boolean(eventRow.allDay),
+                color: eventRow.color ? String(eventRow.color) : null,
+                resource: eventRow.resource ? String(eventRow.resource) : null,
+                roomId: eventRow.roomId ? String(eventRow.roomId) : null,
+                employeeIds,
+                customerIds,
+            },
+        });
+    }, [getEmployeeIdsForEvent, getCustomerIdsForEvent]);
+
     if (isLoading) {
         return (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
@@ -173,6 +196,7 @@ export function HomePage() {
                             events={allEventRows}
                             getEmployeeIdsForEvent={getEmployeeIdsForEvent}
                             getCustomerIdsForEvent={getCustomerIdsForEvent}
+                            onEditEvent={handleEditFromList}
                         />
                     </Box>
                 )}

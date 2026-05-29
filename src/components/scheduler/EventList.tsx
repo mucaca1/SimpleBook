@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
     Box, Typography, Avatar, Tooltip, IconButton, ToggleButtonGroup, ToggleButton,
 } from "@mui/material";
-import { People, Person } from "@mui/icons-material";
+import { Edit, People, Person } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useEmployeeCrud } from "../../hooks/useEmployeeCrud";
 import { useCustomerCrud } from "../../hooks/useCustomerCrud";
@@ -14,9 +14,10 @@ interface EventListProps {
     events: readonly TCalendarEventRow[];
     getEmployeeIdsForEvent: (eventId: string) => string[];
     getCustomerIdsForEvent: (eventId: string) => string[];
+    onEditEvent: (event: TCalendarEventRow) => void;
 }
 
-export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEvent }: EventListProps) {
+export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEvent, onEditEvent }: EventListProps) {
     const { t } = useTranslation();
     const { employees } = useEmployeeCrud();
     const { customers } = useCustomerCrud();
@@ -90,6 +91,13 @@ export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEve
                                 "&:hover": { bgcolor: "action.hover" },
                             }}
                         >
+                            <IconButton
+                                size="small"
+                                onClick={() => onEditEvent(event)}
+                                sx={{ flexShrink: 0 }}
+                            >
+                                <Edit sx={{ fontSize: 16 }} />
+                            </IconButton>
                             {event.color && (
                                 <Box
                                     sx={{
