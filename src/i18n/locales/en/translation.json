@@ -569,6 +569,11 @@
             "12h": "12-hour (1:00 PM)",
             "24h": "24-hour (13:00)",
             "showWeekends": "Show Weekends"
+        },
+        "filters": {
+            "employee": "Employee",
+            "customer": "Customer",
+            "room": "Room"
         }
     },
     "rooms": {
