@@ -257,6 +257,11 @@
                 "description": "Pridať náhodné predobjednávky služieb zákazníkom, ktorých meno alebo priezvisko obsahuje písmeno \"C\". Každý zákazník dostane 1–3 náhodné predobjednávateľné služby.",
                 "button": "Pridať predobjednávky zákazníkom s písmenom \"C\""
             },
+            "events": {
+                "title": "Kalendárové udalosti",
+                "description": "Vygenerovať 45 náhodných kalendárových udalostí v 3 mesiacoch: minulý mesiac, aktuálny mesiac a budúci mesiac (15 udalostí na mesiac). Vyžaduje existujúce služby a zamestnancov.",
+                "button": "Vygenerovať 45 udalostí"
+            },
             "toast": {
                 "customersCreated": "{{count}} zákazníkov bolo úspešne vytvorených",
                 "customersError": "Nepodarilo sa vygenerovať zákazníkov",
@@ -272,7 +277,11 @@
                 "preOrdersCreated": "{{count}} predobjednávok pridaných {{customerCount}} zákazníkom",
                 "preOrdersError": "Nepodarilo sa pridať predobjednávky",
                 "preOrdersNoMatch": "Nenašli sa žiadni zákazníci s písmenom \"C\" v mene.",
-                "preOrdersNoPrices": "Nenašli sa žiadne predobjednávateľné ceny. Najprv vygenerujte služby."
+                "preOrdersNoPrices": "Nenašli sa žiadne predobjednávateľné ceny. Najprv vygenerujte služby.",
+                "eventsCreated": "{{count}} kalendárových udalostí bolo úspešne vytvorených",
+                "eventsError": "Nepodarilo sa vygenerovať udalosti",
+                "eventsNoServices": "Nenašli sa žiadne služby. Najprv vygenerujte služby.",
+                "eventsNoEmployees": "Nenašli sa žiadni zamestnanci. Najprv vygenerujte zamestnancov."
             }
         }
     },
