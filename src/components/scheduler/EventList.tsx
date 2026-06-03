@@ -1,16 +1,15 @@
 import React, { useState, useMemo } from "react";
 import {
-    Box, Typography, Avatar, Tooltip, IconButton, ToggleButtonGroup, ToggleButton,
+    Box, Typography, Avatar, Tooltip, IconButton, ToggleButtonGroup, ToggleButton, Button,
 } from "@mui/material";
-import { Edit, People, Person } from "@mui/icons-material";
+import { Edit, People, Person, ExpandMore, ExpandLess } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import dayjs from "dayjs";
 import { useEmployeeCrud } from "../../hooks/useEmployeeCrud";
 import { useCustomerCrud } from "../../hooks/useCustomerCrud";
-import { ShowMore } from "../ui/ShowMore";
 import type { TCalendarEventRow } from "../../evolu/evolu-query";
 
 const MAX_VISIBLE = 3;
-const MAX_ITEMS = 5;
 
 interface EventListProps {
     events: readonly TCalendarEventRow[];
@@ -24,6 +23,8 @@ export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEve
     const { employees } = useEmployeeCrud();
     const { customers } = useCustomerCrud();
     const [showCustomers, setShowCustomers] = useState(false);
+    const [upcomingDaysAhead, setUpcomingDaysAhead] = useState(0);
+    const [pastDaysBehind, setPastDaysBehind] = useState(0);
 
     const employeeMap = React.useMemo(() => {
         const map = new Map<string, { name: string; initials: string }>();
@@ -45,16 +46,26 @@ export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEve
         return map;
     }, [customers]);
 
-    const { upcoming, past } = useMemo(() => {
-        const now = new Date().toISOString();
+    const { upcoming, upcomingHasMore, past, pastHasMore } = useMemo(() => {
+        const todayStartISO = dayjs().startOf("day").toISOString();
+        const upcomingEndISO = dayjs().startOf("day").add(upcomingDaysAhead, "day").endOf("day").toISOString();
+        const pastStartISO = dayjs().startOf("day").subtract(pastDaysBehind, "day").startOf("day").toISOString();
+
         const sorted = [...events].sort((a, b) => String(a.start).localeCompare(String(b.start)));
-        const futureEvents = sorted.filter((e) => String(e.start) >= now);
-        const pastEvents = sorted.filter((e) => String(e.start) < now).reverse();
+
+        const allUpcoming = sorted.filter((e) => String(e.start) >= todayStartISO);
+        const visibleUpcoming = allUpcoming.filter((e) => String(e.start) <= upcomingEndISO);
+
+        const allPast = sorted.filter((e) => String(e.start) < todayStartISO).reverse();
+        const visiblePast = allPast.filter((e) => String(e.start) >= pastStartISO);
+
         return {
-            upcoming: futureEvents,
-            past: pastEvents,
+            upcoming: visibleUpcoming,
+            upcomingHasMore: allUpcoming.length > visibleUpcoming.length,
+            past: visiblePast,
+            pastHasMore: allPast.length > visiblePast.length,
         };
-    }, [events]);
+    }, [events, upcomingDaysAhead, pastDaysBehind]);
 
     const renderToggle = () => (
         <ToggleButtonGroup
@@ -168,35 +179,75 @@ export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEve
                 {renderToggle()}
             </Box>
             {upcoming.length > 0 ? (
-                <ShowMore
-                    items={upcoming}
-                    renderItems={(visible) => (
-                        <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                            {visible.map(renderEventItem)}
-                        </Box>
-                    )}
-                />
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                    {upcoming.map(renderEventItem)}
+                </Box>
             ) : (
                 <Typography variant="body2" color="text.disabled" sx={{ pl: 1 }}>
-                    —
+                    {t("scheduler.noEvents", { date: dayjs().startOf("day").add(upcomingDaysAhead, "day").format("DD.MM.YYYY") })}
                 </Typography>
             )}
+            {(upcomingHasMore || upcomingDaysAhead > 0) && (
+                <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                    {upcomingHasMore && (
+                        <Button
+                            size="small"
+                            startIcon={<ExpandMore />}
+                            onClick={() => setUpcomingDaysAhead((d) => d + 1)}
+                        >
+                            {t("scheduler.showMoreUpcoming")}
+                        </Button>
+                    )}
+                    {upcomingDaysAhead > 0 && (
+                        <Button
+                            size="small"
+                            startIcon={<ExpandLess />}
+                            onClick={() => setUpcomingDaysAhead(0)}
+                        >
+                            {t("common.showLess")}
+                        </Button>
+                    )}
+                </Box>
+            )}
 
-            {past.length > 0 && (
+            {(past.length > 0 || pastHasMore) && (
                 <>
                     <Box sx={{ display: "flex", alignItems: "center", mt: 2, mb: 1 }}>
                         <Typography variant="h6" sx={{ flex: 1 }}>
                             {t("scheduler.pastEvents")}
                         </Typography>
                     </Box>
-                    <ShowMore
-                        items={past}
-                        renderItems={(visible) => (
-                            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                                {visible.map(renderEventItem)}
-                            </Box>
-                        )}
-                    />
+                    {past.length > 0 ? (
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                            {past.map(renderEventItem)}
+                        </Box>
+                    ) : (
+                        <Typography variant="body2" color="text.disabled" sx={{ pl: 1 }}>
+                            {t("scheduler.noEvents", { date: dayjs().startOf("day").subtract(pastDaysBehind > 0 ? pastDaysBehind : 1, "day").format("DD.MM.YYYY") })}
+                        </Typography>
+                    )}
+                    {(pastHasMore || pastDaysBehind > 0) && (
+                        <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                            {pastHasMore && (
+                                <Button
+                                    size="small"
+                                    startIcon={<ExpandMore />}
+                                    onClick={() => setPastDaysBehind((d) => d + 1)}
+                                >
+                                    {t("scheduler.showMorePast")}
+                                </Button>
+                            )}
+                            {pastDaysBehind > 0 && (
+                                <Button
+                                    size="small"
+                                    startIcon={<ExpandLess />}
+                                    onClick={() => setPastDaysBehind(0)}
+                                >
+                                    {t("common.showLess")}
+                                </Button>
+                            )}
+                        </Box>
+                    )}
                 </>
             )}
         </Box>
