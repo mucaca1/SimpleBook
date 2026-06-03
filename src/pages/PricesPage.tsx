@@ -15,6 +15,7 @@ import { useServiceCrud } from "../hooks/useServiceCrud";
 import { useSettingsSync } from "../hooks/useSettingsSync";
 import { PriceFormData, UNIT_TYPES, EXPIRATION_ACTIONS, getCurrencySymbol } from "../types/price";
 import { DeleteConfirmDialog } from "../components/ui/DeleteConfirmDialog";
+import { ShowMore } from "../components/ui/ShowMore";
 import type { TPriceRow } from "../evolu/evolu-query";
 import { PriceId, ServiceId } from "../evolu/evolu-db";
 
@@ -469,19 +470,24 @@ export function PricesPage() {
                             <CircularProgress />
                         </Box>
                     ) : filteredPrices && filteredPrices.length > 0 ? (
-                        <Grid container spacing={2}>
-                            {filteredPrices.map((price) => (
-                                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={price.id}>
-                                    <PriceCard
-                                        price={price}
-                                        serviceName={serviceMap.get(price.serviceId as ServiceId) ?? t("prices.unknownService")}
-                                        currencySymbol={currencySymbol}
-                                        onEdit={handleEdit}
-                                        onDelete={handleDelete}
-                                    />
+                        <ShowMore
+                            items={filteredPrices}
+                            renderItems={(visible) => (
+                                <Grid container spacing={2}>
+                                    {visible.map((price) => (
+                                        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={price.id}>
+                                            <PriceCard
+                                                price={price}
+                                                serviceName={serviceMap.get(price.serviceId as ServiceId) ?? t("prices.unknownService")}
+                                                currencySymbol={currencySymbol}
+                                                onEdit={handleEdit}
+                                                onDelete={handleDelete}
+                                            />
+                                        </Grid>
+                                    ))}
                                 </Grid>
-                            ))}
-                        </Grid>
+                            )}
+                        />
                     ) : (
                         <Typography variant="body1" color="text.secondary" sx={{ py: 4, textAlign: "center" }}>
                             {t("prices.empty")}

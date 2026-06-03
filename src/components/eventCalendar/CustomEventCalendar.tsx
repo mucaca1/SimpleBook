@@ -8,6 +8,9 @@ import { useQuery } from '@evolu/react';
 import { sqliteFalse } from '@evolu/common';
 import { useCalendarEventCrud } from '../../hooks/useCalendarEventCrud';
 import { useServiceCrud } from '../../hooks/useServiceCrud';
+import { useEmployeeCrud } from '../../hooks/useEmployeeCrud';
+import { useCustomerCrud } from '../../hooks/useCustomerCrud';
+import { useRoomCrud } from '../../hooks/useRoomCrud';
 import { updateCalendarTimeFormat, updateCalendarShowWeekends } from '../../hooks/useSettingsSync';
 import { settings } from '../../evolu/evolu-query';
 import { hexToSchedulerColor } from '../../utils/colorMapping';
@@ -32,14 +35,19 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
     const { i18n } = useTranslation();
     const {
         events,
+        allEventRows,
         isLoading,
         createEvent,
         updateEvent,
         deleteEvent,
         assignEmployees,
         getEmployeeIdsForEvent,
+        getCustomerIdsForEvent,
     } = useCalendarEventCrud();
     const { services } = useServiceCrud();
+    const { employees } = useEmployeeCrud();
+    const { customers } = useCustomerCrud();
+    const { rooms } = useRoomCrud();
 
     // Settings
     const settingsRows = useQuery(settings);
@@ -88,6 +96,75 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
         if (view === 'week') return getWeekDays(currentDate, showWeekends, locale);
         return [currentDate];
     }, [currentDate, view, showWeekends, locale]);
+
+    // Filter state
+    const [employeeFilter, setEmployeeFilter] = useState<string[]>([]);
+    const [customerFilter, setCustomerFilter] = useState<string[]>([]);
+    const [roomFilter, setRoomFilter] = useState<string[]>([]);
+
+    // Filter options for the toolbar
+    const employeeOptions = useMemo(() =>
+        (employees ?? []).map((e) => ({
+            id: String(e.id),
+            label: `${e.firstName ?? ''} ${e.lastName ?? ''}`.trim() || '?',
+        })),
+        [employees]
+    );
+
+    const customerOptions = useMemo(() =>
+        (customers ?? []).map((c) => ({
+            id: String(c.id),
+            label: `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim() || '?',
+        })),
+        [customers]
+    );
+
+    const roomOptions = useMemo(() =>
+        (rooms ?? []).map((r) => ({
+            id: String(r.id),
+            label: r.name ?? '?',
+        })),
+        [rooms]
+    );
+
+    // Build roomId lookup from event rows
+    const eventRoomMap = useMemo(() => {
+        const map = new Map<string, string | null>();
+        for (const row of allEventRows) {
+            map.set(String(row.id), row.roomId ? String(row.roomId) : null);
+        }
+        return map;
+    }, [allEventRows]);
+
+    // Filtered events
+    const filteredEvents = useMemo(() => {
+        const hasFilters = employeeFilter.length > 0 || customerFilter.length > 0 || roomFilter.length > 0;
+        if (!hasFilters) return events;
+
+        return events.filter((event) => {
+            const eventId = String(event.id);
+
+            // Employee filter
+            if (employeeFilter.length > 0) {
+                const assigned = getEmployeeIdsForEvent(eventId);
+                if (!assigned.some((id) => employeeFilter.includes(id))) return false;
+            }
+
+            // Customer filter
+            if (customerFilter.length > 0) {
+                const assigned = getCustomerIdsForEvent(eventId);
+                if (!assigned.some((id) => customerFilter.includes(id))) return false;
+            }
+
+            // Room filter
+            if (roomFilter.length > 0) {
+                const eventRoom = eventRoomMap.get(eventId);
+                if (!eventRoom || !roomFilter.includes(eventRoom)) return false;
+            }
+
+            return true;
+        });
+    }, [events, employeeFilter, customerFilter, roomFilter, getEmployeeIdsForEvent, getCustomerIdsForEvent, eventRoomMap]);
 
     const resources: SchedulerResource[] = useMemo(
         () => (services ?? []).map((service) => ({
@@ -252,6 +329,15 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
                 showWeekends={showWeekends}
                 onTimeFormatChange={handleTimeFormatChange}
                 onShowWeekendsChange={handleShowWeekendsChange}
+                employeeOptions={employeeOptions}
+                customerOptions={customerOptions}
+                roomOptions={roomOptions}
+                employeeFilter={employeeFilter}
+                customerFilter={customerFilter}
+                roomFilter={roomFilter}
+                onEmployeeFilterChange={setEmployeeFilter}
+                onCustomerFilterChange={setCustomerFilter}
+                onRoomFilterChange={setRoomFilter}
             />
 
             {/* Main content: mini month calendar + scheduler grid */}
@@ -264,7 +350,7 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
                     }}>
                         <MiniMonthCalendar
                             currentDate={currentDate}
-                            events={events}
+                            events={filteredEvents}
                             locale={locale}
                             onDaySelect={handleDaySelect}
                         />
@@ -274,7 +360,7 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                     <CalendarWeekView
                         days={days}
-                        events={events}
+                        events={filteredEvents}
                         resources={resources}
                         onSlotClick={handleSlotClick}
                         onEventClick={handleEventClick}

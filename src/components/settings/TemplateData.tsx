@@ -17,14 +17,15 @@ import {
     MedicalServices as MedicalServicesIcon,
     AccountBalanceWallet as CreditIcon,
     ShoppingCart as PreOrderIcon,
+    Event as EventIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@evolu/react";
 import { toast } from "react-toastify";
 import { evolu } from "../../evolu-init";
-import { customers, preOrderPrices, services } from "../../evolu/evolu-query";
+import { customers, preOrderPrices, services, employees } from "../../evolu/evolu-query";
 import * as Evolu from "@evolu/common";
-import { ServiceId, CustomerId, PriceId } from "../../evolu/evolu-db";
+import { ServiceId, CustomerId, PriceId, EmployeeId, CalendarEventId } from "../../evolu/evolu-db";
 
 const FIRST_NAMES_MALE = [
     "James", "John", "Robert", "Michael", "William", "David", "Richard",
@@ -101,7 +102,7 @@ function randomEmail(first: string, last: string): string {
     return `${first.toLowerCase()}.${last.toLowerCase()}@${pick(domains)}`;
 }
 
-type SeedOperation = "customers" | "employees" | "services" | "credits" | "preOrders";
+type SeedOperation = "customers" | "employees" | "services" | "credits" | "preOrders" | "events";
 
 export function TemplateData() {
     const { t } = useTranslation();
@@ -111,6 +112,7 @@ export function TemplateData() {
         services: 0,
         credits: 0,
         preOrders: 0,
+        events: 0,
     });
     const [isSeeding, setIsSeeding] = useState<Record<SeedOperation, boolean>>({
         customers: false,
@@ -118,11 +120,13 @@ export function TemplateData() {
         services: false,
         credits: false,
         preOrders: false,
+        events: false,
     });
 
     const [creditAmount, setCreditAmount] = useState("100");
     const allCustomers = useQuery(customers);
     const allServices = useQuery(services);
+    const allEmployees = useQuery(employees);
     const allPreOrderPrices = useQuery(preOrderPrices);
 
     const isAnySeeding = Object.values(isSeeding).some(Boolean);
@@ -388,6 +392,124 @@ export function TemplateData() {
         }
     };
 
+    const handleSeedEvents = async () => {
+        if (!allServices || allServices.length === 0) {
+            toast.error(t("settings.templateData.toast.eventsNoServices"));
+            return;
+        }
+        if (!allEmployees || allEmployees.length === 0) {
+            toast.error(t("settings.templateData.toast.eventsNoEmployees"));
+            return;
+        }
+
+        setIsSeeding((prev) => ({ ...prev, events: true }));
+        setProgress((prev) => ({ ...prev, events: 0 }));
+        const total = 45; // 15 per month × 3 months
+        let created = 0;
+
+        const EVENT_COLORS = [
+            "#d32f2f", "#c2185b", "#9c27b0", "#3f51b5",
+            "#1976d2", "#0097a7", "#2e7d32", "#fbc02d",
+            "#ed6c02", "#455a64",
+        ];
+
+        try {
+            const now = new Date();
+            const months: { start: Date; end: Date }[] = [];
+
+            // Build 3 month ranges: last month, current month, next month
+            for (const offset of [-1, 0, 1]) {
+                const year = now.getFullYear();
+                const month = now.getMonth() + offset;
+                const start = new Date(year, month, 1);
+                const end = new Date(year, month + 1, 0, 23, 59, 59);
+                months.push({ start, end });
+            }
+
+            for (const { start: monthStart, end: monthEnd } of months) {
+                for (let i = 0; i < 15; i++) {
+                    // Pick a random weekday within the month
+                    let day: Date;
+                    let attempts = 0;
+                    do {
+                        day = new Date(
+                            monthStart.getFullYear(),
+                            monthStart.getMonth(),
+                            randomInt(monthStart.getDate(), monthEnd.getDate()),
+                        );
+                        attempts++;
+                    } while (day.getDay() === 0 || day.getDay() === 6 ? attempts < 50 : false);
+
+                    if (day.getDay() === 0 || day.getDay() === 6) continue;
+
+                    // Pick a random service
+                    const service = pick(allServices);
+                    const durationMinutes = parseInt(String(service.duration)) || 30;
+
+                    // Random start hour (8-17) and minute (0, 15, 30, 45)
+                    const startHour = randomInt(8, 17);
+                    const startMinute = pick([0, 15, 30, 45]);
+                    const startDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), startHour, startMinute);
+                    const endDate = new Date(startDate.getTime() + durationMinutes * 60_000);
+
+                    const result = await evolu.insert("calendarEvents", {
+                        title: service.name,
+                        description: null,
+                        start: startDate.toISOString(),
+                        end: endDate.toISOString(),
+                        allDay: 0,
+                        color: service.color || pick(EVENT_COLORS),
+                        resource: String(service.id),
+                        roomId: null,
+                    });
+
+                    if (!result.ok) {
+                        console.error(`Failed to create event:`, result.error);
+                        created++;
+                        continue;
+                    }
+
+                    const eventId = result.value.id as CalendarEventId;
+
+                    // Assign 1-2 random employees
+                    const numEmployees = randomInt(1, Math.min(2, allEmployees.length));
+                    const shuffledEmployees = [...allEmployees].sort(() => Math.random() - 0.5);
+                    for (let e = 0; e < numEmployees; e++) {
+                        await evolu.insert("calendarEventEmployees", {
+                            calendarEventId: eventId,
+                            employeeId: shuffledEmployees[e].id as EmployeeId,
+                        });
+                    }
+
+                    // Assign 0-2 random customers (if available)
+                    if (allCustomers && allCustomers.length > 0) {
+                        const numCustomers = randomInt(0, Math.min(2, allCustomers.length));
+                        const shuffledCustomers = [...allCustomers].sort(() => Math.random() - 0.5);
+                        for (let c = 0; c < numCustomers; c++) {
+                            await evolu.insert("calendarEventCustomers", {
+                                calendarEventId: eventId,
+                                customerId: shuffledCustomers[c].id as CustomerId,
+                            });
+                        }
+                    }
+
+                    created++;
+                    if (created % 5 === 0 || created === total) {
+                        setProgress((prev) => ({ ...prev, events: Math.round((created / total) * 100) }));
+                        await new Promise((r) => setTimeout(r, 0));
+                    }
+                }
+            }
+
+            toast.success(t("settings.templateData.toast.eventsCreated", { count: created }));
+        } catch (error) {
+            console.error("Failed to seed events:", error);
+            toast.error(t("settings.templateData.toast.eventsError"));
+        } finally {
+            setIsSeeding((prev) => ({ ...prev, events: false }));
+        }
+    };
+
     return (
         <Stack spacing={3}>
             <Alert severity="info">
@@ -633,6 +755,46 @@ export function TemplateData() {
                             {isSeeding.preOrders
                                 ? t("settings.templateData.generating")
                                 : t("settings.templateData.preOrders.button")}
+                        </Button>
+                    </Stack>
+                </CardContent>
+            </Card>
+
+            {/* Generate Calendar Events */}
+            <Card>
+                <CardContent>
+                    <Stack spacing={2}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <EventIcon color="primary" />
+                            <Typography variant="h6">
+                                {t("settings.templateData.events.title")}
+                            </Typography>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                            {t("settings.templateData.events.description")}
+                        </Typography>
+                        {isSeeding.events && (
+                            <Box>
+                                <LinearProgress
+                                    variant="determinate"
+                                    value={progress.events}
+                                    sx={{ mb: 1 }}
+                                />
+                                <Typography variant="caption" color="text.secondary">
+                                    {progress.events}%
+                                </Typography>
+                            </Box>
+                        )}
+                        <Button
+                            variant="contained"
+                            startIcon={<EventIcon />}
+                            onClick={handleSeedEvents}
+                            disabled={isAnySeeding || !allServices || allServices.length === 0 || !allEmployees || allEmployees.length === 0}
+                            sx={{ alignSelf: "flex-start" }}
+                        >
+                            {isSeeding.events
+                                ? t("settings.templateData.generating")
+                                : t("settings.templateData.events.button")}
                         </Button>
                     </Stack>
                 </CardContent>

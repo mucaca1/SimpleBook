@@ -6,6 +6,7 @@ import { CustomersPage } from "./CustomersPage";
 import { EmployeePage } from "./EmployeePage";
 import { HomePage } from "./HomePage";
 import { PricesPage } from "./PricesPage";
+import { RoomsPage } from "./RoomsPage";
 import { ServicePage } from "./ServicePage";
 import { SettingsPage } from "./SettingsPage";
 
@@ -39,6 +40,10 @@ export function RootPage() {
                         <Route
                             path="/prices"
                             element={<PricesPage />}
+                        />
+                        <Route
+                            path="/rooms"
+                            element={<RoomsPage />}
                         />
                     </Routes>
                 </div>

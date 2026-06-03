@@ -29,6 +29,7 @@ export function HomePage() {
         updateEvent,
         deleteEvent,
         assignEmployees,
+        assignCustomers,
     } = useCalendarEventCrud();
     const { services } = useServiceCrud();
 
@@ -53,6 +54,8 @@ export function HomePage() {
     const handleEventClick = useCallback((event: SchedulerEvent) => {
         const eventId = String(event.id);
         const employeeIds = getEmployeeIdsForEvent(eventId);
+        const customerIds = getCustomerIdsForEvent(eventId);
+        const eventRow = allEventRows.find((r) => String(r.id) === eventId);
         setFormState({
             open: true,
             mode: "edit",
@@ -65,10 +68,12 @@ export function HomePage() {
                 allDay: event.allDay ?? false,
                 color: event.color ?? null,
                 resource: event.resource ?? null,
+                roomId: eventRow?.roomId ? String(eventRow.roomId) : null,
                 employeeIds,
+                customerIds,
             },
         });
-    }, [getEmployeeIdsForEvent]);
+    }, [getEmployeeIdsForEvent, getCustomerIdsForEvent, allEventRows]);
 
     const handleFormSave = useCallback(async (formData: CalendarEventFormData) => {
         if (formState.mode === "create") {
@@ -80,9 +85,10 @@ export function HomePage() {
                 allDay: formData.allDay || undefined,
                 color: formData.color ?? undefined,
                 resource: formData.resource ?? undefined,
-            });
+            }, formData.roomId);
             if (newId) {
                 await assignEmployees(newId, formData.employeeIds);
+                await assignCustomers(newId, formData.customerIds);
                 if (Object.keys(formData.customFieldValues).length > 0) {
                     await saveCustomFieldValuesForCalendarEvent(
                         newId as CalendarEventId,
@@ -99,8 +105,9 @@ export function HomePage() {
                 allDay: formData.allDay || undefined,
                 color: formData.color ?? undefined,
                 resource: formData.resource ?? undefined,
-            });
+            }, formData.roomId);
             await assignEmployees(formData.id, formData.employeeIds);
+            await assignCustomers(formData.id, formData.customerIds);
             if (Object.keys(formData.customFieldValues).length > 0) {
                 await saveCustomFieldValuesForCalendarEvent(
                     formData.id as CalendarEventId,
@@ -110,7 +117,7 @@ export function HomePage() {
         }
         setFormState(INITIAL_FORM_STATE);
         setDraftData(null);
-    }, [formState.mode, createEvent, updateEvent, assignEmployees]);
+    }, [formState.mode, createEvent, updateEvent, assignEmployees, assignCustomers]);
 
     const handleFormDelete = useCallback(async (id: string) => {
         await deleteEvent(id);
@@ -122,6 +129,29 @@ export function HomePage() {
         setFormState(INITIAL_FORM_STATE);
         setDraftData(null);
     }, []);
+
+    const handleEditFromList = useCallback((eventRow: typeof allEventRows[number]) => {
+        const eventId = String(eventRow.id);
+        const employeeIds = getEmployeeIdsForEvent(eventId);
+        const customerIds = getCustomerIdsForEvent(eventId);
+        setFormState({
+            open: true,
+            mode: "edit",
+            data: {
+                id: eventId,
+                title: String(eventRow.title ?? ""),
+                description: String(eventRow.description ?? ""),
+                start: String(eventRow.start),
+                end: String(eventRow.end),
+                allDay: Boolean(eventRow.allDay),
+                color: eventRow.color ? String(eventRow.color) : null,
+                resource: eventRow.resource ? String(eventRow.resource) : null,
+                roomId: eventRow.roomId ? String(eventRow.roomId) : null,
+                employeeIds,
+                customerIds,
+            },
+        });
+    }, [getEmployeeIdsForEvent, getCustomerIdsForEvent]);
 
     if (isLoading) {
         return (
@@ -166,6 +196,7 @@ export function HomePage() {
                             events={allEventRows}
                             getEmployeeIdsForEvent={getEmployeeIdsForEvent}
                             getCustomerIdsForEvent={getCustomerIdsForEvent}
+                            onEditEvent={handleEditFromList}
                         />
                     </Box>
                 )}

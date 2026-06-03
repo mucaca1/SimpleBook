@@ -3,7 +3,7 @@ import {
     TextField, FormControlLabel, Checkbox,
     Box, Stack, Typography, Button, CircularProgress,
     List, ListItem, ListItemAvatar, ListItemText, Avatar,
-    Divider, IconButton,
+    Divider, IconButton, Autocomplete,
 } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -12,7 +12,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { useEmployeeCrud } from '../../hooks/useEmployeeCrud';
+import { useCustomerCrud } from '../../hooks/useCustomerCrud';
 import { useServiceCrud } from '../../hooks/useServiceCrud';
+import { useRoomCrud } from '../../hooks/useRoomCrud';
 import type { SchedulerEventColor } from '@mui/x-scheduler/models';
 import { CustomFieldSection } from './CustomFieldSection';
 import type { CustomFieldSectionRef } from './CustomFieldSection';
@@ -43,7 +45,9 @@ export function EventFormPanel({
 }: EventFormPanelProps) {
     const { t } = useTranslation();
     const { employees, isLoading: employeesLoading } = useEmployeeCrud();
+    const { customers, isLoading: customersLoading } = useCustomerCrud();
     const { services } = useServiceCrud();
+    const { rooms } = useRoomCrud();
     const customFieldRef = useRef<CustomFieldSectionRef>(null);
 
     const [title, setTitle] = useState('');
@@ -54,8 +58,12 @@ export function EventFormPanel({
     const [color, setColor] = useState<SchedulerEventColor | null>('teal');
     const [resource, setResource] = useState<string | null>(null);
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<Set<string>>(new Set());
+    const [selectedCustomerIds, setSelectedCustomerIds] = useState<Set<string>>(new Set());
+    const [roomId, setRoomId] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const [titleError, setTitleError] = useState('');
+    const [employeeSearch, setEmployeeSearch] = useState('');
+    const [customerSearch, setCustomerSearch] = useState('');
 
     useEffect(() => {
         if (initialData) {
@@ -67,6 +75,8 @@ export function EventFormPanel({
             setColor(initialData.color ?? 'teal');
             setResource(initialData.resource ?? null);
             setSelectedEmployeeIds(new Set(initialData.employeeIds || []));
+            setSelectedCustomerIds(new Set(initialData.customerIds || []));
+            setRoomId(initialData.roomId ?? null);
         } else {
             setTitle('');
             setDescription('');
@@ -76,8 +86,12 @@ export function EventFormPanel({
             setColor('teal');
             setResource(null);
             setSelectedEmployeeIds(new Set());
+            setSelectedCustomerIds(new Set());
+            setRoomId(null);
         }
         setTitleError('');
+        setEmployeeSearch('');
+        setCustomerSearch('');
     }, [initialData]);
 
     useEffect(() => {
@@ -94,6 +108,15 @@ export function EventFormPanel({
 
     const toggleEmployee = useCallback((id: string) => {
         setSelectedEmployeeIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    }, []);
+
+    const toggleCustomer = useCallback((id: string) => {
+        setSelectedCustomerIds((prev) => {
             const next = new Set(prev);
             if (next.has(id)) next.delete(id);
             else next.add(id);
@@ -121,7 +144,9 @@ export function EventFormPanel({
                 allDay,
                 color,
                 resource,
+                roomId,
                 employeeIds: Array.from(selectedEmployeeIds),
+                customerIds: Array.from(selectedCustomerIds),
                 customFieldValues: customValues,
             };
             await onSave(formData);
@@ -280,6 +305,35 @@ export function EventFormPanel({
 
                         <Divider />
 
+                        {/* Room */}
+                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+                            {t('scheduler.eventForm.room')}
+                        </Typography>
+                        <Autocomplete
+                            size="small"
+                            options={(rooms ?? []).map((r) => ({ id: String(r.id), label: String(r.name), color: r.color }))}
+                            getOptionLabel={(option) => option.label}
+                            value={(rooms ?? []).map((r) => ({ id: String(r.id), label: String(r.name), color: r.color })).find((r) => r.id === roomId) ?? null}
+                            onChange={(_e, newValue) => setRoomId(newValue?.id ?? null)}
+                            renderInput={(params) => (
+                                <TextField {...params} placeholder={t('scheduler.eventForm.selectRoom')} size="small" />
+                            )}
+                            renderOption={(props, option) => (
+                                <li {...props}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        {option.color && (
+                                            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: option.color }} />
+                                        )}
+                                        {option.label}
+                                    </Box>
+                                </li>
+                            )}
+                            disabled={saving}
+                            isOptionEqualToValue={(o, v) => o.id === v.id}
+                        />
+
+                        <Divider />
+
                         {/* Description */}
                         <TextField
                             placeholder={t('scheduler.eventForm.description')}
@@ -307,8 +361,24 @@ export function EventFormPanel({
                                 {t('scheduler.noEmployees')}
                             </Typography>
                         ) : (
-                            <List dense disablePadding sx={{ maxHeight: 150, overflow: 'auto' }}>
-                                {(employees ?? []).map((emp) => {
+                            <>
+                                <TextField
+                                    size="small"
+                                    placeholder={t('scheduler.eventForm.searchEmployees')}
+                                    value={employeeSearch}
+                                    onChange={(e) => setEmployeeSearch(e.target.value)}
+                                    fullWidth
+                                    disabled={saving}
+                                    sx={{ mb: 0.5 }}
+                                />
+                                <List dense disablePadding sx={{ maxHeight: 150, overflow: 'auto' }}>
+                                {(employees ?? [])
+                                    .filter((emp) => {
+                                        if (!employeeSearch.trim()) return true;
+                                        const name = `${emp.firstName ?? ''} ${emp.lastName ?? ''}`.trim().toLowerCase();
+                                        return name.includes(employeeSearch.trim().toLowerCase());
+                                    })
+                                    .map((emp) => {
                                     const id = String(emp.id);
                                     return (
                                         <ListItem
@@ -339,6 +409,73 @@ export function EventFormPanel({
                                     );
                                 })}
                             </List>
+                            </>
+                        )}
+
+                        <Divider />
+
+                        {/* Customer Assignment */}
+                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+                            {t('scheduler.eventForm.customers')}
+                        </Typography>
+                        {customersLoading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 1 }}>
+                                <CircularProgress size={20} />
+                            </Box>
+                        ) : (customers ?? []).length === 0 ? (
+                            <Typography variant="body2" color="text.secondary" fontSize="0.75rem">
+                                {t('scheduler.noCustomers')}
+                            </Typography>
+                        ) : (
+                            <>
+                                <TextField
+                                    size="small"
+                                    placeholder={t('scheduler.eventForm.searchCustomers')}
+                                    value={customerSearch}
+                                    onChange={(e) => setCustomerSearch(e.target.value)}
+                                    fullWidth
+                                    disabled={saving}
+                                    sx={{ mb: 0.5 }}
+                                />
+                                <List dense disablePadding sx={{ maxHeight: 150, overflow: 'auto' }}>
+                                {(customers ?? [])
+                                    .filter((cust) => {
+                                        if (!customerSearch.trim()) return true;
+                                        const name = `${cust.firstName ?? ''} ${cust.lastName ?? ''}`.trim().toLowerCase();
+                                        return name.includes(customerSearch.trim().toLowerCase());
+                                    })
+                                    .map((cust) => {
+                                    const id = String(cust.id);
+                                    return (
+                                        <ListItem
+                                            key={id}
+                                            onClick={() => !saving && toggleCustomer(id)}
+                                            sx={{ cursor: saving ? 'default' : 'pointer', '&:hover': { bgcolor: 'action.hover' }, py: 0, px: 0.5 }}
+                                        >
+                                            <ListItemAvatar>
+                                                <Avatar sx={{ width: 24, height: 24, fontSize: 10 }}>
+                                                    {getInitials(cust)}
+                                                </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={
+                                                    <Typography variant="body2" fontSize="0.75rem">
+                                                        {`${cust.firstName ?? ''} ${cust.lastName ?? ''}`.trim() || t('scheduler.unnamedCustomer')}
+                                                    </Typography>
+                                                }
+                                            />
+                                            <Checkbox
+                                                edge="end"
+                                                checked={selectedCustomerIds.has(id)}
+                                                tabIndex={-1}
+                                                size="small"
+                                                disabled={saving}
+                                            />
+                                        </ListItem>
+                                    );
+                                })}
+                            </List>
+                            </>
                         )}
 
                         {/* Custom Fields */}

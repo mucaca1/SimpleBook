@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AppBar, Toolbar, Button, Typography, Box, Menu, MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
-import { Home, Settings, ExpandMore, People, Badge, HomeRepairService, AttachMoney } from "@mui/icons-material";
+import { Home, Settings, ExpandMore, People, Badge, HomeRepairService, AttachMoney, MeetingRoom } from "@mui/icons-material";
 
 export function MenuBar() {
     const { t } = useTranslation();
@@ -124,6 +124,16 @@ export function MenuBar() {
                             <AttachMoney fontSize="small" />
                         </Box>
                         {t('services.prices')}
+                    </MenuItem>
+                    <MenuItem
+                        component={RouterLink}
+                        to="/rooms"
+                        onClick={handleServicesMenuClose}
+                    >
+                        <Box sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
+                            <MeetingRoom fontSize="small" />
+                        </Box>
+                        {t('services.rooms')}
                     </MenuItem>
                 </Menu>
             </Toolbar>

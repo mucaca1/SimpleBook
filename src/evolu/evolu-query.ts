@@ -1,6 +1,6 @@
 import * as Evolu from "@evolu/common";
 import { evolu } from "../evolu-init";
-import type { CustomerId, EmployeeId, CalendarEventId, CalendarEventCustomerId, ServiceId, CreditTransactionId, PriceId } from "./evolu-db";
+import type { CustomerId, EmployeeId, CalendarEventId, CalendarEventCustomerId, ServiceId, CreditTransactionId, PriceId, RoomId } from "./evolu-db";
 
 export const settings: Evolu.Query = evolu.createQuery((db) =>
     db.selectFrom("settings").select(["id", "language", "theme", "calendarTimeFormat", "calendarShowWeekends", "currency"])
@@ -108,6 +108,15 @@ export const services: Evolu.Query = evolu.createQuery((db) =>
 );
 
 export type TServiceRow = typeof services.Row;
+
+export const rooms: Evolu.Query = evolu.createQuery((db) =>
+    db.selectFrom("rooms")
+        .selectAll()
+        .where("isDeleted", "is not", Evolu.sqliteTrue)
+        .orderBy("createdAt", "desc")
+);
+
+export type TRoomRow = typeof rooms.Row;
 
 export const prices: Evolu.Query = evolu.createQuery((db) =>
     db.selectFrom("prices")

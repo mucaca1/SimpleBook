@@ -17,6 +17,7 @@ import { useSettingsSync } from "../hooks/useSettingsSync";
 import { ServiceFormData } from "../types/service";
 import { PriceFormData, UNIT_TYPES, EXPIRATION_ACTIONS, getCurrencySymbol } from "../types/price";
 import { DeleteConfirmDialog } from "../components/ui/DeleteConfirmDialog";
+import { ShowMore } from "../components/ui/ShowMore";
 import { getPricesForService } from "../evolu/evolu-query";
 import type { TServiceRow, TPriceRow } from "../evolu/evolu-query";
 import { ServiceId, PriceId } from "../evolu/evolu-db";
@@ -755,18 +756,23 @@ export function ServicePage() {
                             <CircularProgress />
                         </Box>
                     ) : services && services.length > 0 ? (
-                        <Grid container spacing={2}>
-                            {services.map((service) => (
-                                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={service.id}>
-                                    <ServiceCard
-                                        service={service}
-                                        onEdit={handleEdit}
-                                        onDelete={handleDelete}
-                                        onPrices={handlePrices}
-                                    />
+                        <ShowMore
+                            items={services}
+                            renderItems={(visible) => (
+                                <Grid container spacing={2}>
+                                    {visible.map((service) => (
+                                        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={service.id}>
+                                            <ServiceCard
+                                                service={service}
+                                                onEdit={handleEdit}
+                                                onDelete={handleDelete}
+                                                onPrices={handlePrices}
+                                            />
+                                        </Grid>
+                                    ))}
                                 </Grid>
-                            ))}
-                        </Grid>
+                            )}
+                        />
                     ) : (
                         <Typography variant="body1" color="text.secondary" sx={{ py: 4, textAlign: "center" }}>
                             {t("service.empty")}

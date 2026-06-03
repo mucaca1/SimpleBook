@@ -11,7 +11,9 @@ export interface CalendarEventFormData {
     allDay: boolean;
     color: SchedulerEventColor | null;
     resource: string | null;
+    roomId?: string | null;
     employeeIds: string[];
+    customerIds: string[];
     customFieldValues: Record<string, string | boolean | null>;
 }
 
