@@ -1,6 +1,8 @@
+export type AttendanceStatus = 'present' | 'absent' | 'absent_charged';
+
 export interface AttendanceEntry {
     id: string;
-    attendance: 'present' | 'absent';
+    attendance: AttendanceStatus;
 }
 
 export interface CustomerCostPreview {
@@ -17,6 +19,11 @@ export interface CustomerCostPreview {
     noPrice: boolean;
 }
 
+export interface CustomerPriceOverride {
+    customerId: string;
+    customPrice: number | null;  // null = use auto-calculated price
+}
+
 export interface CompleteSessionData {
     eventId: string;
     eventTitle: string;
@@ -27,4 +34,5 @@ export interface CompleteSessionData {
     customerAttendance: AttendanceEntry[];
     additionalEmployeeIds: string[];
     additionalCustomerIds: string[];
+    customerPriceOverrides: CustomerPriceOverride[];
 }

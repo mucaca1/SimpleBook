@@ -19,7 +19,7 @@ import type {
     TServiceRow,
 } from "../evolu/evolu-query";
 import type { CalendarEventId } from "../evolu/evolu-db";
-import type { CompleteSessionData, CustomerCostPreview } from "../components/eventCalendar/completeSessionTypes";
+import type { CompleteSessionData, CustomerCostPreview, AttendanceStatus } from "../components/eventCalendar/completeSessionTypes";
 
 const UNIT_DURATION_MAP: Record<string, number> = {
     "15m": 15,
@@ -35,6 +35,11 @@ function calculateUnitCount(durationMinutes: number, unitType: string): number {
     const unitDuration = UNIT_DURATION_MAP[unitType];
     if (unitDuration === 0) return 1; // flat rate: session, other
     return Math.ceil(durationMinutes / unitDuration);
+}
+
+/** Whether this attendance status should be charged */
+function isChargable(attendance: AttendanceStatus): boolean {
+    return attendance === "present" || attendance === "absent_charged";
 }
 
 export function useCompleteSession() {
@@ -75,7 +80,6 @@ export function useCompleteSession() {
                 (tx) => String(tx.customerId) === customerId
             );
 
-            // Sum preorder additions for this service
             let added = 0;
             for (const tx of customerTxs) {
                 if (String(tx.serviceId) !== serviceId) continue;
@@ -88,7 +92,6 @@ export function useCompleteSession() {
                 }
             }
 
-            // Sum consumed preorders for this service
             let consumed = 0;
             for (const tx of customerTxs) {
                 if (String(tx.serviceId) !== serviceId) continue;
@@ -123,12 +126,32 @@ export function useCompleteSession() {
         [allPrices]
     );
 
+    /** Calculate the auto-calculated (default) cost for a customer */
+    const getAutoCalculatedCost = useCallback(
+        (
+            eventStart: string,
+            eventEnd: string,
+            serviceId: string | null
+        ): { cost: number; unitCount: number; pricePerUnit: number } => {
+            if (!serviceId) return { cost: 0, unitCount: 0, pricePerUnit: 0 };
+            const price = getApplicablePrice(serviceId);
+            if (!price) return { cost: 0, unitCount: 0, pricePerUnit: 0 };
+
+            const durationMinutes = dayjs(eventEnd).diff(dayjs(eventStart), "minute");
+            const unitCount = calculateUnitCount(durationMinutes, String(price.unitType));
+            const pricePerUnit = Number(price.price);
+            return { cost: unitCount * pricePerUnit, unitCount, pricePerUnit };
+        },
+        [getApplicablePrice]
+    );
+
     const getCustomerCostPreview = useCallback(
         (
             customerId: string,
             eventStart: string,
             eventEnd: string,
-            serviceId: string | null
+            serviceId: string | null,
+            customPrice: number | null
         ): CustomerCostPreview => {
             const noService = !serviceId;
             if (noService) {
@@ -168,7 +191,11 @@ export function useCompleteSession() {
 
             const durationMinutes = dayjs(eventEnd).diff(dayjs(eventStart), "minute");
             const unitCount = calculateUnitCount(durationMinutes, String(price.unitType));
-            const totalCost = unitCount * Number(price.price);
+            const autoCost = unitCount * Number(price.price);
+
+            // Use custom price if provided, otherwise auto-calculated
+            const totalCost = customPrice !== null ? customPrice : autoCost;
+
             const availablePreOrders = getAvailablePreOrders(customerId, serviceId);
             const preOrdersUsed = Math.min(availablePreOrders, unitCount);
             const remainingUnits = unitCount - preOrdersUsed;
@@ -197,17 +224,23 @@ export function useCompleteSession() {
         async (data: CompleteSessionData): Promise<void> => {
             setIsCompleting(true);
             try {
-                const { eventId, serviceId, employeeAttendance, customerAttendance, additionalEmployeeIds, additionalCustomerIds } = data;
+                const {
+                    eventId, serviceId,
+                    employeeAttendance, customerAttendance,
+                    additionalEmployeeIds, additionalCustomerIds,
+                    customerPriceOverrides,
+                } = data;
+
+                // Build a map of custom prices
+                const customPriceMap = new Map<string, number>();
+                for (const override of customerPriceOverrides) {
+                    if (override.customPrice !== null) {
+                        customPriceMap.set(override.customerId, override.customPrice);
+                    }
+                }
 
                 // 1. Add additional employees to the event
                 if (additionalEmployeeIds.length > 0) {
-                    const currentEmployeeRows = (allEventEmployees ?? []).filter(
-                        (r) => String(r.calendarEventId) === eventId
-                    );
-                    const currentEmployeeIds = currentEmployeeRows.map((r) => String(r.employeeId));
-                    const allEmployeeIds = [...new Set([...currentEmployeeIds, ...additionalEmployeeIds])];
-
-                    // Soft-delete removed assignments (none removed, only added)
                     for (const empId of additionalEmployeeIds) {
                         await evolu.insert("calendarEventEmployees", {
                             calendarEventId: eventId as CalendarEventId,
@@ -258,47 +291,66 @@ export function useCompleteSession() {
                     }
                 }
 
-                // 5. For each present customer, create consumption credit transactions
-                const presentCustomers = customerAttendance.filter(
-                    (e) => e.attendance === "present"
+                // 5. For each chargable customer (present or absent_charged), create credit transactions
+                const chargableCustomers = customerAttendance.filter(
+                    (e) => isChargable(e.attendance)
                 );
 
-                if (serviceId && presentCustomers.length > 0) {
+                if (serviceId && chargableCustomers.length > 0) {
                     const price = getApplicablePrice(serviceId);
                     if (price) {
                         const durationMinutes = dayjs(data.eventEnd).diff(dayjs(data.eventStart), "minute");
                         const unitCount = calculateUnitCount(durationMinutes, String(price.unitType));
-                        const priceValue = Number(price.price);
+                        const pricePerUnit = Number(price.price);
+                        const autoCost = unitCount * pricePerUnit;
 
-                        for (const customer of presentCustomers) {
-                            const availablePreOrders = getAvailablePreOrders(customer.id, serviceId);
-                            const preOrdersUsed = Math.min(availablePreOrders, unitCount);
-                            const remainingUnits = unitCount - preOrdersUsed;
+                        for (const customer of chargableCustomers) {
+                            const customPrice = customPriceMap.get(customer.id) ?? null;
+                            const finalCost = customPrice !== null ? customPrice : autoCost;
+                            const isNoShow = customer.attendance === "absent_charged";
+                            const notePrefix = isNoShow ? `No-show: ${data.eventTitle}` : `Session: ${data.eventTitle}`;
 
-                            // Create consumption transactions for pre-orders used
-                            for (let i = 0; i < preOrdersUsed; i++) {
+                            // Only use pre-orders when using auto-calculated price (not custom)
+                            if (customPrice === null) {
+                                const availablePreOrders = getAvailablePreOrders(customer.id, serviceId);
+                                const preOrdersUsed = Math.min(availablePreOrders, unitCount);
+                                const remainingUnits = unitCount - preOrdersUsed;
+
+                                for (let i = 0; i < preOrdersUsed; i++) {
+                                    await evolu.insert("creditTransactions", {
+                                        customerId: customer.id as any,
+                                        amount: -pricePerUnit,
+                                        date: dayjs().format("YYYY-MM-DD"),
+                                        note: notePrefix,
+                                        priceId: price.id,
+                                        serviceId: serviceId as any,
+                                        quantity: 1,
+                                        calendarEventId: eventId as CalendarEventId,
+                                        transactionType: "consumption",
+                                    });
+                                }
+
+                                if (remainingUnits > 0) {
+                                    await evolu.insert("creditTransactions", {
+                                        customerId: customer.id as any,
+                                        amount: -(remainingUnits * pricePerUnit),
+                                        date: dayjs().format("YYYY-MM-DD"),
+                                        note: notePrefix,
+                                        serviceId: serviceId as any,
+                                        quantity: remainingUnits,
+                                        calendarEventId: eventId as CalendarEventId,
+                                        transactionType: "consumption",
+                                    });
+                                }
+                            } else {
+                                // Custom price: single transaction for the whole amount
                                 await evolu.insert("creditTransactions", {
                                     customerId: customer.id as any,
-                                    amount: -priceValue,
+                                    amount: -finalCost,
                                     date: dayjs().format("YYYY-MM-DD"),
-                                    note: `Session: ${data.eventTitle}`,
-                                    priceId: price.id,
+                                    note: `${notePrefix} (custom price)`,
                                     serviceId: serviceId as any,
                                     quantity: 1,
-                                    calendarEventId: eventId as CalendarEventId,
-                                    transactionType: "consumption",
-                                });
-                            }
-
-                            // Create consumption transaction for remaining credit charge
-                            if (remainingUnits > 0) {
-                                await evolu.insert("creditTransactions", {
-                                    customerId: customer.id as any,
-                                    amount: -(remainingUnits * priceValue),
-                                    date: dayjs().format("YYYY-MM-DD"),
-                                    note: `Session: ${data.eventTitle}`,
-                                    serviceId: serviceId as any,
-                                    quantity: remainingUnits,
                                     calendarEventId: eventId as CalendarEventId,
                                     transactionType: "consumption",
                                 });
@@ -329,6 +381,7 @@ export function useCompleteSession() {
     return {
         completeSession,
         getCustomerCostPreview,
+        getAutoCalculatedCost,
         getAvailablePreOrders,
         isCompleting,
         priceMap,

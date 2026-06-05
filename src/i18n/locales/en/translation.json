@@ -589,6 +589,8 @@
             "customers": "Customers",
             "present": "Present",
             "absent": "Absent",
+            "absentCharged": "No-show",
+            "noShowBadge": "No-show charge",
             "addEmployee": "Add Employee",
             "addCustomer": "Add Customer",
             "cost": "Cost",
@@ -598,6 +600,8 @@
             "insufficientWarning": "Insufficient credit. Balance will go negative.",
             "noServiceWarning": "No service assigned",
             "noPriceWarning": "No price found",
+            "customPriceBadge": "custom",
+            "resetPrice": "reset",
             "lockedEvent": "This session is completed and cannot be edited.",
             "toast": {
                 "completed": "Session completed successfully",

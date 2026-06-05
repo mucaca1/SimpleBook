@@ -589,6 +589,8 @@
             "customers": "Zákazníci",
             "present": "Prítomný",
             "absent": "Neprítomný",
+            "absentCharged": "Neprítomný",
+            "noShowBadge": "Kobava",
             "addEmployee": "Pridať zamestnanca",
             "addCustomer": "Pridať zákazníka",
             "cost": "Náklady",
@@ -598,6 +600,8 @@
             "insufficientWarning": "Nedostatočný kredit. Zostatok bude záporný.",
             "noServiceWarning": "Žiadna priradená služba",
             "noPriceWarning": "Cena nenájdená",
+            "customPriceBadge": "vlastná",
+            "resetPrice": "obnoviť",
             "lockedEvent": "Toto sedenie je dokončené a nie je možné ho upravovať.",
             "toast": {
                 "completed": "Sedenie bolo úspešne dokončené",
