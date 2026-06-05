@@ -10,7 +10,7 @@ import { EventFormPanel } from "../components/eventCalendar/EventFormPanel";
 import { CompleteSessionDialog } from "../components/eventCalendar/CompleteSessionDialog";
 import { saveCustomFieldValuesForCalendarEvent } from "../evolu/customFieldUtils";
 import type { CalendarEventId } from "../evolu/evolu-db";
-import type { CalendarEventFormData, ExternalDraftData, CalendarRef } from "../components/eventCalendar/types";
+import type { CalendarEventFormData, CalendarRef } from "../components/eventCalendar/types";
 
 interface FormState {
     open: boolean;
@@ -44,15 +44,10 @@ export function HomePage() {
     const calendarRef = useRef<CalendarRef>(null);
 
     const [formState, setFormState] = useState<FormState>(INITIAL_FORM_STATE);
-    const [draftData, setDraftData] = useState<ExternalDraftData | null>(null);
 
     // Complete session dialog state
     const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
     const [completeDialogEventId, setCompleteDialogEventId] = useState<string | null>(null);
-
-    const handleDraftChange = useCallback((draft: ExternalDraftData) => {
-        setDraftData(draft);
-    }, []);
 
     const handleSlotClick = useCallback((_day: dayjs.Dayjs, startTime: dayjs.Dayjs) => {
         setFormState({
@@ -130,20 +125,17 @@ export function HomePage() {
             }
         }
         setFormState(INITIAL_FORM_STATE);
-        setDraftData(null);
         calendarRef.current?.clearDraft();
     }, [formState.mode, createEvent, updateEvent, assignEmployees, assignCustomers]);
 
     const handleFormDelete = useCallback(async (id: string) => {
         await deleteEvent(id);
         setFormState(INITIAL_FORM_STATE);
-        setDraftData(null);
         calendarRef.current?.clearDraft();
     }, [deleteEvent]);
 
     const handleFormClose = useCallback(() => {
         setFormState(INITIAL_FORM_STATE);
-        setDraftData(null);
         calendarRef.current?.clearDraft();
     }, []);
 
@@ -159,7 +151,6 @@ export function HomePage() {
         setCompleteDialogEventId(null);
         // Close the form panel too after completion
         setFormState(INITIAL_FORM_STATE);
-        setDraftData(null);
         calendarRef.current?.clearDraft();
     }, []);
 
@@ -234,7 +225,6 @@ export function HomePage() {
                         onSave={handleFormSave}
                         onDelete={handleFormDelete}
                         onClose={handleFormClose}
-                        onDraftChange={handleDraftChange}
                         onCompleteSession={formState.mode === 'edit' && formState.data?.id ? handleOpenCompleteSession : undefined}
                         isCompleted={formState.data?.id ? isEventCompleted(formState.data.id) : false}
                         employees={homeData.employeeRows}

@@ -15,7 +15,7 @@ import type { SchedulerEventColor } from '@mui/x-scheduler/models';
 import type { TEmployeeRow, TCustomerRow, TServiceRow, TRoomRow } from '../../evolu/evolu-query';
 import { CustomFieldSection } from './CustomFieldSection';
 import type { CustomFieldSectionRef } from './CustomFieldSection';
-import type { CalendarEventFormData, ExternalDraftData } from './types';
+import type { CalendarEventFormData } from './types';
 import { getEventColor } from './utils';
 
 const EVENT_COLORS: SchedulerEventColor[] = [
@@ -29,7 +29,6 @@ interface EventFormPanelProps {
     onSave: (data: CalendarEventFormData) => Promise<void>;
     onDelete?: (id: string) => Promise<void>;
     onClose: () => void;
-    onDraftChange?: (draft: ExternalDraftData) => void;
     onCompleteSession?: () => void;
     isCompleted?: boolean;
     // Data props (from HomePage — no internal queries needed)
@@ -45,7 +44,6 @@ export function EventFormPanel({
     onSave,
     onDelete,
     onClose,
-    onDraftChange,
     onCompleteSession,
     isCompleted,
     employees,
@@ -101,18 +99,6 @@ export function EventFormPanel({
         setEmployeeSearch('');
         setCustomerSearch('');
     }, [initialData]);
-
-    useEffect(() => {
-        if (onDraftChange) {
-            onDraftChange({
-                title,
-                start: start.toISOString(),
-                end: end.toISOString(),
-                color,
-                allDay,
-            });
-        }
-    }, [title, start, end, color, allDay, onDraftChange]);
 
     const toggleEmployee = useCallback((id: string) => {
         setSelectedEmployeeIds((prev) => {

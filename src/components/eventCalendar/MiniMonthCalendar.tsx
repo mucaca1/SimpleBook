@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import dayjs from 'dayjs';
@@ -13,7 +13,7 @@ interface MiniMonthCalendarProps {
 
 const CELL_SIZE = 32;
 
-export function MiniMonthCalendar({
+export const MiniMonthCalendar = React.memo(function MiniMonthCalendar({
     currentDate,
     events,
     locale,
@@ -159,4 +159,4 @@ export function MiniMonthCalendar({
             </Box>
         </Box>
     );
-}
+});

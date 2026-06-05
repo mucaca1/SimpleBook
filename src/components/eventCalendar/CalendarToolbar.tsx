@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { IconButton, Button, ButtonGroup, Typography, Box, Popover, FormControlLabel, Checkbox, Radio, RadioGroup, Divider, Autocomplete, TextField, Chip } from '@mui/material';
 import { ChevronLeft, ChevronRight, Menu as MenuIcon, MenuOpen, Settings, FilterList } from '@mui/icons-material';
 import dayjs from 'dayjs';
@@ -33,7 +33,7 @@ interface CalendarToolbarProps {
     onRoomFilterChange: (ids: string[]) => void;
 }
 
-export function CalendarToolbar({
+export const CalendarToolbar = React.memo(function CalendarToolbar({
     currentDate,
     view,
     onViewChange,
@@ -313,4 +313,4 @@ export function CalendarToolbar({
             )}
         </Box>
     );
-}
+});

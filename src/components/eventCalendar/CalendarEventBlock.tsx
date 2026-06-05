@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { CheckCircle } from '@mui/icons-material';
 import dayjs from 'dayjs';
@@ -16,7 +17,7 @@ interface CalendarEventBlockProps {
     isCompleted?: boolean;
 }
 
-export function CalendarEventBlock({
+export const CalendarEventBlock = React.memo(function CalendarEventBlock({
     event,
     top,
     height,
@@ -111,4 +112,4 @@ export function CalendarEventBlock({
             </Box>
         </Box>
     );
-}
+});

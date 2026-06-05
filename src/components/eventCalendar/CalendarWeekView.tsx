@@ -1,4 +1,4 @@
-import { useRef, useCallback, useMemo, useEffect, useState } from 'react';
+import React, { useRef, useCallback, useMemo, useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import type { SchedulerEvent, SchedulerResource } from '@mui/x-scheduler/models';
@@ -25,7 +25,7 @@ interface CalendarWeekViewProps {
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const BORDER_COLOR = 'rgba(0, 0, 0, 0.08)';
 
-export function CalendarWeekView({
+export const CalendarWeekView = React.memo(function CalendarWeekView({
     days,
     events,
     resources,
@@ -335,4 +335,4 @@ export function CalendarWeekView({
             </Box>
         </Box>
     );
-}
+});
