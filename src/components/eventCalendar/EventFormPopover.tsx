@@ -11,11 +11,8 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import { useEmployeeCrud } from '../../hooks/useEmployeeCrud';
-import { useCustomerCrud } from '../../hooks/useCustomerCrud';
-import { useServiceCrud } from '../../hooks/useServiceCrud';
-import { useRoomCrud } from '../../hooks/useRoomCrud';
 import type { SchedulerEventColor } from '@mui/x-scheduler/models';
+import type { TEmployeeRow, TCustomerRow, TServiceRow, TRoomRow } from '../../evolu/evolu-query';
 import { CustomFieldSection } from './CustomFieldSection';
 import type { CustomFieldSectionRef } from './CustomFieldSection';
 import type { CalendarEventFormData } from './types';
@@ -35,6 +32,11 @@ interface EventFormPopoverProps {
     onDelete?: (id: string) => Promise<void>;
     onClose: () => void;
     onDraftChange?: (draft: { title: string; start: string; end: string; color: SchedulerEventColor | null; allDay: boolean }) => void;
+    // Data props (from CustomEventCalendar — no internal queries)
+    employees: TEmployeeRow[];
+    customers: TCustomerRow[];
+    services: TServiceRow[];
+    rooms: TRoomRow[];
 }
 
 export function EventFormPopover({
@@ -46,12 +48,12 @@ export function EventFormPopover({
     onDelete,
     onClose,
     onDraftChange,
+    employees,
+    customers,
+    services,
+    rooms,
 }: EventFormPopoverProps) {
     const { t } = useTranslation();
-    const { employees, isLoading: employeesLoading } = useEmployeeCrud();
-    const { customers, isLoading: customersLoading } = useCustomerCrud();
-    const { services } = useServiceCrud();
-    const { rooms } = useRoomCrud();
     const customFieldRef = useRef<CustomFieldSectionRef>(null);
 
     const [title, setTitle] = useState('');
@@ -373,11 +375,7 @@ export function EventFormPopover({
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
                             {t('scheduler.eventForm.employees')}
                         </Typography>
-                        {employeesLoading ? (
-                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 1 }}>
-                                <CircularProgress size={20} />
-                            </Box>
-                        ) : (employees ?? []).length === 0 ? (
+                        {(employees ?? []).length === 0 ? (
                             <Typography variant="body2" color="text.secondary" fontSize="0.75rem">
                                 {t('scheduler.noEmployees')}
                             </Typography>
@@ -439,11 +437,7 @@ export function EventFormPopover({
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
                             {t('scheduler.eventForm.customers')}
                         </Typography>
-                        {customersLoading ? (
-                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 1 }}>
-                                <CircularProgress size={20} />
-                            </Box>
-                        ) : (customers ?? []).length === 0 ? (
+                        {(customers ?? []).length === 0 ? (
                             <Typography variant="body2" color="text.secondary" fontSize="0.75rem">
                                 {t('scheduler.noCustomers')}
                             </Typography>

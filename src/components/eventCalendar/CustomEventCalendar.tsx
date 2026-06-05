@@ -1,14 +1,11 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { Box } from '@mui/material';
 import dayjs from 'dayjs';
 import type { SchedulerEvent } from '@mui/x-scheduler/models';
 import type { SchedulerResource } from '@mui/x-scheduler-headless/models';
 import { useTranslation } from 'react-i18next';
-import { useQueries } from '@evolu/react';
 import { sqliteFalse } from '@evolu/common';
-import { useCalendarEventCrud } from '../../hooks/useCalendarEventCrud';
 import { updateCalendarTimeFormat, updateCalendarShowWeekends } from '../../hooks/useSettingsSync';
-import { services, employees, customers, rooms, settings } from '../../evolu/evolu-query';
 import { hexToSchedulerColor } from '../../utils/colorMapping';
 import { saveCustomFieldValuesForCalendarEvent } from '../../evolu/customFieldUtils';
 import type { CalendarEventId } from '../../evolu/evolu-db';
@@ -27,33 +24,40 @@ interface DraftEventData {
     allDay: boolean;
 }
 
-export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEventClick: onEventClickExternal, externalFormOpen, externalDraftData }: CustomEventCalendarProps) {
+export const CustomEventCalendar = React.memo(forwardRef(function CustomEventCalendar({
+    sx,
+    onSlotClick: onSlotClickExternal,
+    onEventClick: onEventClickExternal,
+    // Data props
+    events,
+    allEventRows,
+    completedEventIds,
+    getEmployeeIdsForEvent,
+    getCustomerIdsForEvent,
+    serviceRows,
+    employeeRows,
+    customerRows,
+    roomRows,
+    settingsRow,
+    // Mutation callbacks
+    createEvent: createEventCb,
+    updateEvent: updateEventCb,
+    deleteEvent: deleteEventCb,
+    assignEmployees: assignEmployeesCb,
+}: CustomEventCalendarProps, ref) {
     const { i18n } = useTranslation();
-    const {
-        events,
-        allEventRows,
-        isLoading,
-        createEvent,
-        updateEvent,
-        deleteEvent,
-        assignEmployees,
-        getEmployeeIdsForEvent,
-        getCustomerIdsForEvent,
-        completedEventIds,
-    } = useCalendarEventCrud();
 
-    // Batch remaining queries into a single useQueries call (one suspension)
-    const [serviceRows, employeeRows, customerRows, roomRows, settingsRows] = useQueries([
-        services,
-        employees,
-        customers,
-        rooms,
-        settings,
-    ]);
-    const settingsRow = settingsRows.length > 0 ? settingsRows[0] : null;
     const ampm = settingsRow?.calendarTimeFormat === '12h';
     const showWeekends = settingsRow?.calendarShowWeekends !== sqliteFalse;
     const locale = i18n.language === 'sk' ? 'sk' : 'en';
+
+    // Expose clearDraft to parent via ref (avoids re-rendering calendar on panel toggle)
+    const [draftEvent, setDraftEvent] = useState<SchedulerEvent | null>(null);
+    useImperativeHandle(ref, () => ({
+        clearDraft: () => setDraftEvent(null),
+    }));
+
+    const draftAnchorRef = useRef<HTMLDivElement | null>(null);
 
     // Calendar state
     const [currentDate, setCurrentDate] = useState(dayjs());
@@ -65,31 +69,6 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
     const [popoverMode, setPopoverMode] = useState<'create' | 'edit'>('create');
     const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLElement | null>(null);
     const [popoverData, setPopoverData] = useState<Partial<CalendarEventFormData> | undefined>();
-
-    // Draft event for pre-drawing
-    const [draftEvent, setDraftEvent] = useState<SchedulerEvent | null>(null);
-    const draftAnchorRef = useRef<HTMLDivElement | null>(null);
-
-    // Clear draft when external form closes
-    useEffect(() => {
-        if (onSlotClickExternal && !externalFormOpen) {
-            setDraftEvent(null);
-        }
-    }, [onSlotClickExternal, externalFormOpen]);
-
-    // Sync external draft data (from right panel form) to calendar preview
-    useEffect(() => {
-        if (externalDraftData && externalFormOpen) {
-            setDraftEvent(prev => prev ? {
-                ...prev,
-                title: externalDraftData.title || '(New Event)',
-                start: externalDraftData.start,
-                end: externalDraftData.end,
-                color: externalDraftData.color ?? undefined,
-                allDay: externalDraftData.allDay,
-            } : null);
-        }
-    }, [externalDraftData, externalFormOpen]);
 
     const days = useMemo(() => {
         if (view === 'week') return getWeekDays(currentDate, showWeekends, locale);
@@ -261,7 +240,7 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
 
     const handlePopoverSave = useCallback(async (formData: CalendarEventFormData) => {
         if (popoverMode === 'create') {
-            const newId = await createEvent({
+            const newId = await createEventCb({
                 title: formData.title,
                 description: formData.description || undefined,
                 start: formData.start,
@@ -271,7 +250,7 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
                 resource: formData.resource ?? undefined,
             });
             if (newId) {
-                await assignEmployees(newId, formData.employeeIds);
+                await assignEmployeesCb(newId, formData.employeeIds);
                 if (Object.keys(formData.customFieldValues).length > 0) {
                     await saveCustomFieldValuesForCalendarEvent(
                         newId as CalendarEventId,
@@ -280,7 +259,7 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
                 }
             }
         } else if (formData.id) {
-            await updateEvent(formData.id, {
+            await updateEventCb(formData.id, {
                 title: formData.title,
                 description: formData.description || undefined,
                 start: formData.start,
@@ -289,7 +268,7 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
                 color: formData.color ?? undefined,
                 resource: formData.resource ?? undefined,
             });
-            await assignEmployees(formData.id, formData.employeeIds);
+            await assignEmployeesCb(formData.id, formData.employeeIds);
             if (Object.keys(formData.customFieldValues).length > 0) {
                 await saveCustomFieldValuesForCalendarEvent(
                     formData.id as CalendarEventId,
@@ -299,20 +278,18 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
         }
         setPopoverOpen(false);
         setDraftEvent(null);
-    }, [popoverMode, createEvent, updateEvent, assignEmployees]);
+    }, [popoverMode, createEventCb, updateEventCb, assignEmployeesCb]);
 
     const handlePopoverDelete = useCallback(async (id: string) => {
-        await deleteEvent(id);
+        await deleteEventCb(id);
         setPopoverOpen(false);
         setDraftEvent(null);
-    }, [deleteEvent]);
+    }, [deleteEventCb]);
 
     const handlePopoverClose = useCallback(() => {
         setPopoverOpen(false);
         setDraftEvent(null);
     }, []);
-
-    if (isLoading) return null;
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', ...sx }}>
@@ -382,8 +359,12 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
                     onDelete={handlePopoverDelete}
                     onClose={handlePopoverClose}
                     onDraftChange={handleDraftChange}
+                    employees={employeeRows}
+                    customers={customerRows}
+                    services={serviceRows}
+                    rooms={roomRows}
                 />
             )}
         </Box>
     );
-}
+}));

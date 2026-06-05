@@ -1,16 +1,16 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Box, CircularProgress } from "@mui/material";
 import dayjs from "dayjs";
 import type { SchedulerEvent } from "@mui/x-scheduler/models";
 import { useCalendarEventCrud } from "../hooks/useCalendarEventCrud";
-import { useServiceCrud } from "../hooks/useServiceCrud";
+import { useHomeData } from "../hooks/useHomeData";
 import { EventList } from "../components/scheduler/EventList";
 import { CustomEventCalendar } from "../components/eventCalendar";
 import { EventFormPanel } from "../components/eventCalendar/EventFormPanel";
 import { CompleteSessionDialog } from "../components/eventCalendar/CompleteSessionDialog";
 import { saveCustomFieldValuesForCalendarEvent } from "../evolu/customFieldUtils";
 import type { CalendarEventId } from "../evolu/evolu-db";
-import type { CalendarEventFormData, ExternalDraftData } from "../components/eventCalendar/types";
+import type { CalendarEventFormData, ExternalDraftData, CalendarRef } from "../components/eventCalendar/types";
 
 interface FormState {
     open: boolean;
@@ -21,9 +21,13 @@ interface FormState {
 const INITIAL_FORM_STATE: FormState = { open: false, mode: "create" };
 
 export function HomePage() {
+    // All reference data in ONE useQueries call (one suspension)
+    const homeData = useHomeData();
+
+    // Event data + mutation functions (queries cached from useHomeData, zero extra Suspense)
     const {
         allEventRows,
-        isLoading,
+        isLoading: eventsLoading,
         getEmployeeIdsForEvent,
         getCustomerIdsForEvent,
         createEvent,
@@ -33,8 +37,11 @@ export function HomePage() {
         assignCustomers,
         isEventCompleted,
         completedEventIds,
+        events,
     } = useCalendarEventCrud();
-    const { services } = useServiceCrud();
+
+    // Calendar ref for draft clearing (avoids re-rendering calendar on panel toggle)
+    const calendarRef = useRef<CalendarRef>(null);
 
     const [formState, setFormState] = useState<FormState>(INITIAL_FORM_STATE);
     const [draftData, setDraftData] = useState<ExternalDraftData | null>(null);
@@ -124,17 +131,20 @@ export function HomePage() {
         }
         setFormState(INITIAL_FORM_STATE);
         setDraftData(null);
+        calendarRef.current?.clearDraft();
     }, [formState.mode, createEvent, updateEvent, assignEmployees, assignCustomers]);
 
     const handleFormDelete = useCallback(async (id: string) => {
         await deleteEvent(id);
         setFormState(INITIAL_FORM_STATE);
         setDraftData(null);
+        calendarRef.current?.clearDraft();
     }, [deleteEvent]);
 
     const handleFormClose = useCallback(() => {
         setFormState(INITIAL_FORM_STATE);
         setDraftData(null);
+        calendarRef.current?.clearDraft();
     }, []);
 
     const handleOpenCompleteSession = useCallback(() => {
@@ -150,6 +160,7 @@ export function HomePage() {
         // Close the form panel too after completion
         setFormState(INITIAL_FORM_STATE);
         setDraftData(null);
+        calendarRef.current?.clearDraft();
     }, []);
 
     const handleEditFromList = useCallback((eventRow: typeof allEventRows[number]) => {
@@ -175,7 +186,7 @@ export function HomePage() {
         });
     }, [getEmployeeIdsForEvent, getCustomerIdsForEvent]);
 
-    if (isLoading) {
+    if (eventsLoading || homeData.isLoading) {
         return (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
                 <CircularProgress />
@@ -187,11 +198,24 @@ export function HomePage() {
         <Box sx={{ display: "flex", height: "calc(100vh - 120px)", gap: 0 }}>
             <Box sx={{ flex: 1, minWidth: 0 }}>
                 <CustomEventCalendar
+                    ref={calendarRef}
                     sx={{ height: "100%" }}
                     onSlotClick={handleSlotClick}
                     onEventClick={handleEventClick}
-                    externalFormOpen={formState.open}
-                    externalDraftData={draftData}
+                    events={events}
+                    allEventRows={allEventRows}
+                    completedEventIds={completedEventIds}
+                    getEmployeeIdsForEvent={getEmployeeIdsForEvent}
+                    getCustomerIdsForEvent={getCustomerIdsForEvent}
+                    serviceRows={homeData.serviceRows}
+                    employeeRows={homeData.employeeRows}
+                    customerRows={homeData.customerRows}
+                    roomRows={homeData.roomRows}
+                    settingsRow={homeData.settingsRow}
+                    createEvent={createEvent}
+                    updateEvent={updateEvent}
+                    deleteEvent={deleteEvent}
+                    assignEmployees={assignEmployees}
                 />
             </Box>
             <Box sx={{
@@ -213,6 +237,10 @@ export function HomePage() {
                         onDraftChange={handleDraftChange}
                         onCompleteSession={formState.mode === 'edit' && formState.data?.id ? handleOpenCompleteSession : undefined}
                         isCompleted={formState.data?.id ? isEventCompleted(formState.data.id) : false}
+                        employees={homeData.employeeRows}
+                        customers={homeData.customerRows}
+                        services={homeData.serviceRows}
+                        rooms={homeData.roomRows}
                     />
                 ) : (
                     <Box sx={{ flex: 1, overflowY: "auto", pl: 1 }}>
@@ -222,6 +250,8 @@ export function HomePage() {
                             getCustomerIdsForEvent={getCustomerIdsForEvent}
                             onEditEvent={handleEditFromList}
                             completedEventIds={completedEventIds}
+                            employees={homeData.employeeRows}
+                            customers={homeData.customerRows}
                         />
                     </Box>
                 )}
@@ -239,6 +269,9 @@ export function HomePage() {
                     serviceId={formState.data.resource || null}
                     assignedEmployeeIds={formState.data.employeeIds || []}
                     assignedCustomerIds={formState.data.customerIds || []}
+                    employees={homeData.employeeRows}
+                    customers={homeData.customerRows}
+                    currency={homeData.currency}
                 />
             )}
         </Box>

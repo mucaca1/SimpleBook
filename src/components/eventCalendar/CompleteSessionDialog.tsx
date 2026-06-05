@@ -26,10 +26,8 @@ import {
 import { Close, Add, CheckCircle, Warning, Info, Edit } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
-import { useEmployeeCrud } from '../../hooks/useEmployeeCrud';
-import { useCustomerCrud } from '../../hooks/useCustomerCrud';
+import type { TEmployeeRow, TCustomerRow } from '../../evolu/evolu-query';
 import { useCompleteSession } from '../../hooks/useCompleteSession';
-import { useSettingsSync } from '../../hooks/useSettingsSync';
 import { getCurrencySymbol } from '../../types/price';
 import type { AttendanceEntry, CustomerCostPreview, CompleteSessionData, AttendanceStatus, CustomerPriceOverride } from './completeSessionTypes';
 
@@ -48,6 +46,10 @@ interface CompleteSessionDialogProps {
     serviceId: string | null;
     assignedEmployeeIds: string[];
     assignedCustomerIds: string[];
+    // Data props (from HomePage — no internal queries)
+    employees: TEmployeeRow[];
+    customers: TCustomerRow[];
+    currency: string | null;
 }
 
 export function CompleteSessionDialog({
@@ -60,12 +62,12 @@ export function CompleteSessionDialog({
     serviceId,
     assignedEmployeeIds,
     assignedCustomerIds,
+    employees,
+    customers,
+    currency,
 }: CompleteSessionDialogProps) {
     const { t } = useTranslation();
-    const { employees } = useEmployeeCrud();
-    const { customers } = useCustomerCrud();
     const { completeSession, getCustomerCostPreview, getAutoCalculatedCost, isCompleting } = useCompleteSession();
-    const { currency } = useSettingsSync();
 
     const currencySymbol = getCurrencySymbol(currency || 'EUR');
 

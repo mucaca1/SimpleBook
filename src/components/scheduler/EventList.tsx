@@ -5,9 +5,7 @@ import {
 import { Edit, People, Person, ExpandMore, ExpandLess, CheckCircle } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
-import { useEmployeeCrud } from "../../hooks/useEmployeeCrud";
-import { useCustomerCrud } from "../../hooks/useCustomerCrud";
-import type { TCalendarEventRow } from "../../evolu/evolu-query";
+import type { TCalendarEventRow, TEmployeeRow, TCustomerRow } from "../../evolu/evolu-query";
 
 const MAX_VISIBLE = 3;
 
@@ -17,12 +15,13 @@ interface EventListProps {
     getCustomerIdsForEvent: (eventId: string) => string[];
     onEditEvent: (event: TCalendarEventRow) => void;
     completedEventIds?: Set<string>;
+    // Data props (from HomePage — no internal queries)
+    employees: TEmployeeRow[];
+    customers: TCustomerRow[];
 }
 
-export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEvent, onEditEvent, completedEventIds }: EventListProps) {
+export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEvent, onEditEvent, completedEventIds, employees, customers }: EventListProps) {
     const { t } = useTranslation();
-    const { employees } = useEmployeeCrud();
-    const { customers } = useCustomerCrud();
     const [showCustomers, setShowCustomers] = useState(false);
     const [upcomingDaysAhead, setUpcomingDaysAhead] = useState(0);
     const [pastDaysBehind, setPastDaysBehind] = useState(0);
