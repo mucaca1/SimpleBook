@@ -197,7 +197,7 @@ export function EventFormPanel({
                         sx={{ mr: 1, fontSize: '0.65rem', height: 22 }}
                     />
                 )}
-                <IconButton size="small" onClick={onClose} disabled={isLocked}>
+                <IconButton size="small" onClick={onClose} disabled={saving}>
                     <Close fontSize="small" />
                 </IconButton>
             </Box>
@@ -231,7 +231,7 @@ export function EventFormPanel({
                                 value={start}
                                 onChange={(v) => v && setStart(v)}
                                 slotProps={{
-                                    textField: { fullWidth: true, size: 'small', disabled: saving },
+                                    textField: { fullWidth: true, size: 'small', disabled: isLocked },
                                 }}
                             />
                         </Box>
@@ -241,7 +241,7 @@ export function EventFormPanel({
                                 value={end}
                                 onChange={(v) => v && setEnd(v)}
                                 slotProps={{
-                                    textField: { fullWidth: true, size: 'small', disabled: saving },
+                                    textField: { fullWidth: true, size: 'small', disabled: isLocked },
                                 }}
                             />
                         </Box>
@@ -276,14 +276,14 @@ export function EventFormPanel({
                                 return (
                                     <Box
                                         key={String(s.id)}
-                                        onClick={() => !saving && setResource(isSelected ? null : String(s.id))}
+                                        onClick={() => !isLocked && setResource(isSelected ? null : String(s.id))}
                                         sx={{
                                             px: 1.5, py: 0.5,
                                             borderRadius: 1,
                                             border: `1px solid ${isSelected ? serviceColor : 'rgba(0,0,0,0.12)'}`,
                                             bgcolor: isSelected ? serviceColor : 'transparent',
                                             color: isSelected ? '#fff' : 'text.primary',
-                                            cursor: saving ? 'default' : 'pointer',
+                                            cursor: isLocked ? 'default' : 'pointer',
                                             fontSize: '0.75rem',
                                             fontWeight: 500,
                                             transition: 'all 150ms',
@@ -304,13 +304,13 @@ export function EventFormPanel({
                             {EVENT_COLORS.map((c) => (
                                 <Box
                                     key={c}
-                                    onClick={() => !saving && setColor(color === c ? null : c)}
+                                    onClick={() => !isLocked && setColor(color === c ? null : c)}
                                     sx={{
                                         width: 24,
                                         height: 24,
                                         borderRadius: '50%',
                                         bgcolor: getEventColor(c),
-                                        cursor: saving ? 'default' : 'pointer',
+                                        cursor: isLocked ? 'default' : 'pointer',
                                         border: color === c ? '2px solid #000' : '2px solid transparent',
                                         transition: 'border-color 150ms, transform 150ms',
                                         '&:hover': { transform: 'scale(1.15)' },
@@ -399,8 +399,8 @@ export function EventFormPanel({
                                     return (
                                         <ListItem
                                             key={id}
-                                            onClick={() => !saving && toggleEmployee(id)}
-                                            sx={{ cursor: saving ? 'default' : 'pointer', '&:hover': { bgcolor: 'action.hover' }, py: 0, px: 0.5 }}
+                                            onClick={() => !isLocked && toggleEmployee(id)}
+                                            sx={{ cursor: isLocked ? 'default' : 'pointer', '&:hover': { bgcolor: 'action.hover' }, py: 0, px: 0.5 }}
                                         >
                                             <ListItemAvatar>
                                                 <Avatar sx={{ width: 24, height: 24, fontSize: 10 }}>
@@ -465,8 +465,8 @@ export function EventFormPanel({
                                     return (
                                         <ListItem
                                             key={id}
-                                            onClick={() => !saving && toggleCustomer(id)}
-                                            sx={{ cursor: saving ? 'default' : 'pointer', '&:hover': { bgcolor: 'action.hover' }, py: 0, px: 0.5 }}
+                                            onClick={() => !isLocked && toggleCustomer(id)}
+                                            sx={{ cursor: isLocked ? 'default' : 'pointer', '&:hover': { bgcolor: 'action.hover' }, py: 0, px: 0.5 }}
                                         >
                                             <ListItemAvatar>
                                                 <Avatar sx={{ width: 24, height: 24, fontSize: 10 }}>
@@ -515,7 +515,7 @@ export function EventFormPanel({
                             size="small"
                             sx={{ textTransform: 'none' }}
                         >
-                            {t('scheduler.eventForm.cancel')}
+                            {t('common.close')}
                         </Button>
                     </>
                 ) : (
