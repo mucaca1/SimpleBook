@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { useQuery } from "@evolu/react";
+import { useQueries } from "@evolu/react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { sqliteTrue } from "@evolu/common";
@@ -24,9 +24,11 @@ function toSchedulerEvent(row: TCalendarEventRow): SchedulerEvent {
 
 export function useCalendarEventCrud() {
     const { t } = useTranslation();
-    const rows = useQuery(calendarEvents);
-    const assignmentRows = useQuery(calendarEventEmployees);
-    const customerAssignmentRows = useQuery(calendarEventCustomers);
+    const [rows, assignmentRows, customerAssignmentRows] = useQueries([
+        calendarEvents,
+        calendarEventEmployees,
+        calendarEventCustomers,
+    ]);
 
     const events: SchedulerEvent[] = useMemo(
         () => (rows ?? []).map(toSchedulerEvent),

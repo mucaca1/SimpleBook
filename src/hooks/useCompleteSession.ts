@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { useQuery } from "@evolu/react";
+import { useQueries } from "@evolu/react";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
@@ -46,11 +46,13 @@ export function useCompleteSession() {
     const { t } = useTranslation();
     const [isCompleting, setIsCompleting] = useState(false);
 
-    const allCreditTransactions = useQuery(creditTransactions) as TCreditTransactionRow[];
-    const allPrices = useQuery(prices) as TPriceRow[];
-    const allServices = useQuery(services) as TServiceRow[];
-    const allEventEmployees = useQuery(calendarEventEmployees) as TCalendarEventEmployeeRow[];
-    const allEventCustomers = useQuery(calendarEventCustomers) as TCalendarEventCustomerRow[];
+    const [allCreditTransactions, allPrices, allServices, allEventEmployees, allEventCustomers] = useQueries([
+        creditTransactions,
+        prices,
+        services,
+        calendarEventEmployees,
+        calendarEventCustomers,
+    ]) as [TCreditTransactionRow[], TPriceRow[], TServiceRow[], TCalendarEventEmployeeRow[], TCalendarEventCustomerRow[]];
 
     const priceMap = useMemo(() => {
         const map = new Map<string, TPriceRow>();
@@ -239,26 +241,29 @@ export function useCompleteSession() {
                     }
                 }
 
+                // Collect all independent mutations to execute in parallel
+                const mutationPromises: Promise<unknown>[] = [];
+
                 // 1. Add additional employees to the event
-                if (additionalEmployeeIds.length > 0) {
-                    for (const empId of additionalEmployeeIds) {
-                        await evolu.insert("calendarEventEmployees", {
+                for (const empId of additionalEmployeeIds) {
+                    mutationPromises.push(
+                        evolu.insert("calendarEventEmployees", {
                             calendarEventId: eventId as CalendarEventId,
                             employeeId: empId as any,
                             attendance: "present",
-                        });
-                    }
+                        })
+                    );
                 }
 
                 // 2. Add additional customers to the event
-                if (additionalCustomerIds.length > 0) {
-                    for (const custId of additionalCustomerIds) {
-                        await evolu.insert("calendarEventCustomers", {
+                for (const custId of additionalCustomerIds) {
+                    mutationPromises.push(
+                        evolu.insert("calendarEventCustomers", {
                             calendarEventId: eventId as CalendarEventId,
                             customerId: custId as any,
                             attendance: "present",
-                        });
-                    }
+                        })
+                    );
                 }
 
                 // 3. Update attendance on existing employee assignments
@@ -269,10 +274,12 @@ export function useCompleteSession() {
                             String(r.employeeId) === entry.id
                     );
                     for (const row of rows) {
-                        await evolu.update("calendarEventEmployees", {
-                            id: row.id,
-                            attendance: entry.attendance,
-                        });
+                        mutationPromises.push(
+                            evolu.update("calendarEventEmployees", {
+                                id: row.id,
+                                attendance: entry.attendance,
+                            })
+                        );
                     }
                 }
 
@@ -284,10 +291,12 @@ export function useCompleteSession() {
                             String(r.customerId) === entry.id
                     );
                     for (const row of rows) {
-                        await evolu.update("calendarEventCustomers", {
-                            id: row.id,
-                            attendance: entry.attendance,
-                        });
+                        mutationPromises.push(
+                            evolu.update("calendarEventCustomers", {
+                                id: row.id,
+                                attendance: entry.attendance,
+                            })
+                        );
                     }
                 }
 
@@ -317,49 +326,58 @@ export function useCompleteSession() {
                                 const remainingUnits = unitCount - preOrdersUsed;
 
                                 for (let i = 0; i < preOrdersUsed; i++) {
-                                    await evolu.insert("creditTransactions", {
+                                    mutationPromises.push(
+                                        evolu.insert("creditTransactions", {
+                                            customerId: customer.id as any,
+                                            amount: -pricePerUnit,
+                                            date: dayjs().format("YYYY-MM-DD"),
+                                            note: notePrefix,
+                                            priceId: price.id,
+                                            serviceId: serviceId as any,
+                                            quantity: 1,
+                                            calendarEventId: eventId as CalendarEventId,
+                                            transactionType: "consumption",
+                                        })
+                                    );
+                                }
+
+                                if (remainingUnits > 0) {
+                                    mutationPromises.push(
+                                        evolu.insert("creditTransactions", {
+                                            customerId: customer.id as any,
+                                            amount: -(remainingUnits * pricePerUnit),
+                                            date: dayjs().format("YYYY-MM-DD"),
+                                            note: notePrefix,
+                                            serviceId: serviceId as any,
+                                            quantity: remainingUnits,
+                                            calendarEventId: eventId as CalendarEventId,
+                                            transactionType: "consumption",
+                                        })
+                                    );
+                                }
+                            } else {
+                                // Custom price: single transaction for the whole amount
+                                mutationPromises.push(
+                                    evolu.insert("creditTransactions", {
                                         customerId: customer.id as any,
-                                        amount: -pricePerUnit,
+                                        amount: -finalCost,
                                         date: dayjs().format("YYYY-MM-DD"),
-                                        note: notePrefix,
-                                        priceId: price.id,
+                                        note: `${notePrefix} (custom price)`,
                                         serviceId: serviceId as any,
                                         quantity: 1,
                                         calendarEventId: eventId as CalendarEventId,
                                         transactionType: "consumption",
-                                    });
-                                }
-
-                                if (remainingUnits > 0) {
-                                    await evolu.insert("creditTransactions", {
-                                        customerId: customer.id as any,
-                                        amount: -(remainingUnits * pricePerUnit),
-                                        date: dayjs().format("YYYY-MM-DD"),
-                                        note: notePrefix,
-                                        serviceId: serviceId as any,
-                                        quantity: remainingUnits,
-                                        calendarEventId: eventId as CalendarEventId,
-                                        transactionType: "consumption",
-                                    });
-                                }
-                            } else {
-                                // Custom price: single transaction for the whole amount
-                                await evolu.insert("creditTransactions", {
-                                    customerId: customer.id as any,
-                                    amount: -finalCost,
-                                    date: dayjs().format("YYYY-MM-DD"),
-                                    note: `${notePrefix} (custom price)`,
-                                    serviceId: serviceId as any,
-                                    quantity: 1,
-                                    calendarEventId: eventId as CalendarEventId,
-                                    transactionType: "consumption",
-                                });
+                                    })
+                                );
                             }
                         }
                     }
                 }
 
-                // 6. Mark the event as completed
+                // Execute all independent mutations in parallel
+                await Promise.all(mutationPromises);
+
+                // 6. Mark the event as completed (after all other mutations)
                 await evolu.update("calendarEvents", {
                     id: eventId as CalendarEventId,
                     status: "completed",

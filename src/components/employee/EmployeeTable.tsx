@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { TEmployeeRow } from '../../evolu/evolu-query';
 import { Employee } from '../../types/employee';
 import { EmployeeActions } from './EmployeeActions';
-import { useQuery } from '@evolu/react';
+import { useQueries } from '@evolu/react';
 import { customFields, customFieldValues } from '../../evolu/evolu-query';
 import type { TCustomFieldRow, TCustomFieldValueRow } from '../../evolu/evolu-query';
 import { getTranslatedFieldName } from '../../utils/customFieldTranslations';
@@ -25,8 +25,8 @@ export const EmployeeTable = memo(({ employees, isLoading, onEdit, onDelete, onA
     const { t, i18n } = useTranslation();
     const currentLanguage = (i18n.language?.split('-')[0] || 'en') as Language;
 
-    const allCustomFields = useQuery(customFields) as TCustomFieldRow[];
-    const allCustomFieldValues = useQuery(customFieldValues) as TCustomFieldValueRow[];
+    // Batch custom fields and values queries (one suspension)
+    const [allCustomFields, allCustomFieldValues] = useQueries([customFields, customFieldValues]) as [TCustomFieldRow[], TCustomFieldValueRow[]];
 
     const employeeCustomFields = useMemo(() => {
         return allCustomFields.filter(

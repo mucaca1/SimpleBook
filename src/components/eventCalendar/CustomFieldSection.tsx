@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery } from '@evolu/react';
 import {
     Box, Stack, TextField, FormControlLabel, Checkbox,
@@ -47,9 +47,13 @@ export const CustomFieldSection = React.forwardRef<
         (field) => field.appliesTo === 'CalendarEvent'
     );
 
-    const existingValues = useQuery(
-        eventId ? getCustomFieldValuesForCalendarEvent(eventId) : customFields
-    ) as TCustomFieldValueRow[];
+    // Memoize parameterized query to avoid re-creating on every render
+    const eventValuesQuery = useMemo(
+        () => eventId ? getCustomFieldValuesForCalendarEvent(eventId) : customFields,
+        [eventId]
+    );
+
+    const existingValues = useQuery(eventValuesQuery) as TCustomFieldValueRow[];
 
     const [fieldValues, setFieldValues] = useState<FieldValuesState>({});
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsState>({});

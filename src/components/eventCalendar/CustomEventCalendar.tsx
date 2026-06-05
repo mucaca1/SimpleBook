@@ -4,15 +4,11 @@ import dayjs from 'dayjs';
 import type { SchedulerEvent } from '@mui/x-scheduler/models';
 import type { SchedulerResource } from '@mui/x-scheduler-headless/models';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@evolu/react';
+import { useQueries } from '@evolu/react';
 import { sqliteFalse } from '@evolu/common';
 import { useCalendarEventCrud } from '../../hooks/useCalendarEventCrud';
-import { useServiceCrud } from '../../hooks/useServiceCrud';
-import { useEmployeeCrud } from '../../hooks/useEmployeeCrud';
-import { useCustomerCrud } from '../../hooks/useCustomerCrud';
-import { useRoomCrud } from '../../hooks/useRoomCrud';
 import { updateCalendarTimeFormat, updateCalendarShowWeekends } from '../../hooks/useSettingsSync';
-import { settings } from '../../evolu/evolu-query';
+import { services, employees, customers, rooms, settings } from '../../evolu/evolu-query';
 import { hexToSchedulerColor } from '../../utils/colorMapping';
 import { saveCustomFieldValuesForCalendarEvent } from '../../evolu/customFieldUtils';
 import type { CalendarEventId } from '../../evolu/evolu-db';
@@ -45,13 +41,15 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
         getCustomerIdsForEvent,
         completedEventIds,
     } = useCalendarEventCrud();
-    const { services } = useServiceCrud();
-    const { employees } = useEmployeeCrud();
-    const { customers } = useCustomerCrud();
-    const { rooms } = useRoomCrud();
 
-    // Settings
-    const settingsRows = useQuery(settings);
+    // Batch remaining queries into a single useQueries call (one suspension)
+    const [serviceRows, employeeRows, customerRows, roomRows, settingsRows] = useQueries([
+        services,
+        employees,
+        customers,
+        rooms,
+        settings,
+    ]);
     const settingsRow = settingsRows.length > 0 ? settingsRows[0] : null;
     const ampm = settingsRow?.calendarTimeFormat === '12h';
     const showWeekends = settingsRow?.calendarShowWeekends !== sqliteFalse;
@@ -105,27 +103,27 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
 
     // Filter options for the toolbar
     const employeeOptions = useMemo(() =>
-        (employees ?? []).map((e) => ({
+        (employeeRows ?? []).map((e) => ({
             id: String(e.id),
             label: `${e.firstName ?? ''} ${e.lastName ?? ''}`.trim() || '?',
         })),
-        [employees]
+        [employeeRows]
     );
 
     const customerOptions = useMemo(() =>
-        (customers ?? []).map((c) => ({
+        (customerRows ?? []).map((c) => ({
             id: String(c.id),
             label: `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim() || '?',
         })),
-        [customers]
+        [customerRows]
     );
 
     const roomOptions = useMemo(() =>
-        (rooms ?? []).map((r) => ({
+        (roomRows ?? []).map((r) => ({
             id: String(r.id),
             label: r.name ?? '?',
         })),
-        [rooms]
+        [roomRows]
     );
 
     // Build roomId lookup from event rows
@@ -168,12 +166,12 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
     }, [events, employeeFilter, customerFilter, roomFilter, getEmployeeIdsForEvent, getCustomerIdsForEvent, eventRoomMap]);
 
     const resources: SchedulerResource[] = useMemo(
-        () => (services ?? []).map((service) => ({
+        () => (serviceRows ?? []).map((service) => ({
             id: String(service.id),
             title: String(service.name),
             eventColor: hexToSchedulerColor(service.color as string | null | undefined),
         })),
-        [services]
+        [serviceRows]
     );
 
     const handleDaySelect = useCallback((date: dayjs.Dayjs) => {

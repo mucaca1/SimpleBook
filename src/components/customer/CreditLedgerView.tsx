@@ -11,7 +11,7 @@ import {
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { ArrowBack as BackIcon, Add as AddIcon, Delete as DeleteIcon, ShoppingCart as ShoppingCartIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@evolu/react';
+import { useQueries } from '@evolu/react';
 import dayjs from 'dayjs';
 import { Customer } from '../../types/customer';
 import { CreditTransactionFormData } from '../../types/creditTransaction';
@@ -44,10 +44,19 @@ export function CreditLedgerView({
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [transactionToDelete, setTransactionToDelete] = useState<TCreditTransactionRow | null>(null);
 
-    const transactions = useQuery(getCreditTransactionsForCustomer(customer.id)) as TCreditTransactionRow[];
-    const allEmployees = useQuery(employees) as TEmployeeRow[];
-    const allServices = useQuery(services) as TServiceRow[];
-    const allPreOrderPrices = useQuery(preOrderPrices) as TPreOrderPriceRow[];
+    // Memoize parameterized query to avoid re-creating on every render
+    const customerTxQuery = useMemo(
+        () => getCreditTransactionsForCustomer(customer.id),
+        [customer.id]
+    );
+
+    // Batch all queries into a single useQueries call (one suspension)
+    const [transactions, allEmployees, allServices, allPreOrderPrices] = useQueries([
+        customerTxQuery,
+        employees,
+        services,
+        preOrderPrices,
+    ]) as [TCreditTransactionRow[], TEmployeeRow[], TServiceRow[], TPreOrderPriceRow[]];
 
     const employeeMap = useMemo(() => {
         const map = new Map<string, TEmployeeRow>();

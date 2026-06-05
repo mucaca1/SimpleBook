@@ -12,7 +12,8 @@ export const customers: Evolu.Query = evolu.createQuery((db) =>
     db.selectFrom("customers")
         .selectAll()
         .where("isDeleted", "is not", Evolu.sqliteTrue)
-        .orderBy("createdAt", "desc")
+        .orderBy("createdAt", "desc"),
+    { logQueryExecutionTime: true }
 );
 
 export type TCustomerRow = typeof customers.Row;
@@ -46,7 +47,8 @@ export const employees: Evolu.Query = evolu.createQuery((db) =>
     db.selectFrom("employees")
         .selectAll()
         .where("isDeleted", "is not", Evolu.sqliteTrue)
-        .orderBy("createdAt", "desc")
+        .orderBy("createdAt", "desc"),
+    { logQueryExecutionTime: true }
 );
 
 export type TEmployeeRow = typeof employees.Row;
@@ -63,7 +65,8 @@ export const calendarEvents: Evolu.Query = evolu.createQuery((db) =>
     db.selectFrom("calendarEvents")
         .selectAll()
         .where("isDeleted", "is not", Evolu.sqliteTrue)
-        .orderBy("start", "asc")
+        .orderBy("start", "asc"),
+    { logQueryExecutionTime: true }
 );
 
 export type TCalendarEventRow = typeof calendarEvents.Row;
@@ -79,7 +82,8 @@ export const getCustomFieldValuesForCalendarEvent = (calendarEventId: CalendarEv
 export const calendarEventEmployees: Evolu.Query = evolu.createQuery((db) =>
     db.selectFrom("calendarEventEmployees")
         .selectAll()
-        .where("isDeleted", "is not", Evolu.sqliteTrue)
+        .where("isDeleted", "is not", Evolu.sqliteTrue),
+    { logQueryExecutionTime: true }
 );
 
 export type TCalendarEventEmployeeRow = typeof calendarEventEmployees.Row;
@@ -95,7 +99,8 @@ export const getEmployeesForEvent = (calendarEventId: CalendarEventId): Evolu.Qu
 export const calendarEventCustomers: Evolu.Query = evolu.createQuery((db) =>
     db.selectFrom("calendarEventCustomers")
         .selectAll()
-        .where("isDeleted", "is not", Evolu.sqliteTrue)
+        .where("isDeleted", "is not", Evolu.sqliteTrue),
+    { logQueryExecutionTime: true }
 );
 
 export type TCalendarEventCustomerRow = typeof calendarEventCustomers.Row;
@@ -104,7 +109,8 @@ export const services: Evolu.Query = evolu.createQuery((db) =>
     db.selectFrom("services")
         .selectAll()
         .where("isDeleted", "is not", Evolu.sqliteTrue)
-        .orderBy("createdAt", "desc")
+        .orderBy("createdAt", "desc"),
+    { logQueryExecutionTime: true }
 );
 
 export type TServiceRow = typeof services.Row;
@@ -150,7 +156,8 @@ export const creditTransactions: Evolu.Query = evolu.createQuery((db) =>
     db.selectFrom("creditTransactions")
         .selectAll()
         .where("isDeleted", "is not", Evolu.sqliteTrue)
-        .orderBy("createdAt", "desc")
+        .orderBy("createdAt", "desc"),
+    { logQueryExecutionTime: true }
 );
 
 export type TCreditTransactionRow = typeof creditTransactions.Row;
