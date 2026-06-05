@@ -577,6 +577,32 @@
             "employee": "Employee",
             "customer": "Customer",
             "room": "Room"
+        },
+        "completeSession": {
+            "title": "Complete Session",
+            "button": "Complete Session",
+            "confirm": "Confirm Completion",
+            "completed": "Completed",
+            "completedBadge": "Done",
+            "attendance": "Attendance",
+            "employees": "Employees",
+            "customers": "Customers",
+            "present": "Present",
+            "absent": "Absent",
+            "addEmployee": "Add Employee",
+            "addCustomer": "Add Customer",
+            "cost": "Cost",
+            "currentBalance": "Balance",
+            "balanceAfter": "After",
+            "preOrderAvailable": "Pre-order sessions available: {{count}}",
+            "insufficientWarning": "Insufficient credit. Balance will go negative.",
+            "noServiceWarning": "No service assigned",
+            "noPriceWarning": "No price found",
+            "lockedEvent": "This session is completed and cannot be edited.",
+            "toast": {
+                "completed": "Session completed successfully",
+                "completeError": "Failed to complete session"
+            }
         }
     },
     "rooms": {

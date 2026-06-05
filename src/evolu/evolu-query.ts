@@ -163,3 +163,12 @@ export const getCreditTransactionsForCustomer = (customerId: CustomerId): Evolu.
             .where("isDeleted", "is not", Evolu.sqliteTrue)
             .orderBy("createdAt", "desc")
     );
+
+export const getConsumptionTransactionsForEvent = (calendarEventId: CalendarEventId): Evolu.Query =>
+    evolu.createQuery((db) =>
+        db.selectFrom("creditTransactions")
+            .selectAll()
+            .where("calendarEventId", "==", calendarEventId)
+            .where("isDeleted", "is not", Evolu.sqliteTrue)
+            .orderBy("createdAt", "desc")
+    );

@@ -7,6 +7,7 @@ import { useServiceCrud } from "../hooks/useServiceCrud";
 import { EventList } from "../components/scheduler/EventList";
 import { CustomEventCalendar } from "../components/eventCalendar";
 import { EventFormPanel } from "../components/eventCalendar/EventFormPanel";
+import { CompleteSessionDialog } from "../components/eventCalendar/CompleteSessionDialog";
 import { saveCustomFieldValuesForCalendarEvent } from "../evolu/customFieldUtils";
 import type { CalendarEventId } from "../evolu/evolu-db";
 import type { CalendarEventFormData, ExternalDraftData } from "../components/eventCalendar/types";
@@ -30,11 +31,17 @@ export function HomePage() {
         deleteEvent,
         assignEmployees,
         assignCustomers,
+        isEventCompleted,
+        completedEventIds,
     } = useCalendarEventCrud();
     const { services } = useServiceCrud();
 
     const [formState, setFormState] = useState<FormState>(INITIAL_FORM_STATE);
     const [draftData, setDraftData] = useState<ExternalDraftData | null>(null);
+
+    // Complete session dialog state
+    const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
+    const [completeDialogEventId, setCompleteDialogEventId] = useState<string | null>(null);
 
     const handleDraftChange = useCallback((draft: ExternalDraftData) => {
         setDraftData(draft);
@@ -130,6 +137,21 @@ export function HomePage() {
         setDraftData(null);
     }, []);
 
+    const handleOpenCompleteSession = useCallback(() => {
+        if (formState.data?.id) {
+            setCompleteDialogEventId(formState.data.id);
+            setCompleteDialogOpen(true);
+        }
+    }, [formState.data?.id]);
+
+    const handleCloseCompleteSession = useCallback(() => {
+        setCompleteDialogOpen(false);
+        setCompleteDialogEventId(null);
+        // Close the form panel too after completion
+        setFormState(INITIAL_FORM_STATE);
+        setDraftData(null);
+    }, []);
+
     const handleEditFromList = useCallback((eventRow: typeof allEventRows[number]) => {
         const eventId = String(eventRow.id);
         const employeeIds = getEmployeeIdsForEvent(eventId);
@@ -189,6 +211,8 @@ export function HomePage() {
                         onDelete={handleFormDelete}
                         onClose={handleFormClose}
                         onDraftChange={handleDraftChange}
+                        onCompleteSession={formState.mode === 'edit' && formState.data?.id ? handleOpenCompleteSession : undefined}
+                        isCompleted={formState.data?.id ? isEventCompleted(formState.data.id) : false}
                     />
                 ) : (
                     <Box sx={{ flex: 1, overflowY: "auto", pl: 1 }}>
@@ -197,10 +221,26 @@ export function HomePage() {
                             getEmployeeIdsForEvent={getEmployeeIdsForEvent}
                             getCustomerIdsForEvent={getCustomerIdsForEvent}
                             onEditEvent={handleEditFromList}
+                            completedEventIds={completedEventIds}
                         />
                     </Box>
                 )}
             </Box>
+
+            {/* Complete Session Dialog */}
+            {completeDialogOpen && completeDialogEventId && formState.data && (
+                <CompleteSessionDialog
+                    open={completeDialogOpen}
+                    onClose={handleCloseCompleteSession}
+                    eventId={completeDialogEventId}
+                    eventTitle={formState.data.title || ''}
+                    eventStart={formState.data.start || dayjs().toISOString()}
+                    eventEnd={formState.data.end || dayjs().add(1, 'hour').toISOString()}
+                    serviceId={formState.data.resource || null}
+                    assignedEmployeeIds={formState.data.employeeIds || []}
+                    assignedCustomerIds={formState.data.customerIds || []}
+                />
+            )}
         </Box>
     );
 }

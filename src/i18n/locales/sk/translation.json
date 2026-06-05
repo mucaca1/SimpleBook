@@ -577,6 +577,32 @@
             "employee": "Zamestnanec",
             "customer": "Zákazník",
             "room": "Miestnosť"
+        },
+        "completeSession": {
+            "title": "Dokončiť sedenie",
+            "button": "Dokončiť sedenie",
+            "confirm": "Potvrdiť dokončenie",
+            "completed": "Dokončené",
+            "completedBadge": "Hotové",
+            "attendance": "Účasť",
+            "employees": "Zamestnanci",
+            "customers": "Zákazníci",
+            "present": "Prítomný",
+            "absent": "Neprítomný",
+            "addEmployee": "Pridať zamestnanca",
+            "addCustomer": "Pridať zákazníka",
+            "cost": "Náklady",
+            "currentBalance": "Zostatok",
+            "balanceAfter": "Po",
+            "preOrderAvailable": "Dostupné predobjednávky: {{count}}",
+            "insufficientWarning": "Nedostatočný kredit. Zostatok bude záporný.",
+            "noServiceWarning": "Žiadna priradená služba",
+            "noPriceWarning": "Cena nenájdená",
+            "lockedEvent": "Toto sedenie je dokončené a nie je možné ho upravovať.",
+            "toast": {
+                "completed": "Sedenie bolo úspešne dokončené",
+                "completeError": "Nepodarilo sa dokončiť sedenie"
+            }
         }
     },
     "rooms": {

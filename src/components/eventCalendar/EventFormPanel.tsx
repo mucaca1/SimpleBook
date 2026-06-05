@@ -3,9 +3,9 @@ import {
     TextField, FormControlLabel, Checkbox,
     Box, Stack, Typography, Button, CircularProgress,
     List, ListItem, ListItemAvatar, ListItemText, Avatar,
-    Divider, IconButton, Autocomplete,
+    Divider, IconButton, Autocomplete, Chip,
 } from '@mui/material';
-import { Close } from '@mui/icons-material';
+import { Close, CheckCircle, Lock } from '@mui/icons-material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -33,6 +33,8 @@ interface EventFormPanelProps {
     onDelete?: (id: string) => Promise<void>;
     onClose: () => void;
     onDraftChange?: (draft: { title: string; start: string; end: string; color: SchedulerEventColor | null; allDay: boolean }) => void;
+    onCompleteSession?: () => void;
+    isCompleted?: boolean;
 }
 
 export function EventFormPanel({
@@ -42,6 +44,8 @@ export function EventFormPanel({
     onDelete,
     onClose,
     onDraftChange,
+    onCompleteSession,
+    isCompleted,
 }: EventFormPanelProps) {
     const { t } = useTranslation();
     const { employees, isLoading: employeesLoading } = useEmployeeCrud();
@@ -64,6 +68,8 @@ export function EventFormPanel({
     const [titleError, setTitleError] = useState('');
     const [employeeSearch, setEmployeeSearch] = useState('');
     const [customerSearch, setCustomerSearch] = useState('');
+
+    const isLocked = saving || !!isCompleted;
 
     useEffect(() => {
         if (initialData) {
@@ -181,7 +187,17 @@ export function EventFormPanel({
                         ? t('scheduler.eventForm.createEvent')
                         : t('scheduler.eventForm.editEvent')}
                 </Typography>
-                <IconButton size="small" onClick={onClose} disabled={saving}>
+                {isCompleted && (
+                    <Chip
+                        size="small"
+                        icon={<Lock sx={{ fontSize: 12 }} />}
+                        label={t('scheduler.completeSession.completed')}
+                        color="success"
+                        variant="outlined"
+                        sx={{ mr: 1, fontSize: '0.65rem', height: 22 }}
+                    />
+                )}
+                <IconButton size="small" onClick={onClose} disabled={isLocked}>
                     <Close fontSize="small" />
                 </IconButton>
             </Box>
@@ -202,7 +218,7 @@ export function EventFormPanel({
                             required
                             error={!!titleError}
                             helperText={titleError}
-                            disabled={saving}
+                            disabled={isLocked}
                             size="small"
                             autoFocus
                             variant="outlined"
@@ -236,7 +252,7 @@ export function EventFormPanel({
                                 <Checkbox
                                     checked={allDay}
                                     onChange={(e) => setAllDay(e.target.checked)}
-                                    disabled={saving}
+                                    disabled={isLocked}
                                     size="small"
                                 />
                             }
@@ -328,7 +344,7 @@ export function EventFormPanel({
                                     </Box>
                                 </li>
                             )}
-                            disabled={saving}
+                            disabled={isLocked}
                             isOptionEqualToValue={(o, v) => o.id === v.id}
                         />
 
@@ -342,7 +358,7 @@ export function EventFormPanel({
                             fullWidth
                             multiline
                             rows={2}
-                            disabled={saving}
+                            disabled={isLocked}
                             size="small"
                         />
 
@@ -368,7 +384,7 @@ export function EventFormPanel({
                                     value={employeeSearch}
                                     onChange={(e) => setEmployeeSearch(e.target.value)}
                                     fullWidth
-                                    disabled={saving}
+                                    disabled={isLocked}
                                     sx={{ mb: 0.5 }}
                                 />
                                 <List dense disablePadding sx={{ maxHeight: 150, overflow: 'auto' }}>
@@ -403,7 +419,7 @@ export function EventFormPanel({
                                                 checked={selectedEmployeeIds.has(id)}
                                                 tabIndex={-1}
                                                 size="small"
-                                                disabled={saving}
+                                                disabled={isLocked}
                                             />
                                         </ListItem>
                                     );
@@ -434,7 +450,7 @@ export function EventFormPanel({
                                     value={customerSearch}
                                     onChange={(e) => setCustomerSearch(e.target.value)}
                                     fullWidth
-                                    disabled={saving}
+                                    disabled={isLocked}
                                     sx={{ mb: 0.5 }}
                                 />
                                 <List dense disablePadding sx={{ maxHeight: 150, overflow: 'auto' }}>
@@ -469,7 +485,7 @@ export function EventFormPanel({
                                                 checked={selectedCustomerIds.has(id)}
                                                 tabIndex={-1}
                                                 size="small"
-                                                disabled={saving}
+                                                disabled={isLocked}
                                             />
                                         </ListItem>
                                     );
@@ -483,7 +499,7 @@ export function EventFormPanel({
                             ref={customFieldRef}
                             eventId={mode === 'edit' && initialData?.id ? initialData.id as any : null}
                             onValuesChange={() => {}}
-                            disabled={saving}
+                            disabled={isLocked}
                         />
                     </Stack>
                 </LocalizationProvider>
@@ -491,35 +507,63 @@ export function EventFormPanel({
 
             {/* Action buttons */}
             <Box sx={{ display: 'flex', gap: 1, px: 2, py: 1.5, borderTop: 1, borderColor: 'divider' }}>
-                {mode === 'edit' && onDelete && (
-                    <Button
-                        onClick={handleDelete}
-                        color="error"
-                        disabled={saving}
-                        size="small"
-                        sx={{ textTransform: 'none', fontWeight: 600 }}
-                    >
-                        {t('scheduler.eventForm.delete')}
-                    </Button>
+                {isCompleted ? (
+                    <>
+                        <Box sx={{ flex: 1 }} />
+                        <Button
+                            onClick={onClose}
+                            size="small"
+                            sx={{ textTransform: 'none' }}
+                        >
+                            {t('scheduler.eventForm.cancel')}
+                        </Button>
+                    </>
+                ) : (
+                    <>
+                        {mode === 'edit' && onDelete && (
+                            <Button
+                                onClick={handleDelete}
+                                color="error"
+                                disabled={isLocked}
+                                size="small"
+                                sx={{ textTransform: 'none', fontWeight: 600 }}
+                            >
+                                {t('scheduler.eventForm.delete')}
+                            </Button>
+                        )}
+                        {mode === 'edit' && onCompleteSession && (
+                            <Button
+                                onClick={onCompleteSession}
+                                color="success"
+                                variant="outlined"
+                                disabled={isLocked}
+                                size="small"
+                                startIcon={<CheckCircle sx={{ fontSize: 16 }} />}
+                                sx={{ textTransform: 'none', fontWeight: 600 }}
+                            >
+                                {t('scheduler.completeSession.button')}
+                            </Button>
+                        )}
+                        <Box sx={{ flex: 1 }} />
+                        <Button
+                            onClick={onClose}
+                            disabled={isLocked}
+                            size="small"
+                            sx={{ textTransform: 'none' }}
+                        >
+                            {t('scheduler.eventForm.cancel')}
+                        </Button>
+                        <Button
+                            onClick={handleSave}
+                            variant="contained"
+                            disabled={isLocked}
+                            size="small"
+                            sx={{ textTransform: 'none', fontWeight: 600 }}
+                        >
+                            {saving ? <CircularProgress size={16} color="inherit" /> : t('scheduler.eventForm.save')}
+                        </Button>
+                    </>
                 )}
-                <Box sx={{ flex: 1 }} />
-                <Button
-                    onClick={onClose}
-                    disabled={saving}
-                    size="small"
-                    sx={{ textTransform: 'none' }}
-                >
-                    {t('scheduler.eventForm.cancel')}
-                </Button>
-                <Button
-                    onClick={handleSave}
-                    variant="contained"
-                    disabled={saving}
-                    size="small"
-                    sx={{ textTransform: 'none', fontWeight: 600 }}
-                >
-                    {saving ? <CircularProgress size={16} color="inherit" /> : t('scheduler.eventForm.save')}
-                </Button>
             </Box>
         </Box>
     );

@@ -19,6 +19,7 @@ interface CalendarWeekViewProps {
     locale: string;
     draftEvent?: SchedulerEvent | null;
     draftAnchorRef?: React.RefObject<HTMLDivElement | null>;
+    completedEventIds?: Set<string>;
 }
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
@@ -34,6 +35,7 @@ export function CalendarWeekView({
     locale,
     draftEvent,
     draftAnchorRef,
+    completedEventIds,
 }: CalendarWeekViewProps) {
     const gridRef = useRef<HTMLDivElement>(null);
     const [nowTop, setNowTop] = useState<number | null>(null);
@@ -284,6 +286,7 @@ export function CalendarWeekView({
                                             width={width}
                                             ampm={ampm}
                                             onClick={handleEventClick}
+                                            isCompleted={completedEventIds?.has(String(event.id))}
                                         />
                                     </Box>
                                 ))}

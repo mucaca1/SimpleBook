@@ -30,6 +30,8 @@ export function useCreditTransactionCrud(): UseCreditTransactionCrudReturn {
                 priceId: data.priceId || null,
                 serviceId: data.serviceId || null,
                 quantity: data.quantity || null,
+                calendarEventId: data.calendarEventId || null,
+                transactionType: data.transactionType || null,
             });
 
             if (result.ok) {

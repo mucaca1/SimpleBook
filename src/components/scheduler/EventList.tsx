@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import {
     Box, Typography, Avatar, Tooltip, IconButton, ToggleButtonGroup, ToggleButton, Button,
 } from "@mui/material";
-import { Edit, People, Person, ExpandMore, ExpandLess } from "@mui/icons-material";
+import { Edit, People, Person, ExpandMore, ExpandLess, CheckCircle } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import { useEmployeeCrud } from "../../hooks/useEmployeeCrud";
@@ -16,9 +16,10 @@ interface EventListProps {
     getEmployeeIdsForEvent: (eventId: string) => string[];
     getCustomerIdsForEvent: (eventId: string) => string[];
     onEditEvent: (event: TCalendarEventRow) => void;
+    completedEventIds?: Set<string>;
 }
 
-export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEvent, onEditEvent }: EventListProps) {
+export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEvent, onEditEvent, completedEventIds }: EventListProps) {
     const { t } = useTranslation();
     const { employees } = useEmployeeCrud();
     const { customers } = useCustomerCrud();
@@ -94,6 +95,7 @@ export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEve
             : getEmployeeIdsForEvent(String(event.id));
         const visible = ids.slice(0, MAX_VISIBLE);
         const overflow = ids.slice(MAX_VISIBLE);
+        const isCompleted = completedEventIds?.has(String(event.id));
 
         return (
             <Box
@@ -106,15 +108,20 @@ export function EventList({ events, getEmployeeIdsForEvent, getCustomerIdsForEve
                     px: 1,
                     borderRadius: 1,
                     "&:hover": { bgcolor: "action.hover" },
+                    ...(isCompleted && { opacity: 0.6 }),
                 }}
             >
-                <IconButton
-                    size="small"
-                    onClick={() => onEditEvent(event)}
-                    sx={{ flexShrink: 0 }}
-                >
-                    <Edit sx={{ fontSize: 16 }} />
-                </IconButton>
+                {isCompleted ? (
+                    <CheckCircle sx={{ fontSize: 16, color: 'success.main', flexShrink: 0 }} />
+                ) : (
+                    <IconButton
+                        size="small"
+                        onClick={() => onEditEvent(event)}
+                        sx={{ flexShrink: 0 }}
+                    >
+                        <Edit sx={{ fontSize: 16 }} />
+                    </IconButton>
+                )}
                 {event.color && (
                     <Box
                         sx={{

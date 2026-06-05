@@ -55,6 +55,9 @@ export function useCalendarEventCrud() {
 
                 for (const event of updatedEvents) {
                     const id = String(event.id);
+                    // Silently skip completed events (drag-and-drop guard)
+                    if (isEventCompleted(id)) continue;
+
                     if (existingIds.has(id as CalendarEventId)) {
                         await evolu.update("calendarEvents", {
                             id: id as CalendarEventId,
@@ -145,6 +148,12 @@ export function useCalendarEventCrud() {
     const updateEvent = useCallback(
         async (id: string, data: Partial<SchedulerEvent>, roomId?: string | null): Promise<void> => {
             try {
+                // Locking guard: prevent updates on completed events
+                if (isEventCompleted(id)) {
+                    toast.error(t("scheduler.completeSession.lockedEvent"));
+                    return;
+                }
+
                 await evolu.update("calendarEvents", {
                     id: id as CalendarEventId,
                     ...(data.title !== undefined && { title: data.title }),
@@ -167,6 +176,12 @@ export function useCalendarEventCrud() {
     const assignEmployees = useCallback(
         async (eventId: string, newEmployeeIds: string[]) => {
             try {
+                // Locking guard: prevent reassignment on completed events
+                if (isEventCompleted(eventId)) {
+                    toast.error(t("scheduler.completeSession.lockedEvent"));
+                    return;
+                }
+
                 const currentAssignments = (assignmentRows ?? [])
                     .filter((r) => String(r.calendarEventId) === eventId);
                 const currentEmployeeIds = new Set(currentAssignments.map((r) => String(r.employeeId)));
@@ -199,6 +214,26 @@ export function useCalendarEventCrud() {
         [assignmentRows, t]
     );
 
+    const isEventCompleted = useCallback((eventId: string): boolean => {
+        const row = (rows ?? []).find((r) => String(r.id) === eventId);
+        return row?.status === "completed";
+    }, [rows]);
+
+    const getEventStatus = useCallback((eventId: string): string | null => {
+        const row = (rows ?? []).find((r) => String(r.id) === eventId);
+        return row?.status ? String(row.status) : null;
+    }, [rows]);
+
+    const completedEventIds = useMemo(() => {
+        const set = new Set<string>();
+        for (const row of rows ?? []) {
+            if (row.status === "completed") {
+                set.add(String(row.id));
+            }
+        }
+        return set;
+    }, [rows]);
+
     const customerIdsByEvent = useMemo(() => {
         const map = new Map<string, string[]>();
         for (const row of customerAssignmentRows ?? []) {
@@ -217,6 +252,12 @@ export function useCalendarEventCrud() {
     const assignCustomers = useCallback(
         async (eventId: string, newCustomerIds: string[]) => {
             try {
+                // Locking guard: prevent reassignment on completed events
+                if (isEventCompleted(eventId)) {
+                    toast.error(t("scheduler.completeSession.lockedEvent"));
+                    return;
+                }
+
                 const currentAssignments = (customerAssignmentRows ?? [])
                     .filter((r) => String(r.calendarEventId) === eventId);
                 const currentCustomerIds = new Set(currentAssignments.map((r) => String(r.customerId)));
@@ -260,5 +301,8 @@ export function useCalendarEventCrud() {
         getEmployeeIdsForEvent,
         assignCustomers,
         getCustomerIdsForEvent,
+        isEventCompleted,
+        getEventStatus,
+        completedEventIds,
     };
 }

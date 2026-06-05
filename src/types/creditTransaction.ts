@@ -1,4 +1,4 @@
-import { CreditTransactionId, CustomerId, EmployeeId, PriceId, ServiceId } from '../evolu/evolu-db';
+import { CreditTransactionId, CustomerId, EmployeeId, PriceId, ServiceId, CalendarEventId } from '../evolu/evolu-db';
 
 export interface CreditTransaction {
     id: CreditTransactionId;
@@ -10,6 +10,8 @@ export interface CreditTransaction {
     priceId?: PriceId;
     serviceId?: ServiceId;
     quantity?: number;
+    calendarEventId?: CalendarEventId;
+    transactionType?: string;
 }
 
 export interface CreditTransactionFormData {
@@ -21,4 +23,6 @@ export interface CreditTransactionFormData {
     priceId?: string;
     serviceId?: string;
     quantity?: number;
+    calendarEventId?: string;
+    transactionType?: string;
 }

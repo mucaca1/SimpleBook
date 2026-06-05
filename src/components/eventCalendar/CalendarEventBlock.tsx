@@ -1,4 +1,5 @@
 import { Box, Typography } from '@mui/material';
+import { CheckCircle } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import type { SchedulerEvent } from '@mui/x-scheduler/models';
 import { getEventColor, EVENT_GAP } from './utils';
@@ -12,6 +13,7 @@ interface CalendarEventBlockProps {
     ampm: boolean;
     onClick: (event: SchedulerEvent) => void;
     isDraft?: boolean;
+    isCompleted?: boolean;
 }
 
 export function CalendarEventBlock({
@@ -23,6 +25,7 @@ export function CalendarEventBlock({
     ampm,
     onClick,
     isDraft = false,
+    isCompleted = false,
 }: CalendarEventBlockProps) {
     const bgColor = getEventColor(event.color);
     const fmt = ampm ? 'h:mm A' : 'HH:mm';
@@ -54,6 +57,10 @@ export function CalendarEventBlock({
                     : {
                         border: 'none',
                     }),
+                ...(isCompleted && {
+                    opacity: 0.55,
+                    borderLeft: '3px solid #4CAF50',
+                }),
                 transition: 'box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1)',
                 '&:hover': {
                     boxShadow: isDraft ? 'none' : '0 2px 6px rgba(0,0,0,0.25)',
@@ -61,7 +68,7 @@ export function CalendarEventBlock({
                 },
             }}
         >
-            <Box sx={{ px: '6px', py: '2px' }}>
+            <Box sx={{ px: '6px', py: '2px', position: 'relative' }}>
                 <Typography
                     variant="caption"
                     fontWeight={600}
@@ -88,6 +95,18 @@ export function CalendarEventBlock({
                     >
                         {startTime} – {endTime}
                     </Typography>
+                )}
+                {isCompleted && (
+                    <CheckCircle
+                        sx={{
+                            position: 'absolute',
+                            top: 2,
+                            right: 2,
+                            fontSize: 12,
+                            color: '#fff',
+                            opacity: 0.8,
+                        }}
+                    />
                 )}
             </Box>
         </Box>

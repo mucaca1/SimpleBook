@@ -82,6 +82,8 @@ const CalendarEvent = {
     color: Evolu.nullOr(Evolu.NonEmptyString100),
     resource: Evolu.nullOr(Evolu.NonEmptyString100),
     roomId: Evolu.nullOr(RoomId),
+    status: Evolu.nullOr(Evolu.NonEmptyString100),
+    completedAt: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
 const CustomFieldValue = {
@@ -100,6 +102,7 @@ const CalendarEventEmployee = {
     id: CalendarEventEmployeeId,
     calendarEventId: CalendarEventId,
     employeeId: EmployeeId,
+    attendance: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
 const CalendarEventCustomerId = Evolu.id("CalendarEventCustomerId");
@@ -109,6 +112,7 @@ const CalendarEventCustomer = {
     id: CalendarEventCustomerId,
     calendarEventId: CalendarEventId,
     customerId: CustomerId,
+    attendance: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
 const ServiceId = Evolu.id("ServiceId");
@@ -144,12 +148,14 @@ const CreditTransaction = {
     id: CreditTransactionId,
     customerId: CustomerId,
     employeeId: Evolu.nullOr(EmployeeId),
-    amount: Evolu.PositiveNumber,
+    amount: Evolu.FiniteNumber,
     date: Evolu.NonEmptyString100,
     note: Evolu.nullOr(Evolu.NonEmptyString1000),
     priceId: Evolu.nullOr(PriceId),
     serviceId: Evolu.nullOr(ServiceId),
     quantity: Evolu.nullOr(Evolu.PositiveNumber),
+    calendarEventId: Evolu.nullOr(CalendarEventId),
+    transactionType: Evolu.nullOr(Evolu.NonEmptyString100),
 }
 
 export const Schema = {

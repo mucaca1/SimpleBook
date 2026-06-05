@@ -130,9 +130,18 @@ export function CreditLedgerView({
             field: 'amount',
             headerName: t('creditLedger.table.amount'),
             width: 150,
-            valueFormatter: (params) => {
-                if (params == null) return '';
-                return `${currencySymbol} ${Number(params).toFixed(2)}`;
+            renderCell: (params) => {
+                const value = Number(params.value);
+                if (params.value == null || isNaN(value)) return '—';
+                const isNegative = value < 0;
+                return (
+                    <Typography
+                        variant="body2"
+                        sx={{ color: isNegative ? 'error.main' : 'success.main', fontWeight: 500 }}
+                    >
+                        {isNegative ? '' : '+'}{currencySymbol} {value.toFixed(2)}
+                    </Typography>
+                );
             },
         },
         {
@@ -141,6 +150,26 @@ export function CreditLedgerView({
             width: 220,
             renderCell: (params) => {
                 const row = params.row as TCreditTransactionRow;
+                const transactionType = row.transactionType as string | null;
+
+                // Consumption transaction
+                if (transactionType === 'consumption') {
+                    const service = row.serviceId ? serviceMap.get(row.serviceId as string) : null;
+                    const quantity = Number(row.quantity) || 1;
+                    const serviceName = service ? String(service.name) : '—';
+                    return (
+                        <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', lineHeight: 1.2 }}>
+                            <Box>
+                                <Typography variant="body2" color="error.main">Session consumed</Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                    {serviceName} ({quantity}x)
+                                </Typography>
+                            </Box>
+                        </Box>
+                    );
+                }
+
+                // Pre-order or regular credit
                 if (!row.serviceId) return '—';
                 const service = serviceMap.get(row.serviceId as string);
                 const price = priceMap.get(row.priceId as string);

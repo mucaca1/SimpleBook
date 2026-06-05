@@ -43,6 +43,7 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
         assignEmployees,
         getEmployeeIdsForEvent,
         getCustomerIdsForEvent,
+        completedEventIds,
     } = useCalendarEventCrud();
     const { services } = useServiceCrud();
     const { employees } = useEmployeeCrud();
@@ -368,6 +369,7 @@ export function CustomEventCalendar({ sx, onSlotClick: onSlotClickExternal, onEv
                         locale={locale}
                         draftEvent={draftEvent}
                         draftAnchorRef={draftAnchorRef}
+                        completedEventIds={completedEventIds}
                     />
                 </Box>
             </Box>
