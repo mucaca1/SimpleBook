@@ -7,7 +7,7 @@ import { createUseEvolu } from "@evolu/react";
 const DB_VERSION_KEY = "evolu_db_version";
 
 // Current database version - increment when schema changes require migration
-const CURRENT_DB_VERSION = 11;
+const CURRENT_DB_VERSION = 12;
 
 /**
  * Get the current database version from localStorage
@@ -37,6 +37,7 @@ function getDatabaseVersion(): number {
  * - Version 10: Added priceId, serviceId, quantity to CreditTransaction for pre-order service
  * - Version 11: Added status/completedAt to CalendarEvent, attendance to junction tables,
  *   changed CreditTransaction.amount to FiniteNumber, added calendarEventId and transactionType
+ * - Version 12: Added database indexes for query performance optimization
  */
 function needsDatabaseReset(): boolean {
     const currentVersion = getDatabaseVersion();
@@ -90,6 +91,67 @@ export const evolu = createEvolu(evoluReactWebDeps)(Schema, {
     }),
 
     indexes: (create) => [
+        // --- customers ---
+        // customers: WHERE isDeleted != true ORDER BY createdAt DESC
+        create("customers_isDeleted_createdAt").on("customers").column("isDeleted").column("createdAt"),
+
+        // --- employees ---
+        // employees: WHERE isDeleted != true ORDER BY createdAt DESC
+        create("employees_isDeleted_createdAt").on("employees").column("isDeleted").column("createdAt"),
+
+        // --- customFields ---
+        // customFields: WHERE isDeleted != true ORDER BY createdAt DESC
+        create("customFields_isDeleted_createdAt").on("customFields").column("isDeleted").column("createdAt"),
+
+        // --- customFieldValues ---
+        // customFieldValues: WHERE isDeleted != true
+        create("customFieldValues_isDeleted").on("customFieldValues").column("isDeleted"),
+        // getCustomFieldValuesForCustomer: WHERE customerId = ? AND isDeleted != true
+        create("customFieldValues_customerId_isDeleted").on("customFieldValues").column("customerId").column("isDeleted"),
+        // getCustomFieldValuesForEmployee: WHERE employeeId = ? AND isDeleted != true
+        create("customFieldValues_employeeId_isDeleted").on("customFieldValues").column("employeeId").column("isDeleted"),
+        // getCustomFieldValuesForCalendarEvent: WHERE calendarEventId = ? AND isDeleted != true
+        create("customFieldValues_calendarEventId_isDeleted").on("customFieldValues").column("calendarEventId").column("isDeleted"),
+
+        // --- calendarEvents ---
+        // calendarEvents: WHERE isDeleted != true ORDER BY start ASC
+        create("calendarEvents_isDeleted_start").on("calendarEvents").column("isDeleted").column("start"),
+
+        // --- calendarEventEmployees ---
+        // calendarEventEmployees: WHERE isDeleted != true
+        create("calendarEventEmployees_isDeleted").on("calendarEventEmployees").column("isDeleted"),
+        // getEmployeesForEvent: WHERE calendarEventId = ? AND isDeleted != true
+        create("calendarEventEmployees_calendarEventId_isDeleted").on("calendarEventEmployees").column("calendarEventId").column("isDeleted"),
+
+        // --- calendarEventCustomers ---
+        // calendarEventCustomers: WHERE isDeleted != true
+        create("calendarEventCustomers_isDeleted").on("calendarEventCustomers").column("isDeleted"),
+        // queried by calendarEventId in components
+        create("calendarEventCustomers_calendarEventId_isDeleted").on("calendarEventCustomers").column("calendarEventId").column("isDeleted"),
+
+        // --- services ---
+        // services: WHERE isDeleted != true ORDER BY createdAt DESC
+        create("services_isDeleted_createdAt").on("services").column("isDeleted").column("createdAt"),
+
+        // --- rooms ---
+        // rooms: WHERE isDeleted != true ORDER BY createdAt DESC
+        create("rooms_isDeleted_createdAt").on("rooms").column("isDeleted").column("createdAt"),
+
+        // --- prices ---
+        // prices: WHERE isDeleted != true ORDER BY createdAt DESC
+        create("prices_isDeleted_createdAt").on("prices").column("isDeleted").column("createdAt"),
+        // getPricesForService: WHERE serviceId = ? AND isDeleted != true ORDER BY createdAt DESC
+        create("prices_serviceId_isDeleted_createdAt").on("prices").column("serviceId").column("isDeleted").column("createdAt"),
+        // preOrderPrices: WHERE preOrderAllowed = 1 AND isDeleted != true ORDER BY createdAt DESC
+        create("prices_preOrderAllowed_isDeleted_createdAt").on("prices").column("preOrderAllowed").column("isDeleted").column("createdAt"),
+
+        // --- creditTransactions ---
+        // creditTransactions: WHERE isDeleted != true ORDER BY createdAt DESC
+        create("creditTransactions_isDeleted_createdAt").on("creditTransactions").column("isDeleted").column("createdAt"),
+        // getCreditTransactionsForCustomer: WHERE customerId = ? AND isDeleted != true ORDER BY createdAt DESC
+        create("creditTransactions_customerId_isDeleted_createdAt").on("creditTransactions").column("customerId").column("isDeleted").column("createdAt"),
+        // getConsumptionTransactionsForEvent: WHERE calendarEventId = ? AND isDeleted != true ORDER BY createdAt DESC
+        create("creditTransactions_calendarEventId_isDeleted_createdAt").on("creditTransactions").column("calendarEventId").column("isDeleted").column("createdAt"),
     ],
 
     enableLogging: true,
