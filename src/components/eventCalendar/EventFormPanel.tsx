@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
     TextField, FormControlLabel, Checkbox,
     Box, Stack, Typography, Button, CircularProgress,
-    List, ListItem, ListItemAvatar, ListItemText, Avatar,
+    Avatar,
     Divider, IconButton, Autocomplete, Chip,
 } from '@mui/material';
 import { Close, CheckCircle, Lock } from '@mui/icons-material';
@@ -66,10 +66,22 @@ export function EventFormPanel({
     const [roomId, setRoomId] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const [titleError, setTitleError] = useState('');
-    const [employeeSearch, setEmployeeSearch] = useState('');
-    const [customerSearch, setCustomerSearch] = useState('');
 
     const isLocked = saving || !!isCompleted;
+
+    const employeeOptions = useMemo(() => (employees ?? []).map((e) => ({
+        id: String(e.id),
+        label: `${e.firstName ?? ''} ${e.lastName ?? ''}`.trim() || '?',
+        firstName: e.firstName,
+        lastName: e.lastName,
+    })), [employees]);
+
+    const customerOptions = useMemo(() => (customers ?? []).map((c) => ({
+        id: String(c.id),
+        label: `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim() || '?',
+        firstName: c.firstName,
+        lastName: c.lastName,
+    })), [customers]);
 
     useEffect(() => {
         if (initialData) {
@@ -96,27 +108,7 @@ export function EventFormPanel({
             setRoomId(null);
         }
         setTitleError('');
-        setEmployeeSearch('');
-        setCustomerSearch('');
     }, [initialData]);
-
-    const toggleEmployee = useCallback((id: string) => {
-        setSelectedEmployeeIds((prev) => {
-            const next = new Set(prev);
-            if (next.has(id)) next.delete(id);
-            else next.add(id);
-            return next;
-        });
-    }, []);
-
-    const toggleCustomer = useCallback((id: string) => {
-        setSelectedCustomerIds((prev) => {
-            const next = new Set(prev);
-            if (next.has(id)) next.delete(id);
-            else next.add(id);
-            return next;
-        });
-    }, []);
 
     const handleSave = async () => {
         if (!title.trim()) {
@@ -356,60 +348,51 @@ export function EventFormPanel({
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
                             {t('scheduler.eventForm.employees')}
                         </Typography>
-                        {(employees ?? []).length === 0 ? (
+                        {employeeOptions.length === 0 ? (
                             <Typography variant="body2" color="text.secondary" fontSize="0.75rem">
                                 {t('scheduler.noEmployees')}
                             </Typography>
                         ) : (
-                            <>
-                                <TextField
-                                    size="small"
-                                    placeholder={t('scheduler.eventForm.searchEmployees')}
-                                    value={employeeSearch}
-                                    onChange={(e) => setEmployeeSearch(e.target.value)}
-                                    fullWidth
-                                    disabled={isLocked}
-                                    sx={{ mb: 0.5 }}
-                                />
-                                <List dense disablePadding sx={{ maxHeight: 150, overflow: 'auto' }}>
-                                {(employees ?? [])
-                                    .filter((emp) => {
-                                        if (!employeeSearch.trim()) return true;
-                                        const name = `${emp.firstName ?? ''} ${emp.lastName ?? ''}`.trim().toLowerCase();
-                                        return name.includes(employeeSearch.trim().toLowerCase());
-                                    })
-                                    .map((emp) => {
-                                    const id = String(emp.id);
-                                    return (
-                                        <ListItem
-                                            key={id}
-                                            onClick={() => !isLocked && toggleEmployee(id)}
-                                            sx={{ cursor: isLocked ? 'default' : 'pointer', '&:hover': { bgcolor: 'action.hover' }, py: 0, px: 0.5 }}
-                                        >
-                                            <ListItemAvatar>
-                                                <Avatar sx={{ width: 24, height: 24, fontSize: 10 }}>
-                                                    {getInitials(emp)}
-                                                </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText
-                                                primary={
-                                                    <Typography variant="body2" fontSize="0.75rem">
-                                                        {`${emp.firstName ?? ''} ${emp.lastName ?? ''}`.trim() || t('scheduler.unnamedEmployee')}
-                                                    </Typography>
-                                                }
-                                            />
-                                            <Checkbox
-                                                edge="end"
-                                                checked={selectedEmployeeIds.has(id)}
-                                                tabIndex={-1}
+                            <Autocomplete
+                                multiple
+                                size="small"
+                                options={employeeOptions}
+                                getOptionLabel={(option) => option.label}
+                                value={employeeOptions.filter((o) => selectedEmployeeIds.has(o.id))}
+                                onChange={(_, newValue) => {
+                                    setSelectedEmployeeIds(new Set(newValue.map((v) => v.id)));
+                                }}
+                                limitTags={3}
+                                renderInput={(params) => (
+                                    <TextField {...params} placeholder={t('scheduler.eventForm.searchEmployees')} size="small" />
+                                )}
+                                renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => {
+                                        const { key, ...rest } = getTagProps({ index });
+                                        return (
+                                            <Chip
+                                                key={key}
+                                                label={option.label}
                                                 size="small"
-                                                disabled={isLocked}
+                                                avatar={<Avatar sx={{ width: 20, height: 20, fontSize: 9 }}>{getInitials(option)}</Avatar>}
+                                                {...rest}
                                             />
-                                        </ListItem>
-                                    );
-                                })}
-                            </List>
-                            </>
+                                        );
+                                    })
+                                }
+                                renderOption={(props, option) => (
+                                    <li {...props}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <Avatar sx={{ width: 24, height: 24, fontSize: 10 }}>{getInitials(option)}</Avatar>
+                                            <Typography variant="body2" fontSize="0.75rem">
+                                                {option.label === '?' ? t('scheduler.unnamedEmployee') : option.label}
+                                            </Typography>
+                                        </Box>
+                                    </li>
+                                )}
+                                disabled={isLocked}
+                                isOptionEqualToValue={(o, v) => o.id === v.id}
+                            />
                         )}
 
                         <Divider />
@@ -418,60 +401,51 @@ export function EventFormPanel({
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: '0.05em' }}>
                             {t('scheduler.eventForm.customers')}
                         </Typography>
-                        {(customers ?? []).length === 0 ? (
+                        {customerOptions.length === 0 ? (
                             <Typography variant="body2" color="text.secondary" fontSize="0.75rem">
                                 {t('scheduler.noCustomers')}
                             </Typography>
                         ) : (
-                            <>
-                                <TextField
-                                    size="small"
-                                    placeholder={t('scheduler.eventForm.searchCustomers')}
-                                    value={customerSearch}
-                                    onChange={(e) => setCustomerSearch(e.target.value)}
-                                    fullWidth
-                                    disabled={isLocked}
-                                    sx={{ mb: 0.5 }}
-                                />
-                                <List dense disablePadding sx={{ maxHeight: 150, overflow: 'auto' }}>
-                                {(customers ?? [])
-                                    .filter((cust) => {
-                                        if (!customerSearch.trim()) return true;
-                                        const name = `${cust.firstName ?? ''} ${cust.lastName ?? ''}`.trim().toLowerCase();
-                                        return name.includes(customerSearch.trim().toLowerCase());
-                                    })
-                                    .map((cust) => {
-                                    const id = String(cust.id);
-                                    return (
-                                        <ListItem
-                                            key={id}
-                                            onClick={() => !isLocked && toggleCustomer(id)}
-                                            sx={{ cursor: isLocked ? 'default' : 'pointer', '&:hover': { bgcolor: 'action.hover' }, py: 0, px: 0.5 }}
-                                        >
-                                            <ListItemAvatar>
-                                                <Avatar sx={{ width: 24, height: 24, fontSize: 10 }}>
-                                                    {getInitials(cust)}
-                                                </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText
-                                                primary={
-                                                    <Typography variant="body2" fontSize="0.75rem">
-                                                        {`${cust.firstName ?? ''} ${cust.lastName ?? ''}`.trim() || t('scheduler.unnamedCustomer')}
-                                                    </Typography>
-                                                }
-                                            />
-                                            <Checkbox
-                                                edge="end"
-                                                checked={selectedCustomerIds.has(id)}
-                                                tabIndex={-1}
+                            <Autocomplete
+                                multiple
+                                size="small"
+                                options={customerOptions}
+                                getOptionLabel={(option) => option.label}
+                                value={customerOptions.filter((o) => selectedCustomerIds.has(o.id))}
+                                onChange={(_, newValue) => {
+                                    setSelectedCustomerIds(new Set(newValue.map((v) => v.id)));
+                                }}
+                                limitTags={3}
+                                renderInput={(params) => (
+                                    <TextField {...params} placeholder={t('scheduler.eventForm.searchCustomers')} size="small" />
+                                )}
+                                renderTags={(value, getTagProps) =>
+                                    value.map((option, index) => {
+                                        const { key, ...rest } = getTagProps({ index });
+                                        return (
+                                            <Chip
+                                                key={key}
+                                                label={option.label}
                                                 size="small"
-                                                disabled={isLocked}
+                                                avatar={<Avatar sx={{ width: 20, height: 20, fontSize: 9 }}>{getInitials(option)}</Avatar>}
+                                                {...rest}
                                             />
-                                        </ListItem>
-                                    );
-                                })}
-                            </List>
-                            </>
+                                        );
+                                    })
+                                }
+                                renderOption={(props, option) => (
+                                    <li {...props}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <Avatar sx={{ width: 24, height: 24, fontSize: 10 }}>{getInitials(option)}</Avatar>
+                                            <Typography variant="body2" fontSize="0.75rem">
+                                                {option.label === '?' ? t('scheduler.unnamedCustomer') : option.label}
+                                            </Typography>
+                                        </Box>
+                                    </li>
+                                )}
+                                disabled={isLocked}
+                                isOptionEqualToValue={(o, v) => o.id === v.id}
+                            />
                         )}
 
                         {/* Custom Fields */}
