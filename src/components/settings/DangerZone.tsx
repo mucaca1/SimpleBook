@@ -26,7 +26,7 @@ import { sql } from "kysely";
 import { evolu } from "../../evolu-init";
 import { TypeConfirmDialog } from "../ui/TypeConfirmDialog";
 import { DeleteConfirmDialog } from "../ui/DeleteConfirmDialog";
-import { AppOwner } from "@evolu/common";
+import { AppOwner, Mnemonic } from "@evolu/common";
 
 type MnemonicDialogState = {
     open: boolean;
@@ -122,9 +122,12 @@ export function DangerZone() {
     const handleImportWarningConfirm = async () => {
         setIsImporting(true);
         try {
-            await evolu.resetAppOwner({ mnemonic: importMnemonic.trim(), reload: false });
-            toast.success("Mnemonic imported successfully. Reloading...");
-            setTimeout(() => window.location.reload(), 1000);
+            const result = Mnemonic.from(importMnemonic.trim());
+            if (!result.ok) {
+                return;
+            }
+
+            void evolu.restoreAppOwner(result.value);
         } catch (error) {
             console.error("Failed to import mnemonic:", error);
             toast.error("Failed to import mnemonic");
@@ -407,14 +410,34 @@ export function DangerZone() {
             </Dialog>
 
             {/* Import Mnemonic Warning Dialog */}
-            <DeleteConfirmDialog
+            <Dialog
                 open={importWarningOpen}
-                itemName=""
-                itemType={t("settings.dangerZone.importMnemonic.itemType") || "mnemonic"}
-                onConfirm={handleImportWarningConfirm}
                 onClose={handleImportWarningClose}
-                isDeleting={isImporting}
-            />
+                closeOnEscapeKeyDown={!isImporting}
+                closeOnBackdropClick={!isImporting}
+                maxWidth="xs"
+                fullWidth
+            >
+                <DialogTitle>
+                    {t("settings.dangerZone.importMnemonic.confirmTitle") || "Confirm Import"}
+                </DialogTitle>
+                <DialogContent>
+                    <Alert severity="warning">
+                        {t("settings.dangerZone.importMnemonic.confirmMessage") ||
+                            "This will replace your current database owner with the imported mnemonic. Your current data will be lost. Are you sure?"}
+                    </Alert>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleImportWarningClose} color="secondary" disabled={isImporting}>
+                        {t("common.cancel") || "Cancel"}
+                    </Button>
+                    <Button onClick={handleImportWarningConfirm} color="warning" variant="contained" disabled={isImporting}>
+                        {isImporting
+                            ? t("settings.dangerZone.importMnemonic.importing") || "Importing..."
+                            : t("settings.dangerZone.importMnemonic.confirm") || "Import"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             {/* Delete Owner - Step 1: First Warning */}
             <DeleteConfirmDialog

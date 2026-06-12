@@ -9,6 +9,8 @@ import { RootPage } from "./pages/RootPage";
 import { WelcomePage } from "./pages/WelcomePage";
 import { UpdateNotification } from "./components/updates";
 import { useSettingsSync } from "./hooks/useSettingsSync";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const root = createRoot(document.body);
 
@@ -37,6 +39,11 @@ const ToDoApp = memo(function ToDoApp() {
                     </ThemeProvider>
                 </EvoluProvider>
             </React.StrictMode>
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                style={{ zIndex: 9999 }}
+            />
         </div>
     );
 });
