@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, Suspense } from "react";
 import { Box, CircularProgress } from "@mui/material";
 import dayjs from "dayjs";
 import type { SchedulerEvent } from "@mui/x-scheduler/models";
@@ -219,19 +219,25 @@ export function HomePage() {
                 flexDirection: "column",
             }}>
                 {formState.open ? (
-                    <EventFormPanel
-                        mode={formState.mode}
-                        initialData={formState.data}
-                        onSave={handleFormSave}
-                        onDelete={handleFormDelete}
-                        onClose={handleFormClose}
-                        onCompleteSession={formState.mode === 'edit' && formState.data?.id ? handleOpenCompleteSession : undefined}
-                        isCompleted={formState.data?.id ? isEventCompleted(formState.data.id) : false}
-                        employees={homeData.employeeRows}
-                        customers={homeData.customerRows}
-                        services={homeData.serviceRows}
-                        rooms={homeData.roomRows}
-                    />
+                    // Local Suspense: the per-event custom-field-values query inside
+                    // CustomFieldSection suspends on first open of a given event.
+                    // Without this boundary it bubbles up to RootPage and remounts the
+                    // whole calendar. Keep it local so only the panel suspends.
+                    <Suspense fallback={null}>
+                        <EventFormPanel
+                            mode={formState.mode}
+                            initialData={formState.data}
+                            onSave={handleFormSave}
+                            onDelete={handleFormDelete}
+                            onClose={handleFormClose}
+                            onCompleteSession={formState.mode === 'edit' && formState.data?.id ? handleOpenCompleteSession : undefined}
+                            isCompleted={formState.data?.id ? isEventCompleted(formState.data.id) : false}
+                            employees={homeData.employeeRows}
+                            customers={homeData.customerRows}
+                            services={homeData.serviceRows}
+                            rooms={homeData.roomRows}
+                        />
+                    </Suspense>
                 ) : (
                     <Box sx={{ flex: 1, overflowY: "auto", pl: 1 }}>
                         <EventList
